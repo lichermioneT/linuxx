@@ -104,7 +104,7 @@ mkdir指令
 mkdir ==  make directory,创建一个新的目录
 mkdir dir 创建一个空目录
 mkdir -p a/b/c/d 递归创建一个目录
-
+所以记住：mkdir -p = make directory with parents（创建目录及其父目录）！
 
 
 
