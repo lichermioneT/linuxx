@@ -88,4 +88,51 @@ less: f==空格：向后翻页
 less: b:向前翻页
 
 
+tail -n:显示文件的最后n行
+head -n:显示文件的最前n行
+
+tail file：默认后面十行
+head file:默认后面十行
+
+
+// 先显示0-1010,然后从1010返回显示十行
+head -1010 file5 | tail -10
+管道命令符号|
+进程通信和原理，特地讲管道的实现原理和编码
+
+head -1000 file | tail -10
+1.head -1000 file:默认往显示器打印数据
+2.|写到管道里面
+3.tail -10从管道里面拿数据
+
+程序会默认打开三个文件流
+stdin  标准输入 键盘
+stdout 标准输出 显示器
+stderr 标准错误 显示器
+Linux下一切皆文件
+
+
+date指令
+date +%Y/%m/%d-%H-%M-%S
+date +%Y/%m/%d-%H-%M-%S -d@timestamp
+date +%s
+timestamp/ 1970/1/1-00:00:00
+timestamp:时间戳就是从上面的时间到现在的秒数
+
+cal
+calendar==cal
+cal -3
+cal -y
+cal -j
+时间的重要性
+
+
+
+
+
+
+
+
+
+
 
