@@ -59,21 +59,83 @@ zip默认是压缩一个文件目录
 unzip 你的压缩包 解压到当前
 unzip 你的压缩包 -d 解压到指定的路径
 为什么需要解压打包呢？
-互联网-->很多大小文件的-->
+互联网-->很多大小文件的-->便于传输和保存。(将多个文件 保存一个文件)
+-->高效传输
 
 
+tar
+tape archive == tar 磁带归档
+主语f在最后面
+tar -czf my.tgz file 打包
+tar -xzf my.tgz 解压
+-t:不打开压缩文件，直接查看压缩文件。
+-v:解压或者压缩的时候，同步显示压缩列表。
+-C:解压到执行目录先
+
+tar -xzf my.tgz -C 指定路径
+
+bc
+basic calculator == bc
+bench calculator == bc
 
 
+uname
+unix name == uname
+uname -r (--kernel-release)
+uname -a (all)
+uname -m (--machine)
+
+云服务器永不关机的！！！
+关机你怎么开机。
+
+lscpu:查看CPU信息
+lsmem:查看内存信息
+df -h:查看磁盘使用情况
+who:查看当前linux登录用户
+whoami:用户是谁
 
 
+shell
+命令行解释器(command interpreter):命令行提示符，以及可以输入指令并且可以执行
+shell 
+
+linux内核:执行指令。
+shell:可能会创建一个新的进程。
+用户指令:不善于和操作系统打交道。
+用户指令 → Shell → 系统调用 → Linux内核 → 硬件
+    ↑           ↑           ↑
+(用户空间)  (命令解释)  (内核空间)
+
+shell存在的意义，变相的保护操作系统。
+执行指令，通过派生子进程的方式 执行用户的指令，shell本身并不执行对应的指令。
+
+linux的shell和win的图形界面本质上是等价的。
+shell外壳程序。
+bash一种shell外壳。
+
+权限：
+1.基本的具体用户认识
+	1.root 用户 超级管理员(密码保护好)
+	2.普通 用户 一般用户 收权限约束的用户
+	
+	普通用户变root--> su / su -
+	root-->变普通用户 su xxx
+	sudo借用root的身份执行一条指令。
+	
+2.权限的周边认识(是什么，为什么，怎么办(设置，取消), 没有权限，会出现什么问题？
+
+3.
 
 
+su指令
+switch user == su
+su - 
+su username
+su 
 
 
-
-
-
-
+sudo指令
+super user do == sudo
 
 
 
