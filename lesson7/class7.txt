@@ -1,0 +1,154 @@
+vim使用
+
+
+权限
+文件的删除并不是和文件的权限先关。而是能够有权限在目录进行写。
+粘滞位：很多用户想在一个公共目录下进行工作。
+目录设置粘滞位。
+权限：rwxrwxrwt
+
+yum的配置
+yum install -y 
+yum remove -y 
+yum list 
+yum应用商店，里面配置了下载软件的源(就是网站).
+yum的配置文件
+/etc/yum.repos.d/
+
+不同的社区维护不同的软件。
+软件放在服务器上面的。
+
+linux软件生态本土化。yum源。
+
+安装的本质就是拷贝。
+
+报错就去解决！
+
+我怎么知道下载哪些软件呢？你需要成长！！
+yum会自动解决软件之间的耦合关系。
+
+
+
+
+touch先创建一个文件。
+vim是一个编辑器
+1.命令模式
+  (打开vim默认就是)
+  a:append(光标后退一个字符)
+  i:insert(插入模式)
+  o:open a new line(换行直接一行后面)
+  O:open a new line(换行直接一行前面)
+  r:replace 替换
+  R:replace 替换
+  dd:delete line 剪切整行
+  yy:Yank line (猛拉，拖拽)
+  p:put 放置，粘贴
+  u:undo 撤销  
+  ctrl + r : redo 反撤销
+  
+  v:visual mode(可视模式)字符选中 
+  ctrl + v:按照行选中
+  
+  zxxzzeewwttx
+
+  x:eXterminate(消灭、删除)
+  
+  定位：
+  shift + $:定位行末尾
+  shift + ^:定位行首
+  gg:
+  shift + g:G
+  num shift + g :跳转到num行
+  :64  定位64行
+  50gg : 跳转到50行
+  
+  光标移动
+  h:左
+  j:jump
+  k:king
+  l:右
+  
+
+  文本操作
+  yy:复制
+  nyy:复制n行
+
+  p:粘贴
+  np:粘贴n行
+  
+  dd:剪切
+  ndd:剪切n行
+  
+  u:撤销
+  ctrl + r:反撤销
+  
+  v:选中单个字符
+  ctrl + v:选中行
+    
+
+  LICHERMIONEX
+  lichermionex
+  lichermionex
+  lichermionex
+  lichermtonex
+  lichermmonex
+  lichermionex
+  lichermionex
+  
+  shift + ~ :大小写切换 
+  shift + r :替换模式
+  r替换一次
+  nr:替换n次
+
+  x:向后删除删除光标所在位置
+  X:向前删除 
+  
+  nx:向后删除删除光标所在位置
+  nX:向前删除 
+  
+  lichermionex
+  lichermionex
+  lichermionex
+  lichermionex
+  lichermionex
+  lichermionex
+  lichermionex
+  
+  wb
+  cw 
+ qall 
+  wqall
+ u:撤销
+ ctrl + r:反撤销 
+
+
+2.插入模式
+  就是windows的记事本
+  命令进入插入模式
+  a
+  i
+  o
+  xlichermionex
+
+
+3.底行模式
+ ESC shift + : 进入底行模式 
+ :wq 保存退出
+  :wqall
+
+  :set nu
+  :set nonu
+
+
+  :vs 分屏
+  光标的意义定位。
+  ctrl W W :切换光标
+  
+  !linux zhiling
+  
+
+
+
+
+
+
