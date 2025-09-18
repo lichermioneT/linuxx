@@ -1,23 +1,16 @@
 #include<stdio.h>
 
+int add(int x, int y)
+{
+  return x + y;
+}
 int main()
 {
-  printf("hello world\n");
-  printf("Txsdfsdfsdd\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
-  printf("hello world\n");
+  int a = 10;
+  int b = 55;
 
-
-
-
-
+  int r =  add(a, b);
+  printf("%d \n", r);
 
 
 
