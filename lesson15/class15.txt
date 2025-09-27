@@ -1,0 +1,164 @@
+复习
+环境变量
+  系统层面的全局变量
+  USER
+  PWD
+  HOME
+
+
+命令行参数
+  根据选项选择不同的功能
+  main函数的两张表 选项和环境变量
+  getenv 建议
+  evn
+  char** environ
+
+echo是shell内置命令，所以能够打印本地环境变量
+
+c/c++的空间不是实际的物理地址
+虚拟地址，线性地址，逻辑地址。
+
+进程地址空间---》操作系统给进程话的饼干。
+
+地址空间的本质：是内核的一种数据结构。
+
+
+
+struct mm_struct
+{
+
+};
+
+1.地址空间的描述的基本空间大小是字节
+2.32位---2^32个地址
+3.2^32 * 1字节 = 4GB的空间范围
+4.每一个字节唯一的地址
+
+2^32个地址保证唯一性就行了。
+32位的数据即可
+
+
+编址
+1111111111111111111111111111111111111111
+0000000000000000000000000000000000000000
+
+
+默认就是2^32次方个地址。
+unsigned int(32bits)
+
+struct mm_struct
+{
+  uint32_t code_start;
+  uint32_t code_end;
+  uint32_t data_start;
+  uint32_t data_end;
+  uint32_t heap_start;
+  uint32_t heap_end;
+  uint32_t stack_start;
+  uint32_t stack_end;
+};
+
+[start, end]---[起始地址，区域结束地址]
+struct mm_struct* p =  (struct mm_struct*)malloc(sizeof(struct mm_struct));
+------无法修改--------
+p>code_start = ;
+p->code_end = ;
+p->data_start = ;
+p->data_end = ;
+
+-----堆栈可以调整------(本质就是修改end或者start)
+定义局部变量，malloc ,new---->扩大堆栈区域
+函数调用完毕，freee, delete-->缩小堆栈区域
+p->heap_start = ;
+p->heap_end = ;
+p>stack_start = ;
+p->stack_end = ;
+
+mm_struct(4GB的空间操作系统都给你了！！！)
+
+
+task_struct
+{
+  struct mm_struct* mm;
+};
+
+
+
+区域划分
+struct desktop
+{
+  unsigned int man_start;
+  unsigned int man_end;
+
+
+  unsigned int woman_start;
+  unsigned int woman_end;
+
+}
+
+struct desktop d = {1, 50, 51, 100};
+区域调整
+
+struct desktop fix = {1, 45, 55, 100};
+
+区域调整
+struct desktop new = {1, 30, 31, 100};
+
+
+
+task_struct
+{
+  struct mm_struct* mm
+}
+
+mm-> {进程地址空间} --> {内存}<-----{磁盘}
+my.exe加载到内存1k 字节的空间。
+
+
+4GB/4KB
+内存和磁盘io的单位
+page--4kb
+
+
+页表
+虚拟地址    页表      物理地址
+虚拟地址通过页表映射到物理地址
+
+页表是一个多级页表
+
+页表映射都是OS
+load my.exe是me.
+
+二维数组
+进程地址空间
+线性地址
+逻辑地址
+
+
+c/c++的地址空间应该是进程地址空间。
+进程地址空间
+
+
+进程都认为自己独享内存(虚拟地址空间)
+
+如何理解进程地址空间呢？
+为什么存在进程地址空间呢？？
+  1.如果让进程直接访问物理内存，万一进程越界非法操作呢？非常不安全呢！(页表不仅仅只做映射，还会检查映射是否安全呢)
+  2.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
