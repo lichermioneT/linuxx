@@ -1,0 +1,2 @@
+mypro:wait.c
+	gcc $^
