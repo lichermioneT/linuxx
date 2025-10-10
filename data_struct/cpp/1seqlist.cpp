@@ -103,11 +103,6 @@ public:
   
   void Insert(size_t pos, T x);
   void Erase(size_t pos);
-    
-
-
-
-
 private:
   T* _data;
   size_t _size;
@@ -137,9 +132,6 @@ private:
     std::swap(_size, that._size);
     std::swap(_capacity, that._capacity);
   }
-
-
-
 };
 
 

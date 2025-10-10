@@ -1,0 +1,2 @@
+mypro:execl.c
+	gcc $^
