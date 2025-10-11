@@ -17,7 +17,9 @@ public:
    {
      delete[] _data;
      _data = nullptr;
+     _size = _capacity = 0;
    }
+
   seqlist(const seqlist& that)
     :_data(new T[that._capacity])
     ,_size(that._size)
@@ -90,7 +92,7 @@ public:
     _size--;
   }
   
-  size_t Find(T x)
+  int Find(T x)
   {
     for(size_t i = 0; i < _size; i++)
     {
@@ -101,8 +103,35 @@ public:
     return -1;
   }
   
-  void Insert(size_t pos, T x);
-  void Erase(size_t pos);
+  void Insert(size_t pos, T x)
+  {
+    assert(pos <= _size);
+    Checkcapacity();
+
+    for(int i = _size - 1; i >= pos; i--)
+    {
+      _data[i + 1] =  _data[i];
+    }
+    
+    _data[pos] = x;
+    
+    _size++;
+  }
+
+
+
+  void Erase(size_t pos)
+  {
+    assert(pos < _size);
+    for(size_t i = pos; i < _size - 1; i++)
+    {
+      _data[i] = _data[i + 1];
+    }
+
+    _size--;
+  }
+
+
 private:
   T* _data;
   size_t _size;
@@ -138,45 +167,8 @@ private:
 
 int main()
 {
-
-
-  seqlist<int> s1;
+  seqlist<int> s1(10);
   cout<< s1.capacity() <<endl;
   cout<< s1.size() <<endl;
-  
-  s1.PusbFront(11);
-  s1.PusbFront(11);
-  s1.PusbFront(11);
-  s1.PusbFront(11);
-
-  s1.print();
-
-  s1.PopBack();
-  s1.PopBack();
-  s1.PopBack();
-  s1.PopBack();
-
-  s1.print();
-  
-  s1.PusbFront(1);
-  s1.PusbFront(2);
-  s1.PusbFront(3);
-  s1.PusbFront(4);
-
-  s1.print();
-
-  s1.PopBack();
-  s1.PopBack();
-  s1.PopBack();
-
-
-  s1.print();
-
-  seqlist<int> s2(s1);
-  s2.print();
-
-
-
-
   return 0;
 }

@@ -1,0 +1,2 @@
+myproject:string.cpp
+	g++ $^
