@@ -1,2 +1,2 @@
-myproject:2seqlistnode.cpp
+myproject:1seqlist.c
 	g++ $^

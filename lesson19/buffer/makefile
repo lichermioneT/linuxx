@@ -1,0 +1,2 @@
+mypro:myfile.c
+	gcc $^

@@ -63,9 +63,16 @@ void seqlistCheckCapacity(seqlist* ps)
   }
 }
 
+/* 指针是
+ * [pos + 1, _size];
+ *  i = i - 1
+ *
+ *
+ */ 
 void seqlistInsert(seqlist* ps, size_t pos, seqlistdatatype x)
 {
   assert(ps != NULL);
+  assert(pos <= ps->_size);
   seqlistCheckCapacity(ps);
   for(size_t i = ps->_size; i > pos; i--)
   {
@@ -77,7 +84,40 @@ void seqlistInsert(seqlist* ps, size_t pos, seqlistdatatype x)
 }
 
 
+void seqlistErase(seqlist* ps, size_t pos)
+{
+  assert(ps != NULL);
+  assert(ps->_size > 0);
+  assert(pos <ps->_size);
+  for(size_t i = pos; i < ps->_size - 1; i++)
+  {
+    ps->_data[i] = ps->_data[i+1];
+  }
 
+  ps->_size--;
+
+}
+
+
+void seqlistPushBack(seqlist* ps, seqlistdatatype x)
+{
+  seqlistInsert(ps,ps->_size, x);
+}
+
+void seqlistPopBack(seqlist* ps)
+{
+  seqlistErase(ps, ps->_size-1);
+}
+
+void seqlistPushFront(seqlist* ps, seqlistdatatype x)
+{
+  seqlistInsert(ps, 0, x);
+}
+
+void seqlistPopFront(seqlist* ps)
+{
+  seqlistErase(ps,0);
+}
 
 
 int main()

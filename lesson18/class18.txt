@@ -65,16 +65,75 @@ c语言传标记为，int--》一个标记位
           32个比特位。通过比特位传递选项。
             
 
+sszie_t write(int fd, const void * buf, size_t count)  文本类，二进制类。是c语言提供给你的。
+                        操作系统看来都是二进制位。
+
+
+fopen fclose fwrite fread fseek
+open  close  write    read     lseek
+库函数封装系统调用接口
+
+
+如何理解这里的文件呢？
+  文件操作的本质：进程和被打开文件的关系
+  1.进程可以打开多个文件吗？ 可以的！ 系统中一定会存在大量的被打开的文件。被打开的文件要不要被OS管理起来呢？(要的)
+    如何管理呢？(先描述，后组织)  操作系统为了管理对应的打开文件吗，必定要为文件创建对应的内核数据结构标识文件
+
+    struct file{} 包含了文件的大部分属性
+
+为什么fd是从3开始的呢？
+stdin  键盘
+stdout 显示器
+stderr 显示器
+
+FILE* fp = fopen()
+FILE*是什么呢？是一个结构体！必定有一个字段 (文件描述符号)
+
+#include<stdio.h>
+extern FILE* stdin
+extern FILE* stdout
+extern FILE* stderr
+
+
+struct task_struct
+{
+  int fd open()
+  struct files_struct* files;
+
+
+  close(fd);
+}
+
+strcut files_struct{}
+
+struct file* fd_array[]
+进程的文件描述符表
+
+
+
+struct file 
+{
+  键盘
+  显示器
+  显示器
+  文件
+}
+
+
+文件描述符的本质就是数组的下标。
+
+
+
+  2.
+
+如何理解 键盘 显示器， 显示器这些东西也是文件呢？
 
 
 
 
-
-
-
-
-
-
+内建指令
+当前路径
+文件
 
 
 

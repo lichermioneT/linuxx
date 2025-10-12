@@ -1,2 +1,2 @@
-myproject:1seqlist.c
+myproject:2seqlistnode.c
 	gcc $^

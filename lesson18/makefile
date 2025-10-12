@@ -1,2 +1,2 @@
-project:myshell.c
-	gcc $^ -DDEBUG
+project:file.c
+	gcc $^
