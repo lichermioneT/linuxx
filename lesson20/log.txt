@@ -1,0 +1,7 @@
+hello elifc-------------linux 
+hello printf------------------c
+hello fprintf--------c 
+hello fputs--------------------c 
+hello printf------------------c
+hello fprintf--------c 
+hello fputs--------------------c 

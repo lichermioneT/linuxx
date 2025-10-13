@@ -2,73 +2,141 @@
 #include <stdlib.h>
 #include <assert.h>
 
-typedef int seqNdatatype;
-typedef struct seqlistnode
+typedef int NodeDataType;
+typedef struct Node 
 {
-  seqNdatatype _data;
-  struct seqlistnode* ps;
-}seqlistnode;
+    NodeDataType data;
+    struct Node* next;
+}Node;
 
-
-seqlistnode* BuyListNode(seqNdatatype x)
+Node* CreateNode(NodeDataType x)
 {
-  seqlistnode* node = (seqlistnode*)malloc(sizeof(seqlistnode));
-  if(node == NULL)
+  Node* newnode = (Node*)malloc(sizeof(Node));
+  if(newnode == NULL)
   {
     perror("malloc failed");
+    exit(1);
   }
-  node->_data = x;
-  node->ps = NULL;
-
-  return node;
+  newnode->next = NULL;
+  newnode->data = x;
+  return newnode;
 }
 
-
-void seqlistPrint(seqlistnode* ps)
+void print(Node* phead)
 {
-  assert(ps);
-  seqlistnode* cur = ps;
-  while(cur != NULL)
+  while(phead != NULL)
   {
-    printf("%d ", cur->_data);
-    cur = cur->ps;
+    printf("%d ", phead->data);
+    phead = phead->next;
   }
-
   printf("\n");
 }
 
-void seqlistPushBack(seqlistnode** ps, seqNdatatype x)
+void NodePushBack(Node** phead, NodeDataType x)
 {
-  assert(ps);
-  seqlistnode* newnode = BuyListNode(x);
+  assert(phead);
+    
+  Node* newnode = CreateNode(x);
 
-  if(*ps == NULL)
+  if((*phead) == NULL)
   {
-    (*ps) = newnode; 
+    *phead = newnode;
   }
   else 
   {
-    seqlistnode* cur = *ps;
-    while(cur->ps != NULL)
+    Node* tail = *phead;
+    while(tail->next != NULL)
     {
-      cur = cur->ps;
+        tail = tail->next;
     }
-    cur->ps = newnode;
+    tail->next = newnode;
   }
 }
 
-void 
+void NodePopBack(Node** phead)
+{
+  assert(phead);
+  if(*phead == NULL)
+  {
+    return;
+  }
+  else if ((*phead)->next == NULL)
+  {
+    free(*phead);
+    *phead = NULL;
+  }
+  else 
+  {
+    Node* tail = *phead;
+    Node* tailpre = NULL;
+
+    while(tail->next != NULL)
+    {
+      tailpre = tail;
+      tail = tail->next;
+    }
+
+    free(tail);
+    tailpre->next = NULL;
+  }
+}
+
+void NodePushFront(Node** phead, NodeDataType x)
+{
+  assert(phead);
+  Node* newnode = CreateNode(x);
+  
+  newnode->next = *phead;
+
+  *phead = newnode;
+}
+
+void NodePopFront(Node** phead)
+{
+  assert(phead);
+  
+  if(*phead == NULL)
+  {
+    return;
+  }
+  else 
+  {
+    // 保存第二个节点
+    Node* second = (*phead)->next;
+    free(*phead);
+    *phead = second;
+  }
+}
+
+
+
+
+
+
 
 int main()
 {
 
-  // 指针,
-  seqlistnode* s = NULL;
-  seqlistPushBack(&s, 111);
-  seqlistPushBack(&s, 111);
-  seqlistPushBack(&s, 111);
-  seqlistPushBack(&s, 111);
-  seqlistPrint(s);
+  Node* phead = NULL;
+
+  for(int i = 0; i < 20; i++)
+  {
+    NodePushBack(&phead, i); 
+  } 
+  print(phead);
+
+  for(int i = 0; i < 20; i++)
+  {
+    NodePopBack(&phead); 
+    print(phead);
+  } 
+
+  for(int i = 0; i < 20; i++)
+  {
+    NodePushFront(&phead, i);
+    print(phead);
+  }
+
 
 
 
@@ -78,5 +146,3 @@ int main()
 
   return 0;
 }
-
-
