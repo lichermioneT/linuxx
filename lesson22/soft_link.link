@@ -1,0 +1,7 @@
+总用量 12
+drwxr-xr-x  2 root root 4096 10月 16 08:59 .
+drwxr-xr-x 35 root root 4096 10月 16 08:11 ..
+-rw-r--r--  1 root root  316 10月 16 09:03 class22.txt
+-rw-r--r--  2 root root    0 10月 16 08:57 hard_flie.link
+-rw-r--r--  2 root root    0 10月 16 08:57 myfile.txt
+lrwxrwxrwx  1 root root   10 10月 16 08:57 soft_link.link -> myfile.txt

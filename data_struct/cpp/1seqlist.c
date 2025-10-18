@@ -114,10 +114,6 @@ public:
   {
     Erase(0);
   }
-
-
-
-
 private:
   T* _data;
   size_t _size;
@@ -149,11 +145,7 @@ private:
       _capacity = newcapacity;
     }
   }
-
 };
-
-
-
 
 int main()
 {

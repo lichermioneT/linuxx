@@ -1,0 +1,2 @@
+my:propool.cc
+	g++ $^

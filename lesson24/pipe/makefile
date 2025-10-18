@@ -1,0 +1,2 @@
+mypro:pipe.cc
+	g++ $^
