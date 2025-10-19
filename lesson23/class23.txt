@@ -36,9 +36,3 @@ gcc main.c -I ./mylib/include/ -L ./mylib/lib/libmymath.a -lmymath
 形成一个可执行程序，可能不仅仅依赖一个库
 gcc默认动态链接 对于一个库是静态还是动态，取决于你提供的是静态还是动态。
 
-
-
-
-
-
-

@@ -21,16 +21,18 @@ int main()
   }
   else if (id == 0)
   {
-    printf("我是子进程  我的id:%d , 我的父进程id：%d\n", getpid(), getppid());
-    sleep(2);
+    printf("我是子进程 , 我的父进程id：%d, 我的pid:%d \n", getppid(), getpid());
+    printf("\n");
+    sleep(5);
   }
   else 
   {
-    printf("我是父进程  我的id:%d , 我的父进程id：%d\n", getpid(), getppid());
-    sleep(2);
+    printf("我是父进程 , 我的父进程id：%d, 我的pid:%d\n", getppid(), getpid());
+    sleep(5);
   }
  }
-
+  
+ 
 
 
 

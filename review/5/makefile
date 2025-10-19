@@ -1,2 +1,2 @@
-mypro:1test.c
+mypro:1step.c
 	gcc $^

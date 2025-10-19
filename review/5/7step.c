@@ -3,33 +3,29 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 int main()
 {
-  umask(0);
-  int fd = open("myfile", O_WRONLY | O_CREAT, 0644);
 
+ //  close(0);
+   close(1);
+  //close(2);
+
+  int fd = open("myfile", O_RDWR);
   if(fd < 0)
   {
     perror("open failed");
     exit(1);
   }
   
-  int cnt = 5;
-  const char* msg = "hello lic \n";
-  size_t len = strlen(msg);
+  const char* msg = "hello lic\n";
+  write(fd, msg, strlen(msg));
 
-  while(cnt != 0)
-  {
-    write(fd, msg, len);
-    cnt--;
-  }
-  
-
+  printf("%d \n", fd);
   close(fd);
+
 
 
 

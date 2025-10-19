@@ -7,17 +7,20 @@ int main()
 
 
 // 运行状态
+// 计算密集型的
+  
+  if(0)
+  {
   int a = 0;
-  while(0)
+  while(1)
   {
     a = 1 + 1;
-    printf("a = %d \n", a);
-    printf("a = %d \n", a);
+  }
   }
 
   while(1)
   {
-
+    printf("fadsfadsf\n");
   }
 
 
