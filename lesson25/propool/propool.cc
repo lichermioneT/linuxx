@@ -23,12 +23,13 @@ void downLoadTask()
 
 void ioTask()
 {
-  cout<< getpt() <<":io任务" <<endl;
+  cout<< getpid() <<":io任务" <<endl;
 }
 
 void flushTask()
 {
-  cout<<getpt() <<":刷新任务"<<endl;
+  cout<<getpid() <<":刷新任务"<<endl;
+
 }
 
 void loadTaskFunc(vector<func_t>* out)
@@ -65,6 +66,11 @@ int reveTask(int readFd)
 {
   int code = 0;
   ssize_t s = read(readFd, &code, sizeof(code));
+  if(s == 0)
+  {
+    cout<< "pipe closed, child exit \n";
+    exit(1);
+  }
   assert(s == sizeof(int));
   return code;
 }
@@ -78,13 +84,15 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
     int n = pipe(fds);
     assert(n == 0);
     (void)n;
+    // bug 
+    // 父进程打开的文件，是会被子进程共享的
 
     pid_t id = fork();
 
     if(id == 0)
     {
       // 处理任务
-      close(fds[1]);
+      close(fds[1]); // 关闭写端
       
       // 1接收命令码，没有就阻塞。
       while(true)
@@ -111,7 +119,6 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
     
 }
 
-
 void sendTask(const SubEd& process, int tasknum)
 {
   cout<< "send tasknum:" << tasknum << " send to " << process.name_ <<endl;
@@ -129,13 +136,15 @@ int main()
   
   vector<SubEd> subs; // 先描述，后组织起来
   vector<func_t> funcMap; 
-  cteateSubProcess(&subs, funcMap);
+
   loadTaskFunc(&funcMap); 
+  cteateSubProcess(&subs, funcMap);
 
   // loadBal
   // 父进程控制子进程
   int processnum = subs.size();
   int tasknum = funcMap.size();
+
   bool quit = false;
   while(!quit)
   {
