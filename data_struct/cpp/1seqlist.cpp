@@ -114,6 +114,18 @@ public:
   {
     Erase(0);
   }
+  
+  void print()
+  {
+    for(size_t i = 0; i < _size; i++)
+    {
+      cout<< _data[i] << " ";
+    }
+    cout<<endl;
+  }
+
+
+
 private:
   T* _data;
   size_t _size;
@@ -139,9 +151,7 @@ private:
       }
       
       delete[] _data;
-
       _data = temp;
-
       _capacity = newcapacity;
     }
   }
@@ -149,9 +159,17 @@ private:
 
 int main()
 {
+  
+  int arr[] = {1,2,32,4,5,5,65,6778,8,544};
+  seqlist<int> s;
+  for(auto & e : arr)
+  {
+    s.PushBack(e);
+  }
+  
+  s.print();
 
-
-
+  
 
 
 

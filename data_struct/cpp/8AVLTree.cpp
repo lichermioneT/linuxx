@@ -1,24 +1,24 @@
 #include <iostream>
-
+#include <ctime>
+#include <stdlib.h>
 using namespace std;
 
 template<class K, class V>
 struct AVLTreeNode
 {
-  AVLTreeNode<K, V>* letf;
+  AVLTreeNode<K, V>* left;
   AVLTreeNode<K, V>* right;
   AVLTreeNode<K, V>* parent;
   int bf;
   pair<K, V> KV;
-  AVLTreeNode(const pair<K,V> kv)
-    :letf(nullptr)
+  AVLTreeNode(const pair<K,V>& kv)
+    :left(nullptr)
     ,right(nullptr)
     ,parent(nullptr)
     ,bf(0)
     ,KV(kv)
     {}
 };
-
 
 template<class K, class V>
 class AVLTree 
@@ -41,7 +41,7 @@ public:
         if(cur->KV.first > kv.first)
         {
           parent = cur;
-          cur = cur->letf;
+          cur = cur->left;
         }
         else if(cur->KV.first < kv.first) 
         {
@@ -57,15 +57,18 @@ public:
       cur = new Node(kv);
       if(parent->KV.first > kv.first)
       {
-        parent->right = cur;
+        parent->left= cur;
         cur->parent = parent;
       }
       else 
       {
-        parent->letf = cur;
+        parent->right = cur;
         cur->parent = parent;
       }
 
+// 更新平衡因子的
+// 插入右边++
+// 插入左边--
       while(parent)
       {
         if(cur == parent->right)
@@ -76,7 +79,7 @@ public:
         {
           parent->bf--;
         }
-        
+
         if(parent->bf == 0)
         {
           break;
@@ -115,24 +118,26 @@ public:
       }
       return true;
     }
-// 2
-//   1
+// 2             parent 
+//   1           cur
 //     0
   void RotateL(Node* parent)
   {
     Node* subR = parent->right;
-    Node* subRL = subR->letf;
+    Node* subRL = subR->left;
+    Node* ppnode = parent->parent;
 
+// 旋转，左边高的拉下来
     parent->right = subRL;
     if(subRL != nullptr)
     {
       subRL->parent = parent;
     }
 
-    subR->letf = parent;
-    Node* ppnode = parent->parent;
+    subR->left = parent;
     parent->parent = subR;
-    
+
+// 判断是不是成为根节点
     // parent sf
     if(root == parent)
     {
@@ -141,9 +146,10 @@ public:
     }
     else 
     {
-      if(ppnode->letf == parent)
+// 处理两个平行线的问题
+      if(ppnode->left == parent)
       {
-        ppnode->letf = subR;
+        ppnode->left = subR;
       }
       else 
       {
@@ -152,26 +158,28 @@ public:
 
       subR->parent = ppnode;
     }
-
+// 拉下来 subR->bf等于零了，parent->bf等于零了
     subR->bf = 0;
     parent->bf = 0;
   }
 
   void RotateR(Node* parent)
   {
-    Node* subL =  parent->letf;
+    Node* subL =  parent->left;
     Node* subLR = subL->right;
-  
-    parent->letf = subLR;
+    Node* ppnode = parent->parent;
+
+// 旋转右边高的拉下去
+    parent->left = subLR;
     if(subLR != nullptr)
     {
       subLR->parent = parent;
     }
     
-    subL->letf = parent;
-    Node* ppnode = parent->parent;
+    subL->right= parent;
     parent->parent = subL;
 
+// 新的高节点是不是，跟节点
     if(root == parent)
     {
       root = subL;
@@ -179,9 +187,10 @@ public:
     }
     else 
     {
-      if(ppnode->letf == parent)
+// 处理两个平行的情况
+      if(ppnode->left == parent)
       {
-        ppnode->letf = subL;
+        ppnode->left = subL;
       }
       else 
       {
@@ -189,15 +198,25 @@ public:
       }
       subL->parent = ppnode;
     }
-
+// 处理过后就是 parent的bf原来是2，现在下来了就是零，subL左边-1，也是零了。
     subL->bf = 0;
     parent->bf = 0;
   }
 
+//  5          
+//    7       
+//  6
+//
+//  5  
+//    6
+//      7
+//
+//  6
+// 5 7
   void RotateRL(Node* parent)
   {
       Node* subR = parent->right;
-      Node* subRL = parent->letf;
+      Node* subRL = subR->left;
       int bf = subRL->bf;
 
       RotateR(parent->right);
@@ -225,7 +244,7 @@ public:
 
   void RotateLR(Node* parent)
   {
-    Node* subL = parent->letf;
+    Node* subL = parent->left;
     Node* subRL = subL->right;
     int bf = subRL->bf;
     
@@ -250,15 +269,29 @@ public:
       subL->bf  = 0;
       subRL->bf = 0;
     }
-
-
   }
 
+// 中序遍历 (递归)
+void InOrder()
+{
+    cout << "InOrder: ";
+    _InOrder(root);
+    cout << endl;
+}
 
+void _InOrder(Node* root)
+{
+    if (root == nullptr)
+        return;
+
+    _InOrder(root->left);
+    cout << "(" << root->KV.first << ", " << root->KV.second 
+         << ", bf=" << root->bf << ") " <<endl;
+    _InOrder(root->right);
+}
 private: 
   Node* root = nullptr;
 };
-
 
 void  test()
 {
@@ -268,28 +301,27 @@ void  test()
   {
       t.insert(make_pair(e,e));
   }
-
+  t.InOrder();
 } 
 
+void test1()
+{
+  srand((unsigned long)time(nullptr));
+  
+  AVLTree<int, int> t;
+  for(int i = 0; i < 100; i++)
+  { 
+    int r = rand() % 200;
+    t.insert(make_pair(r, r));
+  }
+
+  t.InOrder();
+}
 
 int main()
 {
 
-  test();
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//  test();
+ test1(); 
   return 0;
 }

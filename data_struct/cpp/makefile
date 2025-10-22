@@ -1,2 +1,2 @@
-myproject:8AVLTree.cpp
+myproject:2slist.cpp
 	g++ $^
