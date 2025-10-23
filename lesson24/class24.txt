@@ -61,8 +61,4 @@ a.匿名管道
 5.互斥与同步一致
 
 cat file.txt | grep 'hello'
-
-
-
-
 b.命名管道

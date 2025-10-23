@@ -43,7 +43,7 @@ int main()
     {
        cnt++;
        char buffer[1024];
-       snprintf(buffer, sizeof(buffer), "child->parent say: %s[%d][%d]", s, cnt, getpid()); // 都是子进程的信息
+       snprintf(buffer, sizeof(buffer), "child->parent say: %s[%d][%d]\n", s, cnt, getpid()); // 都是子进程的信息
        write(fds[1], buffer, strlen(buffer));
        cout<< " cnt :" << cnt <<endl; // 写段写满的时候，在阻塞等待，等读端读取数据
     }
@@ -55,10 +55,10 @@ int main()
   close(fds[1]); // 关闭父进程的写
   while(true)
   {
-    sleep(500);
     char buffer[1024];
     // 如果管道中没有数据了，读取端正在读， 默认会直接阻塞当前正在读取的进程！
-    ssize_t s =read(fds[0], buffer, sizeof(buffer) - 1);
+    ssize_t s =read(fds[0], buffer, sizeof(buffer));
+    sleep(1);
     if(s > 0) 
     {
       buffer[s] = 0;
@@ -69,6 +69,7 @@ int main()
       cout << "read:"<< s <<endl;
       break;
     }
+
     // 父进程没有进行sleep
   }
 

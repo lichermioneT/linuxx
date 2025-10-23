@@ -8,15 +8,15 @@ enum Colour
 };
 
 template<class K, class V>
-class RBTreeNode
+struct RBTreeNode
 {
-  RBTreeNode<K,V>*  _letf;
+  RBTreeNode<K,V>*  _left;
   RBTreeNode<K,V>* _right;
   RBTreeNode<K,V>* _parent;
   Colour _col;
   pair<K,V> _kv;
   RBTreeNode(const pair<K,V>& kv)
-    :_letf(nullptr)
+    :_left(nullptr)
     ,_right(nullptr)
     ,_parent(nullptr)
     ,_col(RED)
@@ -52,7 +52,7 @@ public:
       else if(cur->_kv.first > kv.first)
       {
         parent = cur;
-        cur = cur->_letf;
+        cur = cur->_left;
       }
       else 
       {
@@ -68,7 +68,7 @@ public:
     }
     else 
     {
-      parent->_letf = cur;
+      parent->_left = cur;
       cur->_parent = parent;
     }
 
@@ -110,7 +110,7 @@ public:
     
     Node* grandfather = parent->_parent;
 
-    if(grandfather->_letf == parent)
+    if(grandfather->_left == parent)
     {
       Node* uncle = grandfather->_right;
       // 叔叔存在且颜色为红色的
@@ -129,13 +129,13 @@ public:
         // 双旋---》变成单旋转
         if(cur == parent->_right)
         {
-          RotateL(parent);
+          RotateL2(parent);
           swap(parent, cur);
         }
         
         // 第二种情况
         //
-        RoteteR(grandfather);
+        RotateR2(grandfather);
         grandfather->_col = RED;
         parent->_col = BLACK;
         break;
@@ -143,7 +143,7 @@ public:
     }
     else 
     {
-      Node* uncle = grandfather->_letf;
+      Node* uncle = grandfather->_left;
       if(grandfather->_right == parent)
       {
         if(uncle != nullptr  && uncle->_col == RED)
@@ -158,46 +158,193 @@ public:
         }
         else  // 叔叔不存在，存在且为黑色
         {
-          if(cur == parent->_letf)
+          if(cur == parent->_left)
           {
-             RoteteR(parent);
+             RotateR2(parent);
              swap(parent, cur);
           }
 
-          RotateL(grandfather);
+          RotateL2(grandfather);
           grandfather->_col = RED;
           parent->_col = BLACK;
           break;
         }
       }
     }
-    
-    
-
-    
   }
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
     _root->_col = BLACK;
     return true;
   }
 
+  void Print() 
+  {
+    InOrder(_root);
+    cout<<endl;
+  } 
+
+
+void PrintTree(Node* root, int depth = 0)
+{
+      if (root == nullptr)
+                return;
+
+      PrintTree(root->_right, depth + 1);
+        for (int i = 0; i < depth; ++i)
+              printf("    ");  // 缩进
+
+       printf("%d(%s)\n", root->_data, root->_col == RED ? "R" : "B");
+       PrintTree(root->_left, depth + 1);
+}
+
 
 
 private: 
+void InOrder(Node* root)
+  {
+    if(root == nullptr) return;
+    InOrder(root->_left);
+    cout << root->_kv.first << "(" << (root->_col == RED ? "R" : "B") << ") ";
+    InOrder(root->_right);
+  }
+
   Node* _root = nullptr;
+  void RotateL(Node* x)
+  {
+    Node* y = x->_right;
+    if (y == nullptr)
+      return;
+
+    x->_right = y->_left;
+    if (y->_left != nullptr)
+    {
+      y->_left->_parent = x;
+    }
+
+    y->_parent = x->_parent;
+    if (x->_parent != nullptr)
+    {
+      if (x == x->_parent->_left)
+      {
+        x->_parent->_left = y;
+      }
+      else
+      {
+        x->_parent->_right = y;
+      }
+    }
+    else
+    {
+      _root = y;
+    }
+
+    y->_left = x;
+    x->_parent = y;
+  }
+
+  void RotateR(Node* y)
+  {
+    Node* x = y->_left;
+    if (x == nullptr)
+      return;
+
+    y->_left = x->_right;
+    if (x->_right != nullptr)
+    {
+      x->_right->_parent = y;
+    }
+
+    x->_parent = y->_parent;
+    if (y->_parent != nullptr)
+    {
+      if (y == y->_parent->_left)
+      {
+        y->_parent->_left = x;
+      }
+      else
+      {
+        y->_parent->_right = x;
+      }
+    }
+    else
+    {
+      _root = x;
+    }
+
+    x->_right = y;
+    y->_parent = x;
+  }
+
+  void RotateR2(Node* grandfather)
+  {
+      Node* parent = grandfather->_left;
+      Node* curR = parent->_right;
+      Node* ppNode = grandfather->_parent;
+       
+      // 旋转
+      grandfather->_left = parent->_right;
+      if(parent->_right != nullptr)
+      {
+        curR->_parent = grandfather;; 
+      }
+
+      parent->_right = grandfather;
+      grandfather->_parent = parent;
+
+      parent->_parent = ppNode;
+      if(ppNode != nullptr)
+      {
+        if(ppNode == grandfather->_left)
+        {
+          ppNode->_left = parent;
+        }
+        else 
+        {
+          ppNode->_right = parent;
+        }
+      }
+      else 
+      {
+        _root = parent;
+        _root->_parent = nullptr;
+      }
+  }
+
+  void RotateL2(Node* grandfather)
+  {
+    Node* parent = grandfather->_right;
+    Node* curL = parent->_left;
+    Node* ppNode = grandfather->_parent;
+
+    grandfather->_right = curL;
+    if(curL != nullptr)
+    {
+      curL->_parent = grandfather; 
+    }
+
+    parent->_left = grandfather;
+    grandfather->_parent = parent;
+
+    parent->_parent = ppNode;
+
+    if(ppNode != nullptr)
+    {
+      if(ppNode->_left == grandfather)
+      {
+        ppNode->_left = parent;
+      }
+      else 
+      {
+        ppNode->_right = parent;
+      }
+    }
+    else 
+    {
+      _root = parent;
+      _root->_parent = nullptr; 
+    }
+  }
+
+
 };
 
 
@@ -208,8 +355,37 @@ int main()
 
 
 
+  RBTree<int, int> tree;
 
+  // 测试插入顺序：1,2,3,4,5,6,7 会触发旋转
+  tree.insert({1, 1});
+  tree.Print();  // 输出: 1(B) 
 
+  tree.insert({2, 2});
+  tree.Print();  // 输出: 1(B) 2(R) 
+
+  tree.insert({3, 3});
+  tree.Print();  // 触发调整: 2(B) 1(R) 3(R) 
+
+  tree.insert({4, 4});
+  tree.Print();  // 触发旋转: 2(B) 1(R) 3(B) 4(R) 
+
+  tree.insert({5, 5});
+  tree.Print();  // 触发调整: 3(B) 2(B) 1(R) 4(R) 5(R)  等待，实际应为平衡树
+
+  tree.insert({6, 6});
+  tree.Print();
+
+  tree.insert({7, 7});
+  tree.Print();
+
+  // 测试重复插入
+  bool res = tree.insert({4, 4});
+  cout << "Insert duplicate 4: " << (res ? "true" : "false") << endl;
+
+  // 测试更多节点以观察平衡
+  tree.insert({0, 0});
+  tree.Print();
 
 
 
