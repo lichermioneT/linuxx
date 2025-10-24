@@ -32,6 +32,55 @@ public:
     }
   }
 
+  void pushfront(NodeDatatype x)
+  {
+    Node* newnode = new Node(x);
+    newnode->_next = _head;
+    _head = newnode;
+  }
+
+  void popback()
+  {
+    if(_head == nullptr)
+    {
+      return;
+    }
+    else if(_head->_next == nullptr)
+    {
+      free(_head);
+      _head = nullptr;
+    }
+    else 
+    {
+
+      Node* cur = _head;
+      Node* curp = nullptr;
+      while(cur->_next != nullptr)
+      {
+        curp = cur;
+        cur = cur->_next;
+      }
+      free(cur);
+      curp->_next = nullptr;
+    }
+  }
+
+  void popfront()
+  {
+    if(_head == nullptr)
+    {
+      return;
+    }
+    else 
+    {
+        Node* headNext = _head->_next;
+        free(_head);
+        _head = headNext;
+    }
+  }
+
+
+
   void print()
   {
     Node* cur = _head;
@@ -42,10 +91,6 @@ public:
     }
     cout<<endl;
   }
-
-
-
-
 private: 
   Node* _head;
 };
@@ -63,9 +108,18 @@ int main()
   }
   s.print();
 
-
-
-
+  int arr2[] = {1, 2, 3, 4, 5};
+  for(auto& e : arr2)
+  {
+    s.pushfront(e);
+  }
+  s.print();
+  
+  for(int i = 0; i < 15; i++)
+  {
+    s.popfront();
+    s.print();
+  }
 
 
 

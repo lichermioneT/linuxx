@@ -14,6 +14,7 @@ typedef struct seqlist
 void seqlistInit(seqlist* ps, size_t capacity)
 {
   assert(ps);
+  assert(capacity > 0);
   SeqListDataType* temp = (SeqListDataType*)malloc(sizeof(SeqListDataType) * capacity);
   
   if(temp == NULL)
@@ -44,7 +45,6 @@ void seqlistPrint(seqlist* ps)
   }
   printf("\n");
 }
-
 
 void seqlistCheckCapacity(seqlist* ps)
 {
@@ -81,12 +81,10 @@ void seqlistPopBack(seqlist* ps)
   ps->_size--;
 }
 
-
 void seqlistPusFront(seqlist* ps, SeqListDataType x)
 {
   assert(ps != NULL);
   seqlistCheckCapacity(ps);
-  
 // pushfront 
 // [size,1]
   for(size_t i = ps->_size; i > 0; i--)
@@ -97,7 +95,6 @@ void seqlistPusFront(seqlist* ps, SeqListDataType x)
   ps->_data[0] = x;
   ps->_size++;
 }
-
 
 void seqlistPopFront(seqlist* ps)
 {
@@ -110,7 +107,6 @@ void seqlistPopFront(seqlist* ps)
   }
 
   ps->_size--;
-
 }
 
 int seqlistFind(seqlist* ps, SeqListDataType x)
@@ -140,7 +136,6 @@ void seqlistInsert(seqlist* ps, size_t pos, SeqListDataType x)
   ps->_size++;
 }
 
-
 void seqlistErase(seqlist* ps, size_t pos)
 {
   assert(ps != NULL);
@@ -153,7 +148,6 @@ void seqlistErase(seqlist* ps, size_t pos)
 
   ps->_size--;
 }
-
 
 int main()
 {
@@ -204,7 +198,6 @@ int main()
   i = seqlistFind(&s, 3);
   printf("%d \n", i);
 
-
   seqlistInsert(&s, 20, 1000);
   seqlistPrint(&s);
   seqlistInsert(&s, 0, 100);
@@ -215,10 +208,6 @@ int main()
 
 
   seqlistDestory(&s);
-
-
-
-
   return 0;
 }
 

@@ -123,9 +123,6 @@ public:
     }
     cout<<endl;
   }
-
-
-
 private:
   T* _data;
   size_t _size;
@@ -167,8 +164,9 @@ int main()
     s.PushBack(e);
   }
   
-  s.print();
 
+  seqlist<int> s2 = s;
+  s.print();
   
 
 

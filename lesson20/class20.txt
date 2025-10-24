@@ -15,14 +15,11 @@ stderr
 本来输入stdout---->file.txt文件里面去了。
 dup2(fd,1),输出重定向
 
-
 pcb拷贝
 files_struct拷贝
 
 如何理解一切皆文件。
 函数指针指向不同的文件。
-
-
 
 理解缓冲区域
   本质及时一段内存。谁申请的？属于谁的？为什么要申请？
@@ -48,15 +45,10 @@ files_struct拷贝
  这个缓冲区在，stdout stdin stderr --> FILE* --> FILE 结构体 --> fd && 缓冲区！！！！！！！！！！！。
               我们在强制刷新，fflush(文件指针)， fclose(文件指针)。
 
-
 如何解释刚刚fork()的问题呢？
  所缓冲区改如何理解呢？
-  
-
-
 
  和OS有什么关系？
-
 
 缓冲区在FILE_里面
 用户---》系统接口---》struct file{ 内核缓冲区 } ---》OS自主决定(不是我们写到，那只是c语言层面！！)
@@ -65,12 +57,9 @@ files_struct拷贝
 fsync(int fd)
 fdatafync(int fd)
 
-
 拷贝函数
 fwrtte
 write
-
-
 
 没有被打开的文件呢？
   静态管理，方便我们随时打开！
@@ -85,4 +74,3 @@ write
 磁盘的存储结构
 
 磁盘的逻辑结构
-

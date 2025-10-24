@@ -24,10 +24,10 @@ int main()
   printf("用户名@主机名 当前路径# ");
   fflush(stdout);
   sleep(10);
-
+  
+  // 去掉0 sizeof会计算 0的
   char* s = fgets(linecommand, sizeof(linecommand)-1, stdin);
   assert(s != NULL);
-
   (void)s;
 
   // 清理最后一个\n
@@ -48,7 +48,6 @@ int main()
   {
     ;
   }
-
 
   // 如果是cd指令，不需要创建子进程，让对应的shell执行。
   // 不需要子进程来执行，让shell自己执行----- 内建/内置命令
@@ -71,8 +70,6 @@ int main()
 
     continue;
   }
-
-
   //测试 是否成功
   
 #ifdef DEBUG 
@@ -96,11 +93,8 @@ int main()
    pid_t ret =  waitpid(id, &status, 0);
    assert(ret > 0);
    (void)ret;
-
    lastCode = (status>>8)&0xff;
    lastSig = status & 0x7f;
-
   }
-
   return 0;
 }

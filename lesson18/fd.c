@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #define FILE_NAME(number) "log.txt"#number
 
@@ -17,7 +19,10 @@ int main()
   int fd3 = open(FILE_NAME(4), O_WRONLY | O_CREAT | O_ASYNC, 06666);
   int fd4 = open(FILE_NAME(5), O_WRONLY | O_CREAT | O_ASYNC, 06666);
   int fd5 = open(FILE_NAME(6), O_WRONLY | O_CREAT | O_ASYNC, 06666);
-
+  
+  const char* msg = "hello lic\n";
+  write(STDOUT_FILENO, msg, strlen(msg));
+  // write(stdout, msg, strlen(msg));
   printf("fd %d \n", fd0);
   printf("fd %d \n", fd1);
   printf("fd %d \n", fd2);

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+#include <unistd.h>
 using namespace std;
 
 enum Colour
@@ -182,20 +184,41 @@ public:
     cout<<endl;
   } 
 
-
-void PrintTree(Node* root, int depth = 0)
+void ValidateRBTree()
 {
-      if (root == nullptr)
-                return;
+    if (!_root) { printf("✅ 空树\n"); return; }
+    if (_root->_col != BLACK)
+        printf("❌ 根节点不是黑色\n");
 
-      PrintTree(root->_right, depth + 1);
-        for (int i = 0; i < depth; ++i)
-              printf("    ");  // 缩进
-
-       printf("%d(%s)\n", root->_data, root->_col == RED ? "R" : "B");
-       PrintTree(root->_left, depth + 1);
+    int res = CheckRB(_root);
+    if (res == -1)
+        printf("❌ 红黑树非法\n");
+    else
+        printf("✅ 红黑树合法, 黑高=%d\n", res);
 }
 
+int CheckRB(Node* root)
+{
+    if (!root) return 1;
+    if (root->_col == RED)
+    {
+        if ((root->_left && root->_left->_col == RED) ||
+            (root->_right && root->_right->_col == RED))
+        {
+            printf("❌ Red violation at %d\n", root->_kv.first);
+            return -1;
+        }
+    }
+
+    int left = CheckRB(root->_left);
+    int right = CheckRB(root->_right);
+    if (left == -1 || right == -1 || left != right)
+    {
+        printf("❌ Black height mismatch at %d\n", root->_kv.first);
+        return -1;
+    }
+    return left + (root->_col == BLACK ? 1 : 0);
+}
 
 
 private: 
@@ -208,71 +231,6 @@ void InOrder(Node* root)
   }
 
   Node* _root = nullptr;
-  void RotateL(Node* x)
-  {
-    Node* y = x->_right;
-    if (y == nullptr)
-      return;
-
-    x->_right = y->_left;
-    if (y->_left != nullptr)
-    {
-      y->_left->_parent = x;
-    }
-
-    y->_parent = x->_parent;
-    if (x->_parent != nullptr)
-    {
-      if (x == x->_parent->_left)
-      {
-        x->_parent->_left = y;
-      }
-      else
-      {
-        x->_parent->_right = y;
-      }
-    }
-    else
-    {
-      _root = y;
-    }
-
-    y->_left = x;
-    x->_parent = y;
-  }
-
-  void RotateR(Node* y)
-  {
-    Node* x = y->_left;
-    if (x == nullptr)
-      return;
-
-    y->_left = x->_right;
-    if (x->_right != nullptr)
-    {
-      x->_right->_parent = y;
-    }
-
-    x->_parent = y->_parent;
-    if (y->_parent != nullptr)
-    {
-      if (y == y->_parent->_left)
-      {
-        y->_parent->_left = x;
-      }
-      else
-      {
-        y->_parent->_right = x;
-      }
-    }
-    else
-    {
-      _root = x;
-    }
-
-    x->_right = y;
-    y->_parent = x;
-  }
 
   void RotateR2(Node* grandfather)
   {
@@ -293,7 +251,7 @@ void InOrder(Node* root)
       parent->_parent = ppNode;
       if(ppNode != nullptr)
       {
-        if(ppNode == grandfather->_left)
+        if(ppNode->_left == grandfather)
         {
           ppNode->_left = parent;
         }
@@ -387,8 +345,17 @@ int main()
   tree.insert({0, 0});
   tree.Print();
 
+  srand((unsigned long)time(nullptr));
 
+  for(int i = 0; i < 10000; i++)
+  {
+    int ret = rand() % 1000;
+    tree.insert({ret, ret});
+  }
+  
+  tree.Print(); 
 
+  tree.ValidateRBTree();
 
 
 
