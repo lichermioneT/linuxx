@@ -8,41 +8,21 @@ int main()
 
   int arr[] = {1,0,2,3,0,4,5,0};
   int sz = sizeof(arr)/sizeof(arr[0]);
-
-  int i = 0;
-  int j = 0;
-
-  while(i < sz  && j < sz)
+  
+  int cur = 0;
+  for(int i = 0; i < sz; i++)
   {
     if(arr[i] == 0)
     {
-      j+=2;
+      cur += 2;
     }
     else 
     {
-      i++;
+      cur += 1;
     }
+
+    if(cur >= sz - 1) break;
   }
-
-  i--;
-  j--;
-
-  while(i >= 0 && j >= 0)
-  {
-    if(j < sz)
-    {
-      arr[j] = arr[i];
-    }
-
-    if(arr[i] == 0)
-    {
-
-    }
-  }
-
-
-
-
 
 
   return 0;

@@ -31,14 +31,30 @@ void catchSig(int signo)
 int main(int agrc, char* agrv[])
 {
  
+// 所有的信号都捕捉了 
+  for(int signo = 1; signo <= 31; signo++)
+  {
+    signal(signo, catchSig);
+  }
   
   while(true)
   {
+    cout<< "i am running pid:" << getpid() <<endl;
+    sleep(1);
+  }
+
+
+
+
+/*  
+  while(true)
+  {
+  // 核心转储
     int a[10];
     a[10000] = 106;
   }
 
-
+*/
 
 
 

@@ -44,7 +44,6 @@ int main()
 
 */
 
-// 快速排序
 
   int arr[] = {1,0,3,4,50,0,0,3,6,7,99};
   int sz = sizeof(arr)/sizeof(arr[0]);
@@ -55,13 +54,13 @@ int main()
   }
   printf("\n");
 
-
+/*
   int slow = 0;
   for(int i = 0; i <sz; i++)
   {
-    if(arr[i] != 0)
+    if(arr[i] != 0) // 遍历整个数组
     {
-      swap(&arr[slow], &arr[i]);
+      swap(&arr[slow], &arr[i]); // 不是零就放到后面去
       slow++;
     }
   }
@@ -74,9 +73,23 @@ int main()
   }
   printf("\n");
 
+*/ 
+
+  int slow = sz - 1;
+  for(int i = sz-1; i >= 0; i--)
+  {
+    if(arr[i] == 0)
+    {
+      swap(&arr[i], &arr[slow--]);
+    }
+  }
 
 
-
+  for(int i = 0; i < sz; i++)
+  {
+    printf("%d ", arr[i]);
+  }
+  printf("\n");
 
 
 
