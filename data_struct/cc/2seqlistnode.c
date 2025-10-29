@@ -9,7 +9,6 @@ typedef struct SListNode
   struct SListNode* next;
 }SListNode;
 
-
 SListNode* BuySListNode(SLTDataType x)
 {
   SListNode* newNode = (SListNode*)malloc(sizeof(SListNode));
@@ -23,7 +22,6 @@ SListNode* BuySListNode(SLTDataType x)
   newNode->next = NULL;
 
   return newNode;
-
 }
 
 void SListNodePrint(SListNode* phead)
@@ -85,7 +83,6 @@ void SListNodePopBack(SListNode** phead)
     free(tail);
     tailPre->next = NULL;
   }
-
 }
 
 void SListNodePushFront(SListNode** phead, SLTDataType x)

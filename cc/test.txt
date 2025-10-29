@@ -1,0 +1,26 @@
+total 80K
+drwxr-xr-x  20 root root 4.0K Oct 29 20:19 .
+dr-xr-x---. 16 root root 4.0K Oct 20 21:10 ..
+drwxr-xr-x   3 root root 4.0K Oct 19 10:28 106
+drwxr-xr-x   2 root root 4.0K Oct 11 21:43 2data
+drwxr-xr-x   4 root root 4.0K Oct 17 11:01 alg
+drwxr-xr-x   2 root root 4.0K Oct 18 21:21 bit_cpp
+drwxr-xr-x   2 root root 4.0K Oct 29 20:21 cc
+drwxr-xr-x   2 root root 4.0K Oct 10 21:58 cpp
+drwxr-xr-x   4 root root 4.0K Oct 18 16:56 data_struct
+drwxr-xr-x   3 root root 4.0K Oct 13 14:18 dir_c
+drwxr-xr-x   8 root root 4.0K Oct 28 22:03 .git
+drwxr-xr-x  30 root root 4.0K Oct 29 20:19 lesson
+drwxr-xr-x   2 root root 4.0K Oct 13 17:09 makefile
+drwxr-xr-x   2 root root 4.0K Sep 29 23:38 net
+drwxr-xr-x   3 root root 4.0K Sep 23 18:53 project
+-rw-r--r--   1 root root    0 Sep 23 18:53 README.md
+drwxr-xr-x   6 root root 4.0K Oct 17 15:13 review
+drwxr-xr-x   3 root root 4.0K Oct 10 15:06 shell
+drwxr-xr-x   2 root root 4.0K Sep 23 18:53 tanx
+drwxr-xr-x   3 root root 4.0K Oct 17 14:24 test
+drwxr-xr-x   2 root root 4.0K Oct 14 17:46 thread
+lichermionex 222lichermionex 222lichermionex 222lichermionex 222lichermionex 222 
+lichermionex 222 
+lichermionex 222 
+lichermionex 222 

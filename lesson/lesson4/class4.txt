@@ -1,0 +1,142 @@
+rm -r(recursive)
+cp -r(recursion)
+mv
+man
+commamd --help
+cat
+tac
+more
+less
+|
+timestamp
+date
+cal
+whatis command:一句话直奔主题
+
+find指令
+find -name 路径
+find ~ -name test.c
+find ~ -name *.c 以.c为结尾的文件。
+find搜索文件的时候，可能访问磁盘，可能效率低下
+
+which command:指令在那个文件下
+which只用来搜索命令
+为什么我自己写的命令必须带路径？？
+whereis:在特定路径先，查找指定的文件名对应的指令或者文档 
+
+
+相当于给变量重新取一个别名
+alias zhangsan='ls -al'
+alias:别名
+
+grep指令:文本内容的行过滤工具
+global regular expression print = grep
+grep '999' file
+grep -n '222' file4  显示行号
+grep -i 'lic' file4  忽略大小写
+
+grep
+默认，会匹配文本中的关键字，匹配上的会进行显示的
+-i:忽略大小写
+-n:显示行号
+-v:反向匹配
+grep可以和其它指令结合
+
+wc -l 统计行数
+sort:排序
+uniq:去重
+
+
+hostnamectl
+hostnamectl == host name control
+
+zip/unzip指令
+zip -r 递归处理文件 不然就是一个空文件
+zip myname.zip f1 f2 f3...
+zip默认是压缩一个文件目录
+
+unzip 你的压缩包 解压到当前
+unzip 你的压缩包 -d 解压到指定的路径
+为什么需要解压打包呢？
+互联网-->很多大小文件的-->便于传输和保存。(将多个文件 保存一个文件)
+-->高效传输
+
+zip zipname.zip 需要压缩的文件，注意压缩目录需要携带指令 -r
+
+tar指令是默认递归的，不需要携带-r
+tar
+tape archive == tar 磁带归档
+主语f在最后面
+tar -czf my.tgz file 打包
+tar -xzf my.tgz 解压
+-t:不打开压缩文件，直接查看压缩文件。
+-v:解压或者压缩的时候，同步显示压缩列表。
+-C:解压到执行目录先
+
+tar -xzf my.tgz -C 指定路径
+-c create   创建压缩包
+-x extract  解压
+-v verbose  显示过程
+-f file     指定文件名
+
+
+bc
+basic calculator == bc
+bench calculator == bc
+
+
+uname
+unix name == uname
+uname -r (--kernel-release)
+uname -a (all)
+uname -m (--machine)
+
+云服务器永不关机的！！！
+关机你怎么开机。
+
+lscpu:查看CPU信息
+lsmem:查看内存信息
+df -h:查看磁盘使用情况
+who:查看当前linux登录用户
+whoami:用户是谁
+
+shell
+命令行解释器(command interpreter):命令行提示符，以及可以输入指令并且可以执行
+shell 
+
+linux内核:执行指令。
+shell:可能会创建一个新的进程。
+用户指令:不善于和操作系统打交道。
+用户指令 → Shell → 系统调用 → Linux内核 → 硬件
+    ↑           ↑           ↑
+(用户空间)  (命令解释)  (内核空间)
+
+shell存在的意义，变相的保护操作系统。
+执行指令，通过派生子进程的方式 执行用户的指令，shell本身并不执行对应的指令。
+
+linux的shell和win的图形界面本质上是等价的。
+shell外壳程序。
+bash一种shell外壳。
+
+权限：
+1.基本的具体用户认识
+	1.root 用户 超级管理员(密码保护好)
+	2.普通 用户 一般用户 收权限约束的用户
+	
+	普通用户变root--> su / su -
+	root-->变普通用户 su xxx
+	sudo借用root的身份执行一条指令。
+	
+2.权限的周边认识(是什么，为什么，怎么办(设置，取消), 没有权限，会出现什么问题？
+
+3.
+
+
+su指令
+switch user == su
+su - 
+su username
+su 
+
+sudo指令
+super user do == sudo

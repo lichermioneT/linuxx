@@ -1,0 +1,122 @@
+应用软件
+操作系统:是一款软件，管理软件硬件。
+驱动设备
+硬件
+
+基本指令是在做什么事情？就是window的基本操作。
+图形化界面 == 命令行。
+
+文件 == 文件属性 + 文件内容属性。
+学习操作文件的方法：
+操作文件内容
+操作文件属性
+
+普通文件和目录文件。
+隐藏文件和隐藏目录。ls a显示。
+路径分割符号
+
+家目录、根目录、热点目录、上级目录。
+/home/xxx
+/root
+
+相对路径、绝对路径。
+
+touch创建一个普通文件。
+三个时间。
+访问时间
+修改时间
+改变时间
+
+mkdir -p a/b/c/d
+parent：创建带父目录的目录
+
+rmdir指令
+rmdir == remove directory 删除目录。基本很少用的。
+
+rm指令
+rm == remove 删除文件
+
+rm -r(recursive) 递归删除文件
+rm -f(force)强制删除不提示信息
+rm -i(interactive)交互式的删除文件，需要确认下一删除。
+
+yum install -y man-pages
+man指令
+manual pages == man 手册页
+
+1shell指令
+2系统调用函数
+3c语言库
+
+man:空格向下翻页
+man:f向下翻页
+man:b向上翻页
+
+echo "hello" > file.txt
+
+cp指令
+copy == cp
+cp -r(recursive)递归拷贝目录的内容
+cp -i(interactivate)交互式拷贝
+cp -f(force)
+
+mv指令
+move == mv 移动剪切指令
+mv file1 file2原地move就是rename
+mv dir1 dir2: move移动文件夹不需要携带r
+mv file1 file2:改名
+mv指令天生就是递归的操作
+
+tac指令:反过来显示文件的内容。
+cat指令:正序来显示文件的内容。
+concatenate（连接） == cat
+
+cnt=0; while [ $cnt -le 10000 ]; do echo "hello lic[$cnt]"; let cnt++; done
+cnt=0; while [ $cnt -le 10000 ]; do echo "hello lic[$cnt]" >> file; let cnt++; done
+
+cat -n file:文件行号的显示
+
+more: f==空格：向后翻页
+more: b:向前翻页
+more -n file:默认显示到n行号的内容，然后需要进行翻页的照上面。
+/查找的内容
+
+less: f==空格：向后翻页
+less: b:向前翻页
+
+tail -n:显示文件的最后n行
+head -n:显示文件的最前n行
+
+tail file：默认后面十行
+head file:默认后面十行
+
+// 先显示0-1010,然后从1010返回显示十行
+head -1010 file5 | tail -10
+管道命令符号|
+进程通信和原理，特地讲管道的实现原理和编码
+
+head -1000 file | tail -10
+1.head -1000 file:默认往显示器打印数据
+2.|写到管道里面
+3.tail -10从管道里面拿数据
+
+程序会默认打开三个文件流
+stdin  标准输入 键盘
+stdout 标准输出 显示器
+stderr 标准错误 显示器
+Linux下一切皆文件
+
+
+date指令
+date +%Y/%m/%d-%H-%M-%S
+date +%Y/%m/%d-%H-%M-%S -d@timestamp
+date +%s
+timestamp/ 1970/1/1-00:00:00
+timestamp:时间戳就是从上面的时间到现在的秒数
+
+cal
+calendar==cal
+cal -3
+cal -y
+cal -j
+时间的重要性
