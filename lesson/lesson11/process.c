@@ -34,6 +34,12 @@ int main()
     printf("我是父进程  我的pid:%d,  我的id: %d, a : %d, a的地址 ：%p\n", getppid(), getpid(), a, &a);
   }
   
+  printf("zzz\n");
+
+// 父进度的pid就是当前终端
+// echo $$ 当前终端的PID
+
+// 通过fork的返回值进行分流
 
 
   return 0;

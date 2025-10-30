@@ -47,3 +47,8 @@ exec
 l:list
 p:path,如何找到程序的功能
 v:vector,
+
+waitpid(id,&status,0)
+waitpid(id,&status,WNOHONG)
+
+

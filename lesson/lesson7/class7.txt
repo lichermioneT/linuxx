@@ -1,6 +1,5 @@
 vim使用
 
-
 权限
 文件的删除并不是和文件的权限先关。而是能够有权限在目录进行写。
 粘滞位：很多用户想在一个公共目录下进行工作。
@@ -82,7 +81,6 @@ vim是一个编辑器
   v:选中单个字符
   ctrl + v:选中行
     
-
   LICHERMIONEX
   lichermionex
   lichermionex
@@ -126,7 +124,6 @@ vim是一个编辑器
   i
   o
   xlichermionex
-
 
 3.底行模式
  ESC shift + : 进入底行模式 
@@ -186,101 +183,5 @@ iso
 gcc -E test.c -o test.i  process
 gcc -S test.c -o test.s  assembly
 gcc -c test.c -o test.o  complie
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

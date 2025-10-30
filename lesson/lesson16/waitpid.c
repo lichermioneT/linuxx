@@ -18,10 +18,8 @@ int main()
       printf("我是子进程：%d, 父进程：%d, cnt:%d\n", getpid(), getppid(),cnt--);
       sleep(1);
     }
-    
     // 子进程的退出码
   exit(12); // 进程退出
-
   }
 
   // 父亲进程

@@ -2,6 +2,6 @@
 
 int main()
 {
-   Proncess(); 
+  Proncess(); 
   return 0;
 }

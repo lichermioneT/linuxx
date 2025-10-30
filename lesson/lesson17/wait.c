@@ -12,14 +12,12 @@ int main()
   
   if(id == 0)
   {
-
     int cnt = 5;
     while(cnt)
     {
       printf("child running,pid:%d, ppid:%d,cnt:%d\n", getpid(),getppid(), cnt--);
       sleep(1);
     }
-    
     exit(12);
   }
   
@@ -39,6 +37,5 @@ int main()
       printf("退出失败\n");
     }
   }
-
   return 0;
 }

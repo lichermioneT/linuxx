@@ -62,6 +62,7 @@ unzip 你的压缩包 -d 解压到指定的路径
 -->高效传输
 
 zip zipname.zip 需要压缩的文件，注意压缩目录需要携带指令 -r
+zip指令没有自带递归处理
 
 tar指令是默认递归的，不需要携带-r
 tar
@@ -140,3 +141,6 @@ su
 
 sudo指令
 super user do == sudo
+
+
+*匹配任意字符的

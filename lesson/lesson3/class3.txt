@@ -66,6 +66,7 @@ mv file1 file2原地move就是rename
 mv dir1 dir2: move移动文件夹不需要携带r
 mv file1 file2:改名
 mv指令天生就是递归的操作
+mv指令天生就是递归的操作
 
 tac指令:反过来显示文件的内容。
 cat指令:正序来显示文件的内容。

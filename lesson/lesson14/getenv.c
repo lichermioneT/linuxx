@@ -3,11 +3,8 @@
 
 int main()
 {
-
-  char* msg = NULL;
-  msg = getenv("USER");
-
-  printf("%s \n", msg);
-
-
+  printf("%s \n", getenv("HOME"));
+  printf("%s \n", getenv("USER"));
+  printf("%s \n", getenv("PWD"));
+  printf("%s \n", getenv("PATH"));
 }

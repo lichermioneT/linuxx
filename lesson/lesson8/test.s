@@ -2,7 +2,7 @@
 	.text
 	.section	.rodata
 .LC0:
-	.string	"hello makefile "
+	.string	"\345\211\251\344\275\231\346\227\266\351\227\264\357\274\232%2d\r"
 	.text
 	.globl	main
 	.type	main, @function
@@ -14,10 +14,26 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movl	$12, -4(%rbp)
+	jmp	.L2
+.L3:
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
 	movl	$.LC0, %edi
-	call	puts
 	movl	$0, %eax
-	popq	%rbp
+	call	printf
+	movq	stdout(%rip), %rax
+	movq	%rax, %rdi
+	call	fflush
+	subl	$1, -4(%rbp)
+	movl	$1, %edi
+	call	sleep
+.L2:
+	cmpl	$0, -4(%rbp)
+	jne	.L3
+	movl	$0, %eax
+	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc

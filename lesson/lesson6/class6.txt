@@ -131,3 +131,8 @@ vim使用技巧
   shift + : 进入底行模式  
 
 无脑ESC退回命令模式。
+配置YUM源的文件
+/etc/yum.repos.d/
+
+
+

@@ -30,7 +30,8 @@ ListNode* ListCreate()
 void ListDestory(ListNode* plist)
 {
   assert(plist);
-  
+
+// 不允许删除头结点
   ListNode* cur = plist->next;
   ListNode* free_cur = NULL;
   while(cur != plist)
@@ -90,7 +91,8 @@ void ListPopBack(ListNode* phead)
   
   ListNode* tail = phead->prev;
   ListNode* tailPrev = tail->prev;
-  
+
+// 这里也是确保不能删除头结点的
   if(tail != phead)
   {
     free(tail);

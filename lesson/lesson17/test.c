@@ -28,8 +28,6 @@ void task3()
   printf("hander_task 3 \n");
 }
 
-
-
 void load()
 {
   memset(hander_task,0,sizeof(hander_task));
@@ -50,13 +48,13 @@ int main()
   }
   else if(id == 0)
   {
-    int cnt = 10;
+    int cnt = 3;
     while(cnt)
     {
       printf("I AM CHILD, ID IS %d , PPID IS %d \n", getpid(), getppid());
+      sleep(1);
       cnt--;
     }
-    sleep(1);
   }
 
   load();
@@ -77,6 +75,7 @@ int main()
     else if(ret > 0)
     {
       printf("wait success, exit code : %d , sig : %d \n", (status>>8)&0xFF, status & 0x7F);
+      sleep(1);
       break;
     }
     else 

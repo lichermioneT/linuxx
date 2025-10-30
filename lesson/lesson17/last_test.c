@@ -7,24 +7,21 @@
 
 int main()
 {
-  
   pid_t id = fork();
   
   if(id == 0)
   {
-
-    int cnt = 5;
+    int cnt = 3;
     while(cnt)
     {
       printf("child running,pid:%d, ppid:%d,cnt:%d\n", getpid(),getppid(), cnt--);
       sleep(1);
     }
-    
     exit(12);
   }
   
   int status = 0;
-  int ret = waitpid(id,&status, 0);
+  int ret = waitpid(id, &status, 0);
   // 1.OS获取子进程的僵尸状态
   // 2.获取子进程的退出结果
   if(ret > 0)

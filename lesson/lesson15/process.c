@@ -25,17 +25,5 @@ int main()
     a = 100;
     printf("父进程 a = %d\t,&a = %p \n", a, &a);
   }
-
-
-
-
-
-
-
-
-
-
-
-
   return 0;
 }
