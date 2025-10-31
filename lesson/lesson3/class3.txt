@@ -67,9 +67,11 @@ mv dir1 dir2: move移动文件夹不需要携带r
 mv file1 file2:改名
 mv指令天生就是递归的操作
 mv指令天生就是递归的操作
+mv指令天生就是递归的操作
 
 tac指令:反过来显示文件的内容。
 cat指令:正序来显示文件的内容。
+cat -n file.txt
 concatenate（连接） == cat
 
 cnt=0; while [ $cnt -le 10000 ]; do echo "hello lic[$cnt]"; let cnt++; done
@@ -107,13 +109,13 @@ stdout 标准输出 显示器
 stderr 标准错误 显示器
 Linux下一切皆文件
 
-
 date指令
 date +%Y/%m/%d-%H-%M-%S
 date +%Y/%m/%d-%H-%M-%S -d@timestamp
 date +%s
 timestamp/ 1970/1/1-00:00:00
 timestamp:时间戳就是从上面的时间到现在的秒数
+data +%Y-%m-%d %H-%M-%S
 
 cal
 calendar==cal

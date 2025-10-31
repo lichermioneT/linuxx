@@ -1,0 +1,2 @@
+mypro:signal.cc
+	g++ $^
