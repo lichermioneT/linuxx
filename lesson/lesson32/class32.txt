@@ -1,0 +1,28 @@
+PCB模拟线程 
+TCB---->mm_struct
+
+linux无法直接提供创建线程的系统调用接口，而只能给我们提供轻量级进程的接口！ 
+int clone()
+int vfork()
+
+线程控制
+
+    //pthread_create(&tid, nullptr, start_routine, (void*)"thread one");
+线程的调度，先后顺序不确定的
+
+线程的等待问题！如果不等待，会造成类似僵尸进程的问题--内存泄漏
+线程必须被等待 
+1.获取新线程的退出信息 ---可以不关心退出信息
+2.回收新线程对应的PCB等内核资源，防止内存泄漏。--暂时无法查看
+
+
+
+int pthread_join(pthread_t thread, void** retval); // 用来获取线程函数结束时，返回的退出结果！
+void* func(void* args)
+
+pthread库 里面存放【void*变量】
+二级指针操作一级指针。
+
+线程库语言版本：
+  任何语言，要在Linux实现多线程，必定要使用pthread库
+  如何看待c++11的多线程呢？ c++11的多线程，在Linux环境中，本质上对pthread库的封装

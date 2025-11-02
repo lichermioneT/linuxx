@@ -36,7 +36,7 @@ int main()
   // tid是地址
    char buffer[64];
    // 主线程
-   snprintf(buffer, sizeof(buffer), "0x%x \n", tid);
+   snprintf(buffer, sizeof(buffer), "0x%zx \n", tid);
    while(true)
    {
      cout << "我是主线程， 我真正运行 ！ 我创建出来的tid :" << buffer;

@@ -105,7 +105,6 @@ linux线程是CPU调度的基本单位，而进程是承担分配系统资源的
 如何操作？
 
 
-
 LWP:light weight process:轻量级进程
 [root@lic lesson31]# ps -aL
   PID   LWP TTY          TIME CMD
