@@ -17,9 +17,7 @@ void* thread_routine(void* agrs)
   const char* name = (const char*)agrs;
   while(true)
   {
-     cout << "我是新线程， 我真正运行 ！";
-     cout << "name : " << name;
-     fun();
+     cout << "我是新线程， 我真正运行 ！" << "name : " << name <<endl;  
      sleep(2);
   }
   return nullptr;
@@ -27,7 +25,6 @@ void* thread_routine(void* agrs)
 
 int main()
 {
-
   pthread_t tid;
   int n = pthread_create(&tid, nullptr, thread_routine, (void*)"thread_one");
   assert(0 == n);
@@ -39,14 +36,8 @@ int main()
    snprintf(buffer, sizeof(buffer), "0x%zx \n", tid);
    while(true)
    {
-     cout << "我是主线程， 我真正运行 ！ 我创建出来的tid :" << buffer;
-     fun();
+     cout << "我是主线程， 我真正运行! " << endl;;
      sleep(2);
    }
-  
-
-
-
-
   return 0;
 }

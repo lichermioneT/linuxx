@@ -15,8 +15,6 @@ int vfork()
 1.获取新线程的退出信息 ---可以不关心退出信息
 2.回收新线程对应的PCB等内核资源，防止内存泄漏。--暂时无法查看
 
-
-
 int pthread_join(pthread_t thread, void** retval); // 用来获取线程函数结束时，返回的退出结果！
 void* func(void* args)
 

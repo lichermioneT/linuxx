@@ -32,7 +32,7 @@ public:
     context* ctx = new context(); 
     ctx->this_ = this;
     ctx->args_ = args_;
-    int n = pthread_create(&tid_, nullptr, start_routine, ctx); //TODO
+    int n = pthread_create(&tid_, nullptr, start_routine, ctx); // 
     assert(n == 0); // assert 意料只中， if意料之外
     (void)n;
   }

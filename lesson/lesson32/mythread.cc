@@ -8,6 +8,7 @@ using namespace std;
 
 
 // 当结构体使用
+// 里面存放线程的序号，id, 名字
 class ThreadData
 {
 public:
@@ -33,11 +34,12 @@ void* start_routine(void* args)
   // 一个线程出现异常，会影响其它线程的
   // 进程信号，信号是发给整体发给进程的！
     ThreadData* td = static_cast<ThreadData *>(args);
-    int cnt = 10;
+    int cnt = 1;
     while(cnt)
     {
-      //cout<< "new thread  create success : " << td->namebuffer << "cnt : " << cnt-- <<endl;
-      cout<< "cnt : "  << cnt << "---&cnt : " << &cnt <<endl;
+      // cout<< "new thread  create success : " << td->namebuffer << "cnt : " << cnt-- <<endl;
+      //  cout<< "cnt : "  << cnt << "---&cnt : " << &cnt <<endl;
+      cout<< td->namebuffer <<endl;
       cnt--;
       sleep(1);
     }
@@ -66,40 +68,40 @@ int main()
 {
 
 // 创建一批线程
-  
   vector<ThreadData*> threads;
 #define NUM 10
-  for(int i = 0; i < NUM; i++)
+  for(int i = 0; i < NUM; i++) // 循环创建是个线程
   {
    // pthread_t tid;
-   ThreadData* td = new ThreadData();
-   td->number = i + 1;
-   snprintf(td->namebuffer, sizeof(td->namebuffer), "%s: %d", "thread", i+1);
-   pthread_create(&td->tid, nullptr, start_routine, td);
-  threads.push_back(td);
+   ThreadData* td = new ThreadData(); // 创建一个存放线程信息的对象
+   td->number = i + 1;                // 线程id
+   snprintf(td->namebuffer, sizeof(td->namebuffer), "%s: %d", "thread", i+1); // 线程name
+   pthread_create(&td->tid, nullptr, start_routine, td); // 创建线程，并且把线程的信息给执行的函数 
 
+   threads.push_back(td); // 指针放到数组里面去
    // char namebuffer[64];
    //  snprintf(namebuffer, sizeof(namebuffer), "%s : %d", "thread", i);
-    //pthread_create(&tid, nullptr, start_routine, (void*)"thread one");
-  //  pthread_create(&tid, nullptr, start_routine, namebuffer);
-    
+   // pthread_create(&tid, nullptr, start_routine, (void*)"thread one");
+   //  pthread_create(&tid, nullptr, start_routine, namebuffer);
    // sleep(1);
   }
 
-  for(auto& iter : threads)
+/*
+  for(auto& iter : threads) // 打印线程对象的信息
   {
     cout<<" create thread:" << iter->namebuffer << " : " << iter->tid << "success" <<endl;
   }
 
+*/ 
   sleep(5);
-
 // 线程是可以被cancel的，线程要被取消，前提是这个线程已经跑起来了
 // 线程被取现，退出码是-1 宏
   for(auto& iter : threads)
   {
     pthread_cancel(iter->tid);
   }
-  
+ 
+/*
 // 等待线程
   for(auto& iter : threads)
   {
@@ -108,13 +110,12 @@ int main()
     // 线程退出的退出码,怎么没有看到呢？ 线程出异常，收到信号，整个进程都会退出！
     // pthread_join:默认就会认为函数会调用成功，不考虑异常的问题 ，异常是你进程该考虑的问题。
     pthread_join(iter->tid, (void**)&ret); // void** retp; *ret = void*  二级指针操作一级指针  ret = void*
-    cout<< " join " << " ： " << iter->namebuffer << " success number " << ret->exit_code  << " : " <<ret->exit_result <<endl;
+    cout<< " join " << " ： " << iter->namebuffer << " success number " << iter->number <<endl;
     delete iter; // 外部释放
   }
   
-  
   cout<< " main thread quit " <<endl;
-
+*/
 
 
 /*

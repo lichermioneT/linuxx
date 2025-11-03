@@ -1,0 +1,8 @@
+目录
+/etc/yum.repos.d/
+此目录下的第一级目录
+文件结尾 *.repo
+
+linux的ini配置文件语法
+配置新yum源,先清除缓存，以免造成冲突 yum clean all
+rm /var/cache/yum/ -rf

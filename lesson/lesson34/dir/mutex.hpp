@@ -11,12 +11,8 @@ public:
   
   void lock()
   {
-    if(lock_p_ != nullptr)
-    {
-      pthread_mutex_lock(lock_p_);
-    }
+    if(lock_p_ != nullptr) pthread_mutex_lock(lock_p_);
   }
-
   void unlock()
   {
     if(lock_p_ != nullptr) pthread_mutex_unlock(lock_p_);
@@ -35,11 +31,8 @@ public:
 
   ~LockGuard()
   {
-
+    mutex_.unlock();
   }
-
-
-
 private:
   Mutex mutex_;
 };
