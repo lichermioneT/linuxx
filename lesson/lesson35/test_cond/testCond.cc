@@ -13,7 +13,7 @@ void* start_routine(void* args)
   while(true)
   {
     pthread_mutex_lock(&mutex);
-    pthread_cond_wait(&cond,&mutex); // 为什么要有mutex？
+    pthread_cond_wait(&cond,&mutex); // 为什么要有mutex？ 带锁等待？
     // 判断暂时省略
     std::cout<< name << " - " << tickets << std::endl;
     tickets--;
@@ -35,7 +35,7 @@ int main()
   while(true)
   {
     sleep(1);
-   // pthread_cond_signal(&cond); // 唤醒一个线程 _broadcast唤醒一批线程
+    // pthread_cond_signal(&cond); // 唤醒一个线程 _broadcast唤醒一批线程
     pthread_cond_broadcast(&cond); // 唤醒一批线程
     std::cout<< "main thread wake up ..." <<std::endl;
   }
