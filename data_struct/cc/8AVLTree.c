@@ -13,6 +13,97 @@ typedef struct AVLTreeNode
 }AVLTreeNode;
 
 
+void RotateL(AVLTreeNode** root, AVLTreeNode* parent)
+{
+  assert(parent);
+  AVLTreeNode* parentR = parent->right;
+  AVLTreeNode* parentRL = parentR->left;
+  AVLTreeNode* pparent = parent->parent;
+
+// 1.parent
+  parent->right = parentRL;
+  if(parentRL != NULL)   // 处理不为空的情况
+    parentRL->parent = parent; 
+  
+  subR->left = parent;
+  AVLTreeNode* ppnode = parent->parent;
+  parent->parent = subR;
+
+// 2subL 
+  // 平行处理的
+  //1. parent是树的根，现在subR是根
+  if(parent == *root)
+  {
+    *root = subR;
+    subR->parent = NULL;
+  }
+  else // 2.parent不是这颗树的根节点了
+  {
+    if(ppnode->left == parent)
+    {
+      ppnode->left = subR;
+    }
+    else 
+    {
+      ppnode->right =  subR;
+    }
+    subR->parent = ppnode;
+  }
+  
+  subR->heigt = 0;
+  parent->heigt = 0;
+}
+
+void RotateR(AVLTreeNode** root, AVLTreeNode* parent)
+{
+  assert(root);
+  assert(parent);
+  
+  AVLTreeNode* subL = parent->left;
+  AVLTreeNode* subLR = subL->right;
+  
+  parent->left = subLR;
+  if(subLR != NULL)
+  {
+    subLR->parent = subL;
+  }
+
+  subL->right = parent;
+  AVLTreeNode* ppnode = parent->parent;
+  parent->parent = subL;
+  
+  if(parent->parent == *root)
+  {
+    *root = subL;
+    subL->parent = NULL;
+  }
+  else 
+  {
+      if(ppnode->left == parent)
+      {
+        ppnode->left = subL;
+      }
+      else 
+      {
+        ppnode->right = subL;
+      }
+      subL->parent = ppnode;
+  }
+  
+  subL->heigt = 0;
+  parent->heigt = 0;
+}
+
+void RotateLR(AVLTreeNode** root, AVLTreeNode* parent)
+{
+
+}
+
+void RotateRL(AVLTreeNode** root, AVLTreeNode* parent)
+{
+
+}
+
 void AVLTreeInsert(AVLTreeNode** root, AVLTreeDataType x)
 {
   assert(root);
@@ -150,96 +241,6 @@ void AVLTreeInsert(AVLTreeNode** root, AVLTreeDataType x)
 // parent->right = subR->left 
 // subR->left = parent
 // 更新完成之后，parent->heigt == 0; subR->heigt==0
-
-void RotateL(AVLTreeNode** root, AVLTreeNode* parent)
-{
-  assert(parent);
-  AVLTreeNode* subR = parent->right;
-  AVLTreeNode* subRL = subR->left;
-
-// 1.parent
-  parent->right = subRL;
-  if(subRL != NULL)   // 处理不为空的情况
-    subRL->parent = parent; 
-  
-  subR->left = parent;
-  AVLTreeNode* ppnode = parent->parent;
-  parent->parent = subR;
-
-// 2subL 
-  // 平行处理的
-  //1. parent是树的根，现在subR是根
-  if(parent == *root)
-  {
-    *root = subR;
-    subR->parent = NULL;
-  }
-  else // 2.parent不是这颗树的根节点了
-  {
-    if(ppnode->left == parent)
-    {
-      ppnode->left = subR;
-    }
-    else 
-    {
-      ppnode->right =  subR;
-    }
-    subR->parent = ppnode;
-  }
-  
-  subR->heigt = 0;
-  parent->heigt = 0;
-}
-
-void RotateR(AVLTreeNode** root, AVLTreeNode* parent)
-{
-  assert(root);
-  assert(parent);
-  
-  AVLTreeNode* subL = parent->left;
-  AVLTreeNode* subLR = subL->right;
-  
-  parent->left = subLR;
-  if(subLR != NULL)
-  {
-    subLR->parent = subL;
-  }
-
-  subL->right = parent;
-  AVLTreeNode* ppnode = parent->parent;
-  parent->parent = subL;
-  
-  if(parent->parent == *root)
-  {
-    *root = subL;
-    subL->parent = NULL;
-  }
-  else 
-  {
-      if(ppnode->left == parent)
-      {
-        ppnode->left = subL;
-      }
-      else 
-      {
-        ppnode->right = subL;
-      }
-      subL->parent = ppnode;
-  }
-  
-  subL->heigt = 0;
-  parent->heigt = 0;
-}
-
-void RotateLR(AVLTreeNode** root, AVLTreeNode* parent)
-{
-
-}
-
-void RotateRL(AVLTreeNode** root, AVLTreeNode* parent)
-{
-
-}
 
 int main()
 {

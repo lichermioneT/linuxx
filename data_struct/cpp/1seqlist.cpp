@@ -40,26 +40,6 @@ public:
     _capacity = that._capacity;
   }
 
-/*
-  seqlist<T>& operator=(const seqlist<T>& that)
-  {
-    if(this != &that)
-    {
-      delete[] _data;
-      _data = new T[that._capacity];
-
-      for(size_t i = 0; i < that._size; i++)
-      {
-        _data[i] = that._data[i];
-      }
-
-      _size = that._size;
-      _capacity = that._capacity;
-    }
-
-    return *this;
-  }
-*/
   seqlist<T>& operator=(const seqlist<T>& that)
   { 
     if(this != &that)
@@ -164,20 +144,7 @@ int main()
     s.PushBack(e);
   }
   
-
   seqlist<int> s2 = s;
   s.print();
-  
-
-
-
-
-
-
-
-
-
-
-
   return 0;
 }

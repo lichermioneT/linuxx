@@ -49,7 +49,6 @@ void seqlistPrint(seqlist* ps)
 void seqlistCheckCapacity(seqlist* ps)
 {
   assert(ps);
-  
   if(ps->_size == ps->_capacity)
   {
     size_t newCapacity = ps->_capacity == 0 ? 4 : ps->_capacity * 2;
@@ -86,7 +85,8 @@ void seqlistPusFront(seqlist* ps, SeqListDataType x)
   assert(ps != NULL);
   seqlistCheckCapacity(ps);
 // pushfront 
-// [size,1]
+// [1, size]
+//
   for(size_t i = ps->_size; i > 0; i--)
   {
     ps->_data[i] = ps->_data[i - 1];
@@ -100,7 +100,8 @@ void seqlistPopFront(seqlist* ps)
 {
   assert(ps != NULL);
   assert(ps->_size > 0);
-  
+
+// 
   for(size_t i = 1; i <  ps->_size; i++)
   {
     ps->_data[i-1] = ps->_data[i];
@@ -152,8 +153,10 @@ void seqlistErase(seqlist* ps, size_t pos)
 int main()
 {
 
-  seqlist s;
+  seqlist s;                  // 创建一个结构体，如果一个函数需要拿到结构体，就需要用指针接收
+
   seqlistInit(&s, 4);
+
   seqlistPushBack(&s, 1);
   seqlistPushBack(&s, 2);
   seqlistPushBack(&s, 3);

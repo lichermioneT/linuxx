@@ -139,6 +139,9 @@ public:
 
 // 判断是不是成为根节点
     // parent sf
+    // 2
+    //   1
+    //     0
     if(root == parent)
     {
       root = subR;
@@ -147,6 +150,10 @@ public:
     else 
     {
 // 处理两个平行线的问题
+//     Z
+//   2   2 
+//     1  1 
+//       0  0
       if(ppnode->left == parent)
       {
         ppnode->left = subR;
@@ -163,6 +170,10 @@ public:
     parent->bf = 0;
   }
 
+//     2
+//   1
+// 0
+//
   void RotateR(Node* parent)
   {
     Node* subL =  parent->left;

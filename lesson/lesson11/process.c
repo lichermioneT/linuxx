@@ -25,7 +25,8 @@ int main()
   
 // 后面父子进程都有，只要有共享代码修改，就会发生写实拷贝
   if(id == 0)
-  {   a = 0;
+  { 
+      a = 0;
       printf("我是子进程 我的pid:%d, 我的id: %d, a : %d, a的地址 : %p\n", getppid(), getpid(), a, &a);
   }
   else if(id > 0)

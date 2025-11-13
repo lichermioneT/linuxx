@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-9/root/usr/bin/c++       CMakeFiles/c++11_app.dir/c++11.cpp.o  -o ../c++11_app -rdynamic 
