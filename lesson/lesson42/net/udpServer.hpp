@@ -2,12 +2,13 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-// #include <cstrings>
+#include <strings.h>
 #include <cstdlib>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 
 using namespace std;
 
@@ -62,8 +63,8 @@ enum {SOCKET_ERR = 1};
       struct sockaddr_in local; // 定义了一个变量，栈，用户
       bzero(&local, sizeof(local)); 
       local.sin_family = AF_INET;
-      local.sin_port   = _port;   // 你给别人发消息，你的port和ip要不要发送给对方 。
-
+      local.sin_port   = htons(_port);   // 你给别人发消息，你的port和ip要不要发送给对方 。要的
+      local.sin_addr.s_addr = _ip;       // 1.string-->uint32_t, 2.htonl();
 
       int n = bind(_sockfd, &local, )
 
