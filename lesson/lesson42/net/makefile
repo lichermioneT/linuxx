@@ -1,13 +1,13 @@
 cc=g++
 
 .PHONY:all
-all:udpServer updClient
+all:udpServer udpClient
 
 udpServer: udpServer.cc
 	$(cc)	-o $@ $^
-updClient: updClient.cc
+udpClient: udpClient.cc
 	$(cc)	-o $@ $^
 
 .PHONY:clean
 clean:
-	rm udpServer updClient -rf
+	rm udpServer udpClient -rf

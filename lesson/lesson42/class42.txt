@@ -20,3 +20,25 @@ ip + port = socket
 struct sockaddr
 struct sockaddr_in
 struct sockaddr_nx
+
+
+127.0.0.1:本队环回：服务器代码的测试
+应用层
+传输层
+网络层
+数据链路
+
+
+netstat -nuap
+-n:number
+-u:udp
+-a:all
+-p:process
+
+
+云服务器是虚拟化的服务器，不能直接bind你的公网IP
+
+
+
+ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
+

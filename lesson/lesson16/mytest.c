@@ -12,28 +12,32 @@ int addto(int from, int to)
     sum += i;
   }
 
-  return sum;
+//  exit(21);
+  _exit(21);
 }
 
 int main()
 {
  
   printf("hello lichermionex ");
+  addto(1, 100);
   // 先写入stdout的缓冲区里面
   // 数据满了
   // \n
   // 刷新
   // 调用write函数
   
-  sleep(2);
-  exit(1);
-
-  int ret = addto(0, 100);
-  (void)ret;
-
-  exit(12);
-
-  while(1) sleep(1);
+/*
+ *  sleep(2);
+ *  exit(1);
+ *
+ *  int ret = addto(0, 100);
+ *  (void)ret;
+ *
+ *  exit(12);
+ *
+ *  while(1) sleep(1);
+ */
 
   for(int i = 0; i < 200 ; i++)
   {
@@ -42,12 +46,14 @@ int main()
 
 
   // 我怎么知道它运行的结果怎么样？进程退出码
-  int num = addto(1, 100);
-
-  if(num == 5050)
-    return 0;
-  else 
-    return 1;
+/*
+ *  int num = addto(1, 100);
+ *
+ *  if(num == 5050)
+ *    return 0;
+ *  else 
+ *    return 1;
+ */
 
   // 不关心直接return0；
   // 关系进程退出码的时候，要返回特定的数据表明特定的错误。
