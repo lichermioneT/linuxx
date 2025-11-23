@@ -2,5 +2,6 @@
 
 int add(int a, int b)
 {
-  return a - b;
+  printf("%d + %d : ", a, b);
+  return a + b;
 }

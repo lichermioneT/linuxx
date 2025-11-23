@@ -12,13 +12,18 @@
 
 int main()
 {
-  
-  int fd0 = open(FILE_NAME(1), O_WRONLY | O_CREAT | O_ASYNC, 06666);
-  int fd1 = open(FILE_NAME(2), O_WRONLY | O_CREAT | O_ASYNC, 06666);
-  int fd2 = open(FILE_NAME(3), O_WRONLY | O_CREAT | O_ASYNC, 06666);
-  int fd3 = open(FILE_NAME(4), O_WRONLY | O_CREAT | O_ASYNC, 06666);
-  int fd4 = open(FILE_NAME(5), O_WRONLY | O_CREAT | O_ASYNC, 06666);
-  int fd5 = open(FILE_NAME(6), O_WRONLY | O_CREAT | O_ASYNC, 06666);
+ 
+  umask(0);
+  printf("stdin->fd:%d\n",  stdin->_fileno);
+  printf("stdout->fd:%d\n", stdout->_fileno);
+  printf("stderr->fd:%d\n", stderr->_fileno);
+
+  int fd0 = open(FILE_NAME(1), O_WRONLY | O_CREAT | O_ASYNC, 0666);
+  int fd1 = open(FILE_NAME(2), O_WRONLY | O_CREAT | O_ASYNC, 0666);
+  int fd2 = open(FILE_NAME(3), O_WRONLY | O_CREAT | O_ASYNC, 0666);
+  int fd3 = open(FILE_NAME(4), O_WRONLY | O_CREAT | O_ASYNC, 0666);
+  int fd4 = open(FILE_NAME(5), O_WRONLY | O_CREAT | O_ASYNC, 0666);
+  int fd5 = open(FILE_NAME(6), O_WRONLY | O_CREAT | O_ASYNC, 0666);
   
   const char* msg = "hello lic\n";
   write(STDOUT_FILENO, msg, strlen(msg));

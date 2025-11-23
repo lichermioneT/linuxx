@@ -1,2 +1,2 @@
-pro:class2.cc
+pro:class3.cc
 	g++ $^

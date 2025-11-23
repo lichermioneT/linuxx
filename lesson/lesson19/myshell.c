@@ -29,8 +29,6 @@ int lastSig = 0;
 char linecommand[NUM];
 char* myagrv[OPT_NUM];
 
-
-
 int redirType = NONE_REDIR;
 char* redirFile = NULL;
 
@@ -77,21 +75,16 @@ void commandCheck(char* command)
 }
 
 
-
 int main()
 {
-
-  
   while(1)
   {
-  
     // 初始化
     redirType = NONE_REDIR;
     redirFile = NULL;
     errno = 0;
   printf("用户名@主机名 当前路径# ");
   fflush(stdout);
-  sleep(10);
 
   char* s = fgets(linecommand, sizeof(linecommand)-1, stdin);
   assert(s != NULL);
@@ -103,6 +96,9 @@ int main()
   linecommand[strlen(linecommand) - 1] = 0;
   //  printf("test %s\n", linecommand);
   
+
+  commandCheck(linecommand);
+
   // " ls -a -l -h"
   myagrv[0] = strtok(linecommand, " ");
   
@@ -143,22 +139,19 @@ int main()
 
   //测试 是否成功
   
-#ifdef DEBUG 
-  for(int i = 0; myagrv[i]; i++)
-  {
-    printf("myagrv[%d], %s \n", i, myagrv[i]);
-  }
-#endif
+/*
+ *#ifdef DEBUG 
+ *  for(int i = 0; myagrv[i]; i++)
+ *  {
+ *    printf("myagrv[%d], %s \n", i, myagrv[i]);
+ *  }
+ *#endif
+ */
 
   // 执行命令 
   pid_t id = fork();
   assert(id != -1);
 
-   if(0)
-   {
-      execvp(myagrv[0], myagrv);
-      exit(1);
-   }
 
    if(id == 0)
    {
@@ -196,20 +189,16 @@ int main()
             }
 
             // 重定向文件已经打开了
-            
             dup2(fd, 1);
-
           }
           break;
         default: printf("bug?\n");
           break;
      }
-  
-     execv(myagrv[0], myagrv); // 执行程序替换的时候，会不会影响曾经打开的重定向文件，不会的
+     execvp(myagrv[0], myagrv); // 执行程序替换的时候，会不会影响曾经打开的重定向文件，不会的
      exit(1);
    }
 
-  
    int status = 0;
    pid_t ret =  waitpid(id, &status, 0);
    assert(ret > 0);
@@ -217,8 +206,6 @@ int main()
 
    lastCode = (status>>8)&0xff;
    lastSig = status & 0x7f;
-
   }
-
   return 0;
 }

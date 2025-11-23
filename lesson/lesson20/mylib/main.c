@@ -10,21 +10,23 @@ int main()
     return 1;
   }
 
+  /*
+   *const char* msg = "helllo \n";
+   *fwrite_(msg, strlen(msg), fp);
+   */
+
+
+
+  int cnt = 10;
   const char* msg = "helllo \n";
-  
-  int cnt = 18;
-  while(cnt)
+  while(1)
   {
+    cnt--;
     fwrite_(msg, strlen(msg), fp);
     sleep(1);
-    if(cnt % 3 == 0) fflush_(fp);
-    cnt--;
+    if(cnt == 0)break;
   }
   
   fclose_(fp);
-
-
-
-
   return 0;
 }

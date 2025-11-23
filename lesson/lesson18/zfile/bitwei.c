@@ -10,10 +10,10 @@
 
 void show(int flags)
 {
-  if(flags & ONE )   printf("one \n");
-  if(flags & TWO )   printf("two  \n");
+  if(flags & ONE )   printf("one    \n");
+  if(flags & TWO )   printf("two    \n");
   if(flags & THREE ) printf("three  \n");
-  if(flags & FOUR )  printf("four  \n");
+  if(flags & FOUR )  printf("four   \n");
 }
 
 
@@ -24,4 +24,6 @@ int main()
  show(TWO);
  show(ONE | TWO);
 
+
+ return 0;
 }

@@ -1,0 +1,10 @@
+harallo bit:5
+harallo bit:4
+harallo bit:3
+harallo bit:2
+harallo bit:1
+harallo bit:5
+harallo bit:4
+harallo bit:3
+harallo bit:2
+harallo bit:1

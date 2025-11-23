@@ -8,9 +8,11 @@
 int main()
 {
   
-
-  
   umask(0);
+  /*
+   *int fd = open("log.txt",O_WRONLY | O_CREAT | O_TRUNC, 0666);
+   */
+  
   int fd = open("log.txt",O_WRONLY | O_CREAT | O_APPEND, 0666);
   if(fd < 0)
   {
@@ -19,7 +21,7 @@ int main()
   }
 
   // 现在1的位置是 fd了。现在输出数据是往fd里面了，而不是stdout(显示器了)
-  dup2(fd, 1);
+  dup2(fd, 1);  // fd--->1
 
 
   
@@ -29,10 +31,6 @@ int main()
   const char*msg = "hello world";
   write(1,msg, strlen(msg));
   fflush(stdout);
-
-
-
-
 
   
   close(fd);

@@ -8,8 +8,6 @@
 int main()
 {
   
-
-  
   umask(0);
   int fd = open("log.txt",O_RDONLY);
   if(fd < 0)
@@ -18,24 +16,17 @@ int main()
     return 1;
   }
 
-  
   dup2(fd, 0); // 输入重定向
 
   char line[64];
   while(1)
   {
-    printf("> ");
-
     if(fgets(line, sizeof(line), stdin) == NULL) // stdin read 
     {
       break;
     }
     printf("%s", line);
   }
-
-
-
-
   
   close(fd);
   return 0;

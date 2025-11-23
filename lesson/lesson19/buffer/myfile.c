@@ -8,12 +8,13 @@ int main()
 {
   
   // 用户数据都要经过缓冲区域的
+  // c接口
   printf("hello printf \n");
   fprintf(stdout, "hello fprintf \n");
   fputs("hello fputs \n", stdout);
 
 
-
+  // 系统调用接口
   const char* msg = "hello elifc \n";
   write(1, msg, strlen(msg));
   

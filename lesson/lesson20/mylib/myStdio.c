@@ -1,7 +1,5 @@
 #include "myStdio.h"
 
-
-
 FILE_* fopen_(const char* path_name, const char* mode)
 {
     int flags = 0;
@@ -31,11 +29,9 @@ FILE_* fopen_(const char* path_name, const char* mode)
     if(fd < 0)
     {
       const char* err = strerror(errno);
-      write(2, strerror(errno), strlen(err));
+      write(2, err, strlen(err));
       return NULL;
     }
-
-
 
     FILE_* fp = (FILE_*)malloc(sizeof(FILE_));
   
@@ -46,13 +42,8 @@ FILE_* fopen_(const char* path_name, const char* mode)
     fp->cap = SIZE;
     fp->szie = 0;
     memset(fp->buffer, 0, SIZE);
-    
-
-     
     return fp; // 这就是为什么打开一个文件，就会返回一个FILE* 指针
 }
-
-
 
 void fwrite_(const void* ptr, int num, FILE_* fp)
 {
@@ -64,7 +55,7 @@ void fwrite_(const void* ptr, int num, FILE_* fp)
    
    if(fp->flags & SYNC_NOW)
    {
-    write(fp->flags, fp->buffer, fp->szie);   
+    write(fp->fileno, fp->buffer, fp->szie);   
     fp->szie = 0; // 清空缓冲区
    }
    else if(fp->flags & SYNC_FULL)
@@ -88,8 +79,6 @@ void fwrite_(const void* ptr, int num, FILE_* fp)
 
    }
 }
-
-
 
 void fflush_(FILE_* fp)
 {

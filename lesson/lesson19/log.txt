@@ -1,9 +1,10 @@
-open fd 1 
-open fd : 1 
-hello worldopen fd 3 
-open fd : 3 
-hello worldopen fd 3 
-open fd : 3 
-
-
-hello lic 
+\
+a.out
+buffer
+class19.txt
+dup2.c
+dup3.c
+log.txt
+makefile
+myfile.c
+myshell.c
