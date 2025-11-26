@@ -1,0 +1,24 @@
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  "CXX"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/lic/Desktop/cmake/v1/add.cpp" "/home/lic/Desktop/cmake/v1/build/CMakeFiles/calc.dir/add.cpp.o"
+  "/home/lic/Desktop/cmake/v1/div.cpp" "/home/lic/Desktop/cmake/v1/build/CMakeFiles/calc.dir/div.cpp.o"
+  "/home/lic/Desktop/cmake/v1/main.cpp" "/home/lic/Desktop/cmake/v1/build/CMakeFiles/calc.dir/main.cpp.o"
+  "/home/lic/Desktop/cmake/v1/mul.cpp" "/home/lic/Desktop/cmake/v1/build/CMakeFiles/calc.dir/mul.cpp.o"
+  "/home/lic/Desktop/cmake/v1/sub.cpp" "/home/lic/Desktop/cmake/v1/build/CMakeFiles/calc.dir/sub.cpp.o"
+  )
+set(CMAKE_CXX_COMPILER_ID "GNU")
+
+# The include file search paths:
+set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

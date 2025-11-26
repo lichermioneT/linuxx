@@ -1,0 +1,3 @@
+/home/lic/Desktop/cmake/v3/build/CMakeFiles/rebuild_cache.dir
+/home/lic/Desktop/cmake/v3/build/CMakeFiles/edit_cache.dir
+/home/lic/Desktop/cmake/v3/build/CMakeFiles/calc.dir

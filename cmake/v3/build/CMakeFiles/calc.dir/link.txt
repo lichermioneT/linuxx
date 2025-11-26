@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/calc.dir/add.cpp.o CMakeFiles/calc.dir/div.cpp.o CMakeFiles/calc.dir/main.cpp.o CMakeFiles/calc.dir/mul.cpp.o CMakeFiles/calc.dir/sub.cpp.o  -o calc 

@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/operations.h
+
+/home/lic/Desktop/cmake/v4/src/add.cpp
+operations.h
+/home/lic/Desktop/cmake/v4/src/operations.h
+
+/home/lic/Desktop/cmake/v4/src/div.cpp
+operations.h
+/home/lic/Desktop/cmake/v4/src/operations.h
+stdexcept
+-
+
+/home/lic/Desktop/cmake/v4/src/main.cpp
+iostream
+-
+operations.h
+/home/lic/Desktop/cmake/v4/src/operations.h
+
+/home/lic/Desktop/cmake/v4/src/mul.cpp
+operations.h
+/home/lic/Desktop/cmake/v4/src/operations.h
+
+/home/lic/Desktop/cmake/v4/src/sub.cpp
+operations.h
+/home/lic/Desktop/cmake/v4/src/operations.h
+
