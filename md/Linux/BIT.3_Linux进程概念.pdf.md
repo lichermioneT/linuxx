@@ -4,7 +4,7 @@
 
 
 
-![image-20251109114302528](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109114302528.png)
+![image-20251109114302528](./picture/image-20251109114302528.png)
 
 **这里的存储器是？内存**。**内存掉电易失**
 
@@ -74,7 +74,7 @@
 
 
 
-![image-20251109144658146](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109144658146.png)
+![image-20251109144658146](./picture/image-20251109144658146.png)
 
 **两个朋友发消息，冯诺依曼体系结构**
 
@@ -86,11 +86,11 @@
 | 网卡和显示器输出 | 输入到显示器 |
 |                  |              |
 
-![image-20251109145408179](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109145408179.png)
+![image-20251109145408179](./picture/image-20251109145408179.png)
 
 **发文件也是类似的理解**
 
-![image-20251109145545367](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109145545367.png)
+![image-20251109145545367](./picture/image-20251109145545367.png)
 
 
 
@@ -148,7 +148,7 @@
 
 **学生的信息种类都是一样的。**
 
-![image-20251109152509652](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109152509652.png)
+![image-20251109152509652](./picture/image-20251109152509652.png)
 
 **对学生做管理，变成对链表数据做管理。**
 
@@ -156,7 +156,7 @@
 
 **后组织：数据结构。数据结构组织起来**
 
-![image-20251109153218268](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109153218268.png)
+![image-20251109153218268](./picture/image-20251109153218268.png)
 
 **OS管理硬件：**
 
@@ -188,11 +188,11 @@
 | **驱动**                                                     |
 | **硬件**                                                     |
 
-![image-20251109155021406](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109155021406.png)
+![image-20251109155021406](./picture/image-20251109155021406.png)
 
 ​                                                               **计算机软硬件体系结构**
 
-![image-20251109161027105](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109161027105.png)
+![image-20251109161027105](./picture/image-20251109161027105.png)
 
 **我们学的c/c++: 学习用户接口和系统调用的接口。**
 
@@ -218,7 +218,7 @@
 
 **先描述:PCB。进程控制块。Process control block**
 
-**后组织：![image-20251109162111691](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109162111691.png)**
+**后组织：![image-20251109162111691](./picture/image-20251109162111691.png)**
 
 
 
@@ -265,7 +265,7 @@ struct task_struct {
 
 **/proc/id: 进程目录文件**
 
-![image-20251109164334548](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109164334548.png)
+![image-20251109164334548](./picture/image-20251109164334548.png)
 
 **进程的程序加载到内存**
 
@@ -275,7 +275,7 @@ struct task_struct {
 
 **getppid():终端运行的进程，一般都是当前bash分配一个子进程。**
 
-![image-20251109164817115](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109164817115.png)
+![image-20251109164817115](./picture/image-20251109164817115.png)
 
 **子进程出问题，不会影响父进程的。进程的独立性**
 
@@ -360,7 +360,7 @@ int main()
 
 
 
-![image-20251109180931007](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109180931007.png)
+![image-20251109180931007](./picture/image-20251109180931007.png)
 
 **管理的本质：先描述，后组织**
 
@@ -396,7 +396,7 @@ int main()
 
 **PCB**
 
-![image-20251109183114243](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109183114243.png)
+![image-20251109183114243](./picture/image-20251109183114243.png)
 
 
 
@@ -418,9 +418,9 @@ int main()
 
 
 
-![image-20251109191450337](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109191450337.png)
+![image-20251109191450337](./picture/image-20251109191450337.png)
 
-![image-20251109191517066](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109191517066.png)
+![image-20251109191517066](./picture/image-20251109191517066.png)
 
 **运行队列：放要执行的进程**
 
@@ -430,19 +430,19 @@ int main()
 
 **挂起：内核数据结构还在，code和data还在磁盘的**
 
-![image-20251109191629994](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109191629994.png)
+![image-20251109191629994](./picture/image-20251109191629994.png)
 
-![image-20251109193251666](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109193251666.png)
+![image-20251109193251666](./picture/image-20251109193251666.png)
 
 
 
 **Linux内核源代码：进程状态**
 
-![image-20251109183904911](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109183904911.png)
+![image-20251109183904911](./picture/image-20251109183904911.png)
 
 
 
-![image-20251109194140097](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109194140097.png)
+![image-20251109194140097](./picture/image-20251109194140097.png)
 
 **R运行状态（running）: 并不意味着进程一定在运行中，它表明进程要么是在运行中要么在运行队列里面。**
 
@@ -454,13 +454,13 @@ int main()
 
 **kill -9 杀死进程**
 
-![image-20251109201712780](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109201712780.png)
+![image-20251109201712780](./picture/image-20251109201712780.png)
 
 **前台进程，后台进程。 带不带+**
 
 **深度睡眠:D。disk sleep 磁盘睡眠**
 
-![image-20251109203625094](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109203625094.png)
+![image-20251109203625094](./picture/image-20251109203625094.png)
 
 **dd指令**
 
@@ -472,19 +472,19 @@ int main()
 
 **挂起你不一定看得到的**
 
-![image-20251109204237965](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251109204237965.png)
+![image-20251109204237965](./picture/image-20251109204237965.png)
 
 **小t可以是暂停，就是在调试。**
 
 **trace stop**
 
-![image-20251111202307958](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251111202307958.png)
+![image-20251111202307958](./picture/image-20251111202307958.png)
 
 **D状态：一般是高IO**
 
 **僵尸状态：**
 
-![image-20251111202517909](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251111202517909.png)
+![image-20251111202517909](./picture/image-20251111202517909.png)
 
 
 
@@ -512,7 +512,7 @@ int main()
 
 **1.孤儿进程一定存在**
 
-![image-20251111204403293](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251111204403293.png)
+![image-20251111204403293](./picture/image-20251111204403293.png)
 
 
 
@@ -540,7 +540,7 @@ int main()
 
 **linux支持进程优先级调整的**
 
-![image-20251111204858236](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251111204858236.png)
+![image-20251111204858236](./picture/image-20251111204858236.png)
 
 **数字越小，优先级越高。**
 
@@ -550,7 +550,7 @@ int main()
 
 
 
-![image-20251111205759749](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251111205759749.png)
+![image-20251111205759749](./picture/image-20251111205759749.png)
 
 
 
@@ -600,7 +600,7 @@ int main()
 
 **寄存器 被所有进程共享 **
 
-![image-20251112115132338](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112115132338.png)
+![image-20251112115132338](./picture/image-20251112115132338.png)
 
 
 
@@ -632,7 +632,7 @@ int main()
 
 **用户**
 
-![image-20251112121052229](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112121052229.png)
+![image-20251112121052229](./picture/image-20251112121052229.png)
 
 
 
@@ -640,7 +640,7 @@ int main()
 
 **/etc/bashrc**
 
-![image-20251112121302941](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112121302941.png)
+![image-20251112121302941](./picture/image-20251112121302941.png)
 
 
 
@@ -650,7 +650,7 @@ int main()
 
 **复习 **
 
-![image-20251112122123797](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112122123797.png)
+![image-20251112122123797](./picture/image-20251112122123797.png)
 
 **进程优先级一般不需要调整，除非你特别了解。或者你真的需要调整。**
 
@@ -754,9 +754,9 @@ int main(int agrc, char* argv[])
 
 ```
 
-![image-20251112131717945](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112131717945.png)
+![image-20251112131717945](./picture/image-20251112131717945.png)
 
-![image-20251112131841274](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112131841274.png)
+![image-20251112131841274](./picture/image-20251112131841274.png)
 
 
 
@@ -900,7 +900,7 @@ int putenv(char *string);**
 
 
 
-![image-20251112231621135](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112231621135.png)
+![image-20251112231621135](./picture/image-20251112231621135.png)
 
 
 
@@ -949,7 +949,7 @@ int main()
 
 
 
-![image-20251112232232806](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112232232806.png)
+![image-20251112232232806](./picture/image-20251112232232806.png)
 
 **多进程读取同一个地址，怎么可能出现不同的结果？  进程的独立性，同一个地址，不同的数据。**
 
@@ -961,11 +961,11 @@ int main()
 
 **三son**
 
-![image-20251112233030319](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112233030319.png)
+![image-20251112233030319](./picture/image-20251112233030319.png)
 
 
 
-![image-20251112234206873](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251112234206873.png)
+![image-20251112234206873](./picture/image-20251112234206873.png)
 
 
 
@@ -1020,7 +1020,7 @@ int main()
 
 **举个栗子**
 
-![image-20251113113923267](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113113923267.png)
+![image-20251113113923267](./picture/image-20251113113923267.png)
 
 
 
@@ -1030,7 +1030,7 @@ int main()
 
 **struct mm_struct* p =  (struct mm_struct*)malloc(sizeof(struct mm_struct));**
 
-![image-20251113123910424](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113123910424.png)
+![image-20251113123910424](./picture/image-20251113123910424.png)
 
 **66 -----堆栈可以调整------(本质就是修改end或者start)
  67 定义局部变量，malloc ,new---->扩大堆栈区域
@@ -1038,13 +1038,13 @@ int main()
 
 
 
-![image-20251113124115643](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113124115643.png)
+![image-20251113124115643](./picture/image-20251113124115643.png)
 
 
 
 **页表**
 
-![image-20251113125731626](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113125731626.png)
+![image-20251113125731626](./picture/image-20251113125731626.png)
 
 **程序加载到内存里面**
 
@@ -1058,7 +1058,7 @@ int main()
 
 **在进一步**
 
-![image-20251113130437519](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113130437519.png)
+![image-20251113130437519](./picture/image-20251113130437519.png)
 
 
 
@@ -1076,19 +1076,19 @@ int main()
 
 **编译代码的时候，使用不用的地址形式。**
 
-![image-20251113160630115](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113160630115.png)
+![image-20251113160630115](./picture/image-20251113160630115.png)
 
 
 
 
 
-![image-20251113160958202](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113160958202.png)
+![image-20251113160958202](./picture/image-20251113160958202.png)
 
 
 
 
 
-![image-20251113161014941](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251113161014941.png)
+![image-20251113161014941](./picture/image-20251113161014941.png)
 
 
 

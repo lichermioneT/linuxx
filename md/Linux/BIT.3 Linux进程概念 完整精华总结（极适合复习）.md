@@ -247,7 +247,7 @@ int main()
 
 **核心结论**：CPU一辈子只和内存打交道，所有外设交互必须先经过内存。
 
-![image-20251125154825546](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251125154825546.png)
+![image-20251125154825546](./picture/image-20251125154825546.png)
 
 **c语言本质还是调用系统接口， c接口是对系统接口的封装。**
 

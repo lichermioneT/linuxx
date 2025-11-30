@@ -38,7 +38,7 @@
 
 
 
-![image-20251124095822878](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251124095822878.png)
+![image-20251124095822878](./picture/image-20251124095822878.png)
 
 
 
@@ -60,7 +60,7 @@
 
 
 
-![image-20251124100813288](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251124100813288.png)
+![image-20251124100813288](./picture/image-20251124100813288.png)
 
 
 
@@ -78,13 +78,13 @@
 
 
 
-![image-20251124103737149](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251124103737149.png)
+![image-20251124103737149](./picture/image-20251124103737149.png)
 
 
 
 
 
-![image-20251124105127508](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251124105127508.png)
+![image-20251124105127508](./picture/image-20251124105127508.png)
 
 
 
@@ -466,7 +466,7 @@ int main()
 
 **基于匿名管道的进程池**
 
-![image-20251124144929743](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251124144929743.png)
+![image-20251124144929743](./picture/image-20251124144929743.png)
 
 ```c++
  for(int i = 0; i < PROCESS_NUM; i++)    
@@ -751,7 +751,7 @@ while true; do cat name_pipe; done  读
 
 
 
-![image-20251125104624878](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251125104624878.png)
+![image-20251125104624878](./picture/image-20251125104624878.png)
 
 **命名管道（**Named Pipe**），也叫 **FIFO（First In First Out）**，是 Linux 中一种 **进程间通信（IPC）** 的方式。**
 
@@ -765,7 +765,7 @@ while true; do cat name_pipe; done  读
 
 
 
-![image-20251125105722749](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251125105722749.png)
+![image-20251125105722749](./picture/image-20251125105722749.png)
 
 
 
@@ -909,7 +909,7 @@ int main()
   **2.创建好的内存空间，映射到进程的地址空间！ 挂接起来**  **看到同一份资源**
   **3.未来不想通信了，取消进程和内存的映射关系，然后释放内存.去关联。释放共享内存。**
 
-![image-20251125150225349](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251125150225349.png)
+![image-20251125150225349](./picture/image-20251125150225349.png)
 
 
 
@@ -926,7 +926,7 @@ int main()
 
 **shmget接口**
 
-![image-20251125151113053](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251125151113053.png)
+![image-20251125151113053](./picture/image-20251125151113053.png)
 
 ```c
 #include <sys/ipc.h>
@@ -954,7 +954,7 @@ key:是什么不重要，能进行唯一性标识最重要。ftok函数,ftok(cha
 
 
 
-![image-20251126104138308](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251126104138308.png)
+![image-20251126104138308](./picture/image-20251126104138308.png)
 
 **shmget(key size flag) ;**
 
@@ -1048,7 +1048,7 @@ void *shmat(int shmid, const void *shmaddr, int shmflg);
 
 **创建一个管道，通知共享内存进行数据读取。**
 
-![image-20251126142415193](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251126142415193.png)
+![image-20251126142415193](./picture/image-20251126142415193.png)
 
 
 
@@ -1290,7 +1290,7 @@ int main()
 
 
 
-![image-20251126144947531](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251126144947531.png)
+![image-20251126144947531](./picture/image-20251126144947531.png)
 
 
 

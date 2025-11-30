@@ -20,7 +20,7 @@
 
 **return之前 已经有两个执行流了**
 
-![image-20251117152630548](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117152630548.png)
+![image-20251117152630548](./picture/image-20251117152630548.png)
 
 **2如何理解fork返回之后， 给父进程返回子进程的pid，给子进程返回 0？  父亲 ： 孩子 == 1 ： n。 唯一性**
 
@@ -30,7 +30,7 @@
 
 
 
-![image-20251117152651484](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117152651484.png)
+![image-20251117152651484](./picture/image-20251117152651484.png)
 
 **复习**
 
@@ -50,25 +50,25 @@
 
 
 
-![image-20251117153949294](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117153949294.png)
+![image-20251117153949294](./picture/image-20251117153949294.png)
 
 
 
 **页表映射数据**
 
-![image-20251117154217053](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117154217053.png)
+![image-20251117154217053](./picture/image-20251117154217053.png)
 
 
 
 **写实拷贝**
 
-![image-20251117154249327](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117154249327.png)
+![image-20251117154249327](./picture/image-20251117154249327.png)
 
 
 
 **进程地址空间的意义**
 
-![image-20251117154334952](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117154334952.png)
+![image-20251117154334952](./picture/image-20251117154334952.png)
 
 
 
@@ -76,23 +76,23 @@
 
 **两套地址 **
 
-![image-20251117154551280](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117154551280.png)
+![image-20251117154551280](./picture/image-20251117154551280.png)
 
  
 
 **进程创建**
 
-![image-20251117154943083](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117154943083.png)
+![image-20251117154943083](./picture/image-20251117154943083.png)
 
 
 
-![image-20251117154952150](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117154952150.png)
+![image-20251117154952150](./picture/image-20251117154952150.png)
 
 
 
 **写时拷贝**
 
-![image-20251117155238076](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117155238076.png)
+![image-20251117155238076](./picture/image-20251117155238076.png)
 
 
 
@@ -121,7 +121,7 @@ int main()
 
 **echo $?**
 
-![image-20251117160719884](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117160719884.png)
+![image-20251117160719884](./picture/image-20251117160719884.png)
 
 **一般而言退出码，都需要对应的描述信息。**
 
@@ -129,7 +129,7 @@ int main()
 
 **进程退出一般三种情况**
 
-![image-20251117162018098](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117162018098.png)
+![image-20251117162018098](./picture/image-20251117162018098.png)
 
 
 
@@ -189,7 +189,7 @@ int main()
 
 **缓冲区在哪里呢： 用户层的 不会早OS里面的。**
 
-![image-20251117163449838](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117163449838.png)
+![image-20251117163449838](./picture/image-20251117163449838.png)
 
 
 
@@ -199,7 +199,7 @@ int main()
 
 **进程等待，解决僵尸进程的问题。**
 
-![image-20251117164720405](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117164720405.png)
+![image-20251117164720405](./picture/image-20251117164720405.png)
 
 **wait函数**
 
@@ -311,7 +311,7 @@ int main()
 
 **waitpid的输出型参数**
 
-![image-20251117192522846](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117192522846.png)
+![image-20251117192522846](./picture/image-20251117192522846.png)
 
 
 
@@ -358,7 +358,7 @@ int main()
 
 **僵尸进程的信息放在那里呢？**
 
-![image-20251117193318296](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251117193318296.png)
+![image-20251117193318296](./picture/image-20251117193318296.png)
 
 **检查子进程的退出信息， **
 
@@ -432,7 +432,7 @@ int main()
 
 **wait, waitpid是一个系统调用函数**
 
-![image-20251118124345053](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118124345053.png)
+![image-20251118124345053](./picture/image-20251118124345053.png)
 
 
 
@@ -442,7 +442,7 @@ int main()
 
 **多次非阻塞等待---就是轮询**
 
-![image-20251118125102255](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118125102255.png)
+![image-20251118125102255](./picture/image-20251118125102255.png)
 
 
 
@@ -601,7 +601,7 @@ int main()
 **让子进程执行父进程的一部分。执行父进程对应磁盘代码中的一部分。**
 **让子进程执行一个全新的程序，让我们的子进程想办法，加载磁盘上指定的程序，执行新程序的代码和数据。**
 
-![image-20251118132010858](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118132010858.png)
+![image-20251118132010858](./picture/image-20251118132010858.png)
 
 **将指定程序加载到内存里面，如何找到，然后就是选项参数。**
 
@@ -631,17 +631,17 @@ int main()
 } 
 ```
 
-![image-20251118133139579](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118133139579.png)
+![image-20251118133139579](./picture/image-20251118133139579.png)
 
 
 
-![image-20251118135219911](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118135219911.png)
+![image-20251118135219911](./picture/image-20251118135219911.png)
 
 
 
 
 
-![image-20251118142542843](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118142542843.png)
+![image-20251118142542843](./picture/image-20251118142542843.png)
 
 
 
@@ -649,13 +649,13 @@ int main()
 
 **exec* 加载器**
 
-![image-20251118162053320](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118162053320.png)
+![image-20251118162053320](./picture/image-20251118162053320.png)
 
 
 
 **execve 就这一个函数**
 
-![image-20251118162254116](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118162254116.png)
+![image-20251118162254116](./picture/image-20251118162254116.png)
 
 **execve是系统调用， 其它的都是封装起来的。**
 
@@ -872,9 +872,9 @@ int main(int argc, char* agrv[])
 
 **进程当前在那个工作目录下面的**
 
-![image-20251118193618192](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118193618192.png)
+![image-20251118193618192](./picture/image-20251118193618192.png)
 
-![image-20251118193924486](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118193924486.png)
+![image-20251118193924486](./picture/image-20251118193924486.png)
 
 
 
@@ -915,7 +915,7 @@ int main()
 
 
 
-![image-20251118210257046](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251118210257046.png)
+![image-20251118210257046](./picture/image-20251118210257046.png)
 
 
 

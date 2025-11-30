@@ -179,7 +179,7 @@ return 0;
  **sszie_t write(int fd,** const void * buf, size_t count)  文本类，二进制类。是c语言提供给你的。**
                         操作系统看来都是二进制位。**
 
-![image-20251119142757461](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251119142757461.png)
+![image-20251119142757461](./picture/image-20251119142757461.png)
 
   
 
@@ -273,7 +273,7 @@ int main()
 
 **语言层面封装了系统层面的接口**
 
-![image-20251119145854786](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251119145854786.png)
+![image-20251119145854786](./picture/image-20251119145854786.png)
 
 
 
@@ -288,7 +288,7 @@ int main()
 
 **为什么fd是从3开始的呢？**
 
-![image-20251119151723854](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251119151723854.png)
+![image-20251119151723854](./picture/image-20251119151723854.png)
 
 
 
@@ -344,7 +344,7 @@ int main()
 
 
 
-![image-20251119152316825](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251119152316825.png)
+![image-20251119152316825](./picture/image-20251119152316825.png)
 
 
 
@@ -411,14 +411,14 @@ int main()
 
 **上面的代码就是重定向，本来到显示器，结果到文件里面去了的**
 
-![image-20251119214501168](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251119214501168.png)
+![image-20251119214501168](./picture/image-20251119214501168.png)
 
 
 
 **重定向的本质是什么？
  上层用的fd不变，在内核中更改了fd对应的的struct file*的地址**
 
-![image-20251119214727715](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251119214727715.png)
+![image-20251119214727715](./picture/image-20251119214727715.png)
 
 
 
@@ -1032,7 +1032,7 @@ int main()
 
 **多态**
 
-![image-20251120093846741](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251120093846741.png)
+![image-20251120093846741](./picture/image-20251120093846741.png)
 
 **进程地址空间**
 
@@ -1099,7 +1099,7 @@ int main()
 
 **理解缓冲区域**
 
-![image-20251120103202046](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251120103202046.png)
+![image-20251120103202046](./picture/image-20251120103202046.png)
 
 **本质及时一段内存。谁申请的？属于谁的？为什么要申请？**
 
@@ -1149,7 +1149,7 @@ int main()
 
 
 
-![image-20251120104414970](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251120104414970.png)
+![image-20251120104414970](./picture/image-20251120104414970.png)
 
 **缓冲区是语言级别 提供的内存**
 
@@ -1387,7 +1387,7 @@ int main()
 
 
 
-![image-20251121101629204](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251121101629204.png)
+![image-20251121101629204](./picture/image-20251121101629204.png)
 
 
 
@@ -1395,11 +1395,11 @@ int main()
 
 ## 4文件系统
 
-![image-20251121103037479](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251121103037479.png)
+![image-20251121103037479](./picture/image-20251121103037479.png)
 
 
 
-![image-20251121103355109](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251121103355109.png)
+![image-20251121103355109](./picture/image-20251121103355109.png)
 
 
 
@@ -1427,7 +1427,7 @@ int main()
 
 
 
-![image-20251121110816358](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251121110816358.png)
+![image-20251121110816358](./picture/image-20251121110816358.png)
 
 
 
@@ -1507,11 +1507,11 @@ struct inode
 
 **建立硬链接是和文件名和inode编号的映射关系**
 
-![image-20251122151005195](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251122151005195.png)
+![image-20251122151005195](./picture/image-20251122151005195.png)
 
 
 
-![image-20251122151300246](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251122151300246.png)
+![image-20251122151300246](./picture/image-20251122151300246.png)
 
 
 
@@ -1535,7 +1535,7 @@ struct inode
 
 **一个.也是文件名称**
 
-![image-20251122152457085](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251122152457085.png)
+![image-20251122152457085](./picture/image-20251122152457085.png)
 
 
 
@@ -1549,7 +1549,7 @@ struct inode
 
 **gcc -c 形成同名文件**
 
-![image-20251123112207659](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123112207659.png)
+![image-20251123112207659](./picture/image-20251123112207659.png)
 
 **如果我们不起给对方我们的源代码，我给你提供我们的可重定位目标二进制文件，让你来用你的代码进行链接就行。**
 
@@ -1576,7 +1576,7 @@ struct inode
 
 **找不到头文件的   .h**
 
-![image-20251123145851977](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123145851977.png)
+![image-20251123145851977](./picture/image-20251123145851977.png)
 
 
 
@@ -1584,21 +1584,21 @@ struct inode
 
 **链接那个库，必须指定的很详细的**
 
-![image-20251123150156918](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123150156918.png)
+![image-20251123150156918](./picture/image-20251123150156918.png)
 
 
 
 **库名称 掐头去尾的！**
 
-![image-20251123150539638](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123150539638.png)
+![image-20251123150539638](./picture/image-20251123150539638.png)
 
-![image-20251123150615822](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123150615822.png)
+![image-20251123150615822](./picture/image-20251123150615822.png)
 
 **为什么我们写c/c+= 从来没指定呢， gcc/g++已经默认知道了的**
 
 **gcc默认动态链接 对于一个库是静态还是动态，取决于你提供的是静态还是动态。**
 
-![image-20251123151203434](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123151203434.png)
+![image-20251123151203434](./picture/image-20251123151203434.png)
 
 **拷贝进去了 还是要指明那个库的名称**
 
@@ -1612,21 +1612,21 @@ struct inode
 
 
 
-![image-20251123152906976](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123152906976.png)
+![image-20251123152906976](./picture/image-20251123152906976.png)
 
 
 
 
 
-![image-20251123153103648](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123153103648.png)
+![image-20251123153103648](./picture/image-20251123153103648.png)
 
 
 
-![image-20251123155045477](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123155045477.png)
+![image-20251123155045477](./picture/image-20251123155045477.png)
 
 
 
-![image-20251123155220957](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123155220957.png)
+![image-20251123155220957](./picture/image-20251123155220957.png)
 
 
 
@@ -1638,17 +1638,17 @@ struct inode
 
 **方法2  配置文件**
 
-![image-20251123160029654](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123160029654.png)
+![image-20251123160029654](./picture/image-20251123160029654.png)
 
 **ldconfig  更新配置文件**
 
-![image-20251123182002599](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123182002599.png)
+![image-20251123182002599](./picture/image-20251123182002599.png)
 
 
 
 **方法3**
 
-![image-20251123182942240](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251123182942240.png)
+![image-20251123182942240](./picture/image-20251123182942240.png)
 
 
 

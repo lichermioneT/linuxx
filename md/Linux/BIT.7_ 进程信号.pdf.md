@@ -44,9 +44,9 @@
 
 
 
-![image-20251126152024224](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251126152024224.png)
+![image-20251126152024224](./picture/image-20251126152024224.png)
 
-![image-20251126152316526](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251126152316526.png)
+![image-20251126152316526](./picture/image-20251126152316526.png)
 
 **sem--**
 
@@ -56,7 +56,7 @@
 
 
 
-![image-20251126152833533](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251126152833533.png)
+![image-20251126152833533](./picture/image-20251126152833533.png)
 
 
 
@@ -89,7 +89,7 @@
 
 **信号处理**
 
-![image-20251127091953887](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127091953887.png)
+![image-20251127091953887](./picture/image-20251127091953887.png)
 
 **kill -l 信号的种类**
 
@@ -113,7 +113,7 @@
 
 **4默认动作，自定义动作，忽略动作，**
 
-![image-20251127092321116](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127092321116.png)
+![image-20251127092321116](./picture/image-20251127092321116.png)
 
 
 
@@ -131,7 +131,7 @@
 
 **进行在处理信号的时候：1.默认动作2.自定义动作3.忽略【信号被捕捉】**
 
-![image-20251127092509900](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127092509900.png)
+![image-20251127092509900](./picture/image-20251127092509900.png)
 
 
 
@@ -163,9 +163,9 @@
 
 **kill---底层调用了对应的系统调用。**
 
-![image-20251127094134475](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127094134475.png)
+![image-20251127094134475](./picture/image-20251127094134475.png)
 
-![image-20251127094800384](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127094800384.png)
+![image-20251127094800384](./picture/image-20251127094800384.png)
 
 
 
@@ -290,7 +290,7 @@ int main()
 
 
 
-![image-20251127101342574](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127101342574.png)
+![image-20251127101342574](./picture/image-20251127101342574.png)
 
 **kill接口的使用**
 
@@ -426,7 +426,7 @@ int main(int agrc, char* agrv[])
 
 **OS识别问题**
 
-![image-20251127144110336](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127144110336.png)
+![image-20251127144110336](./picture/image-20251127144110336.png)
 
 
 
@@ -448,7 +448,7 @@ int main(int agrc, char* agrv[])
 
 **虚拟地址----页表+MMU----物理内存。MMU出现异常了，OS马上发送信号给出现异常的进程。**
 
-![image-20251127145213598](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127145213598.png)
+![image-20251127145213598](./picture/image-20251127145213598.png)
 
 
 
@@ -499,7 +499,7 @@ int main(int agrc, char* agrv[])
 
 **写端开启---->OS不允许**
 
-![image-20251127145724542](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127145724542.png)**
+![image-20251127145724542](./picture/image-20251127145724542.png)**
 
 
 
@@ -594,11 +594,11 @@ int main(int agrc, char* agrv[])
 
 **先描述，后组织！**
 
-![image-20251127153856944](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127153856944.png)
+![image-20251127153856944](./picture/image-20251127153856944.png)
 
-![image-20251127153516493](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127153516493.png)
+![image-20251127153516493](./picture/image-20251127153516493.png)
 
-![image-20251127154016030](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127154016030.png)
+![image-20251127154016030](./picture/image-20251127154016030.png)
 
 
 
@@ -616,7 +616,7 @@ int main(int agrc, char* agrv[])
 
 ## 4核心转储
 
-![image-20251127154242477](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127154242477.png)
+![image-20251127154242477](./picture/image-20251127154242477.png)
 
 
 
@@ -628,11 +628,11 @@ int main(int agrc, char* agrv[])
 
 **当进程出现异常的时候，我们将进程对应的时候，在内存中的数据转储到磁盘中，核心转储！**
 
-![image-20251127155028545](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127155028545.png)
+![image-20251127155028545](./picture/image-20251127155028545.png)
 
 **以pid命名的文件**
 
-![image-20251127155145645](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127155145645.png)
+![image-20251127155145645](./picture/image-20251127155145645.png)
 
 
 
@@ -650,7 +650,7 @@ int main(int agrc, char* agrv[])
 
 **学习信号的流程**
 
-![image-20251127155524817](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251127155524817.png)
+![image-20251127155524817](./picture/image-20251127155524817.png)
 
 
 
@@ -696,7 +696,7 @@ hander_t hander[32];      //  函数指针数组，a数组的位置(下标)，�
 
 **hander_t： 信号处理动作**
 
-![image-20251128094002484](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128094002484.png)
+![image-20251128094002484](./picture/image-20251128094002484.png)
 
 
 
@@ -724,11 +724,11 @@ hander_t hander[32];      //  函数指针数组，a数组的位置(下标)，�
 
 
 
-![image-20251128094515274](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128094515274.png)
+![image-20251128094515274](./picture/image-20251128094515274.png)
 
 
 
-![image-20251128094721536](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128094721536.png)
+![image-20251128094721536](./picture/image-20251128094721536.png)
 
 
 
@@ -754,11 +754,11 @@ hander_t hander[32];      //  函数指针数组，a数组的位置(下标)，�
 
 **CR3:0内核态，3用户态**
 
-![image-20251128095906885](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128095906885.png)
+![image-20251128095906885](./picture/image-20251128095906885.png)
 
-![image-20251128095147259](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128095147259.png)
+![image-20251128095147259](./picture/image-20251128095147259.png)
 
-![image-20251128095211436](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128095211436.png)
+![image-20251128095211436](./picture/image-20251128095211436.png)
 
 
 
@@ -786,21 +786,21 @@ hander_t hander[32];      //  函数指针数组，a数组的位置(下标)，�
 
 **曾经我们一定是先进入内核态！ 系统调用，进程切换，**
 
-![image-20251128101837490](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128101837490.png)
+![image-20251128101837490](./picture/image-20251128101837490.png)
 
 
 
 
 
-![image-20251128102335873](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128102335873.png)
+![image-20251128102335873](./picture/image-20251128102335873.png)
 
- ![image-20251128102455980](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128102455980.png)
-
-
+ ![image-20251128102455980](./picture/image-20251128102455980.png)
 
 
 
-![image-20251128102738240](C:\Users\LIC\AppData\Roaming\Typora\typora-user-images\image-20251128102738240.png)
+
+
+![image-20251128102738240](./picture/image-20251128102738240.png)
 
 
 
@@ -818,39 +818,316 @@ int sigismember（const sigset_t *set, int signo);
 
 
 
+```c++
+#include <iostream>      
+#include <vector>      
+#include <signal.h>      
+#include <unistd.h>      
+using namespace std;      
+      
+#define BLOCK_SIGNAL 2      
+#define MAX_SIGNUM 31      
+      
+static void show_pendings(const sigset_t& pendings)      
+{      
+  for(int signo = MAX_SIGNUM; signo >= 1; signo--)      
+  {      
+      if(sigismember(&pendings, signo))      
+      {      
+        cout<< "1";      
+      }      
+      else      
+      {      
+        cout << "0";      
+      }      
+  }      
+  cout<<endl;      
+}      
+      
+static vector<int> sigarr = {2, 3};      
+      
+static void myhander(int signo)      
+{      
+    cout<<  signo << "号信号已经被抵达！！"<<endl;      
+}      
+      
+int main()      
+{                                                                                                                                                 
+      
+  for(const auto&  sig : sigarr) signal(sig,myhander); // 捕捉了信号      
+      
+// 1.屏蔽指定的信      
+  sigset_t block, oblock, pendings;     
+  // 1.1初始化
+  sigemptyset(&block);
+  sigemptyset(&oblock);
+  sigemptyset(&pendings);
+                                                                                                                                                  
+// 1.2添加屏蔽信号
+  // sigaddset(&block, BLOCK_SIGNAL);
+  // 9号信号应该不能打，这样子OS就太垃圾了
+  for(auto & e : sigarr)
+  {
+    sigaddset(&block, e);
+  }
+
+// 1.3开始屏蔽, 设置进内核(进程)
+  sigprocmask(SIG_SETMASK, &block, &oblock);
+ 
+// 遍历打印pending信号集
+  int cnt = 10;
+  while(true)
+  {
+    //2.1初始化
+    sigemptyset(&pendings);
+    //2.2获取
+    sigpending(&pendings);
+    //2.3打印
+    show_pendings(pendings);
+    sleep(1);
+
+// 解除屏蔽信号
+    if(cnt-- == 0)
+    {
+      sigprocmask(SIG_SETMASK, &oblock, &block); // 一旦对特定信号解除屏蔽，一般OS要立马抵达一个信号
+      cout<< "恢复对信号的屏蔽，不屏蔽任何信号" <<endl;
+    }
+  }
+  return 0;
+}
+
+```
+
+
+
+## 6其它
+
+**系统调用接口**
+
+**切换到内核态**
+
+**尽量少操作，切换态，浪费时间的**
+
+**内核级页表**
+
+
+
+**sigaction**
+
+| 参数     | 说明                                           |
+| -------- | ---------------------------------------------- |
+| `signum` | 要捕捉的信号编号，如 `SIGINT`、`SIGTERM` 等    |
+| `act`    | 指向 `struct sigaction` 的指针，用于设置新行为 |
+| `oldact` | 如果不为 NULL，会保存信号之前的处理方式        |
+
+```c++
+#include <signal.h>
+
+int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+
+struct sigaction 
+{
+    void     (*sa_handler)(int);   // 信号处理函数
+    void     (*sa_sigaction)(int, siginfo_t *, void *); // 扩展处理函数
+    sigset_t   sa_mask;            // 信号屏蔽字（处理期间阻塞的信号）
+    int        sa_flags;           // 选项标志
+    void     (*sa_restorer)(void); // 一般不用
+};
+```
+
+
+
+**1.当我们正在进行抵达某一个信号期间，同类型信号无法被抵达，当前信号真正被捕捉，系统会自动将当前信号加入到进程的信号屏蔽字，block(2);**
+
+**2.当信号完成捕捉动作 ，系统又会自动解除该信号的屏蔽**
+
+**3.一般一个信号被解除屏蔽的时候，会自动进行抵达当前屏蔽信号，如果该信号已经被pending的话，没有就不做任何动作。**
+
+**我们进程处理信号的原则是串行处理同类型的信号，不能递归**
+
+
+
+```c++
+#include <iostream>    
+#include <signal.h>    
+#include <unistd.h>    
+using namespace std;    
+    
+void Count(int cnt)    
+{    
+  while(cnt)    
+  {    
+    printf("cnt: %d",cnt);    
+    fflush(stdout);    
+    cnt--;    
+    sleep(1);    
+    printf("\n");    
+  }                                                                                                                                               
+}    
+    
+void hander(int signo)    
+{    
+  cout<< "get a signo : " << signo << "正在处理中" <<endl;    
+  Count(10);    
+}    
+    
+int main()    
+{    
+  struct sigaction act,oact;    
+  act.sa_handler = hander;    
+  act.sa_flags = 0;    
+    
+  sigemptyset(&act.sa_mask); // 正在处理某一种信号的时候，我们也想屏蔽其它信号，就可以添加到这个sa_mask中    
+  sigaddset(&act.sa_mask, 3);    
+  sigaction(SIGINT, &act, &oact);    
+    
+  while(true)    
+  {    
+    sleep(1);    
+  }    
+  return 0;    
+}    
+
+```
+
+
+
+## 7可重入函数
+
+**在同一时间内可以被多个线程或多个执行流安全地“同时进入并执行”的函数。**
+
+**即使函数正在执行，它也可以被“再次调用”而不会出错。**
+
+**可重入函数是指：即使在执行过程中被中断，并再次被调用，也不会出错的函数。**
+
+**它不能使用会被多个执行流共享并修改的资源。**
+
+
+
+**可重入函数**
+
+**1。一般而言，我们认为 mian执行流和信号捕捉执行流是两个执行流。**
+
+**2.在main和hander执行流，该函数被重复进入，出问题了---该函数不可重入函数**
+
+**2.在main和hander执行流，该函数被重复进入，没问题了---该函数可重入函数**
+
+**函数能否被重入是特性，是一个中性词**
+
+
+
+![image-20251130110934774](image-20251130110934774.png)
 
 
 
 
 
+## 8volatile关键字
+
+![image-20251130111416750](picture/image-20251130111416750.png)
+
+![image-20251130111640441](picture/image-20251130111640441.png)
+
+
+
+**寄存器读数据**
+
+**寄存器读数据**
+
+**取指令**
+
+**分析指令**
+
+**执行指令**
+
+**执行指令**
+
+
+
+```c++
+#include <stdio.h>    
+#include <signal.h>    
+    
+// volatile:保持内存可见性，不是从寄存器读取数据    
+volatile int quit = 0;    
+    
+void hander(int signo)    
+{    
+  printf("%d 号信号已经被捕捉了\n", signo);    
+  printf("quit : %d", quit);    
+  quit = 1;    
+  printf("->%d\n", quit);    
+}    
+    
+int main()    
+{    
+    
+  signal(2, hander);    
+  while(!quit); // 只是在寄存里面读取数据，眼里只有寄存器数据没有内存的数据    
+  printf("注意我是正常退出的\n");    
+    
+  return 0;    
+}   
+```
+
+
+
+**线程初始**
+
+![image-20251130112050223](picture/image-20251130112050223.png)
+
+
+
+**子进程给父进程发送信号，我寄了**
+
+
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>    
+#include <assert.h>    
+#include <stdlib.h>    
+    
+void hander(int signo)    
+{                                                                                                                                                
+  printf("%d 号信号已经被捕捉了\n", signo);    
+}    
+    
+int main()    
+{    
+    
+  //  signal(SIGCHLD, hander); // 捕捉子进程的退出信号。这样就清晰了。子进程的退出了    
+                           // waitpid()缺点子进程太多了，同时退出  while()循环等 waitpid(-1,) -1任意进程    
+                           // 子进程太多了，只有一部分退出了。waitpid要非阻塞 waitpdi(-1,null, wnohong) 轮询等待子进程    
+  signal(SIGCHLD, SIG_IGN);    
+  pid_t id = fork();    
+  assert(id >= 0);    
+  if(id == 0)    
+  {    
+    sleep(5);    
+    printf("我是子进程\n");    
+    exit(1);    
+  }    
+  
+    while(1)    
+    sleep(1);    
+  return 0;
+}
+
+
+```
 
 
 
 
 
+![image-20251130140631157](picture/image-20251130140631157.png)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![image-20251130203756098](picture/image-20251130203756098.png)
 
 
 
