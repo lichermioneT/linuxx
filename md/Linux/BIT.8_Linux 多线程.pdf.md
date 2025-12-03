@@ -650,45 +650,361 @@ int main()
 
 
 
+**线程分离**
+
+**线程是可以等待的，等待的时候，join等待，阻塞式等待，如果我们不想等待呢？**
+
+**pthread_self()**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
+
+
+string changeId(const pthread_t& thread_id)
+{
+  char tid[128];
+  snprintf(tid, sizeof(tid), "0x%zx", thread_id);
+  return tid;
+}
+
+void* start_routine(void* args)
+{
+  string threadname = static_cast<const char*>(args);
+  pthread_detach(pthread_self()); // 设置自己为分离状态
+  int cnt = 5;
+  while(cnt)
+  {
+    char tid[28];
+    snprintf(tid, sizeof(tid), "0x%zx", pthread_self());
+    cout<< threadname << "running..." << changeId(pthread_self()) <<endl;
+    cout<< cnt <<endl;
+    sleep(1);
+    cnt--;
+  }
+  return nullptr;
+}
+
+int main()
+{
+
+  pthread_t tid;
+  pthread_create(&tid, nullptr, start_routine, (void*)"thread 1");
+  string main_id = changeId(pthread_self());
+  pthread_detach(tid);
+
+  cout<< " main thread run ...." << "new thread id : "  << changeId(tid) << " main_id : " << main_id <<endl;
+
+  while(true)
+  {
+    //todo main
+  }
+
+  // join和detach不能共存
+  // int n = pthread_join(tid, nullptr);
+  // cout<< "result " << n << " n " << strerror(n) <<endl;
+
+  return 0;
+}
+```
 
 
 
+**线程的独立栈**
+
+**原生线程库，可能要存在多个线程--你用这些接口创建了线程，别人也可以同时在用的**
+
+**原生线程库，要不要对线程管理呢？ 要**
+
+**先描述：线程的属性比较少，**
+
+**组织：**
+
+
+
+**Linux方案：用户级别线程，用户关心的线程属性在库中，内核提供线程执行流的调度**
+
+**Linux用户级线程：内核轻量级进程=1；1**
+
+
+
+**用户级线程id究竟是什么？**
+
+**就是库里面创建的结构体对象**
+
+**id就是结构体对象的地址**
+
+
+
+![image-20251203095315041](picture/image-20251203095315041.png)
+
+**线程的栈，在线程库里面的栈。**
+
+**共享区里面存放了，线程的地址。**
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
+
+// 添加__thread,可以将一个内置类型设置为线程局部存储
+// 每个线程都有一份资源的
+__thread int g_val = 128;
+
+// 共享资源
+int shared = 44;
+string changeId(const pthread_t& thread_id)
+{
+  char tid[128];
+  snprintf(tid, sizeof(tid), "0x%zx", thread_id);
+  return tid;
+}
+
+void* start_routine(void* args)
+{
+  string threadname = static_cast<const char*>(args);
+  int cnt = 5;
+  while(cnt)
+  {
+    char tid[28];
+    snprintf(tid, sizeof(tid), "0x%zx", pthread_self());
+    cout<< threadname << "running..." << changeId(pthread_self()) <<endl;
+    cout<< cnt <<endl;
+    cout<< "g_val: " << g_val <<endl; 
+    g_val++;
+    sleep(1);
+    cnt--;
+  }
+  return nullptr;
+}
+
+int main()
+{
+
+  pthread_t tid;
+  pthread_create(&tid, nullptr, start_routine, (void*)"thread 1");
+  string main_id = changeId(pthread_self());
+  pthread_detach(tid);
+
+  cout<< " main thread run ...." << "new thread id : "  << changeId(tid) << " main_id : " << main_id <<endl;
+
+  while(true)
+  {
+    //todo main
+    cout<< "g_val: " << g_val <<endl; 
+    sleep(1);
+  }
+
+  return 0;
+}
+
+```
 
 
 
 ## 3线程同步与互斥
 
+```c++
+#pragma once 
+#include <string>
+#include <iostream>
+#include <pthread.h>
+#include <functional>
+#include <cassert>
+#include <cstring>
+
+class Thread;
+
+class context
+{
+public:
+  Thread* this_;
+  void* args_;
+public:
+  context():this_(nullptr), args_(nullptr){}
+  ~context(){}
+};
+
+class Thread
+{
+public:
+  typedef std::function<void*(void*)> func_t;  // function pointer
+  const int num = 1024;
+public: 
+  Thread(func_t func, void* args = nullptr, int number = 0):func_(func), args_(args)
+  {
+    char buffer[num];
+    snprintf(buffer, sizeof(buffer), "thread-%d", number);         // thread-1,2,,n;
+    name_ = buffer;                                                // thread name
+
+    context* ctx = new context();     // store class address and agrs
+    ctx->this_ = this;
+    ctx->args_ = args_;
+
+    int n = pthread_create(&tid_, nullptr, start_routine, ctx);     // TODO
+    assert(n == 0);                                                 // assert 意料只中， if意料之外
+    (void)n;
+  }
+
+  // 类内创建线程，执行对应的方法，方法static this pointer
+  static void* start_routine(void* agrs)   // 缺省参数
+  {
+    context* ctx = static_cast<context*>(agrs);
+    
+    void* ret = ctx->this_->run(ctx->args_);
+    delete ctx;
+    return ret;
+    // 静态不能调用成员方法，成员变量。
+  }
+
+  void join()
+  {
+    int n = pthread_join(tid_, nullptr);
+    assert(n == 0);
+    (void)n;
+  }
+
+  void* run(void* args)
+  {
+    return func_(args);
+  }
+
+  ~Thread()
+  {
+    // do nothing
+  }
+
+private:
+  std::string name_;  // thread name
+  func_t func_;       // thread function
+  void* args_;        // thread args
+  pthread_t tid_;     // thread tid
+};
+
+```
 
 
 
+```c++
+#include <iostream>
+#include <memory>
+#include "Thread.hpp"
+#include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
+
+// 间接猪跑
+// pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // 定义锁
+// 需要多个线程交叉执行，
+// 交叉执行的本质，调度器尽可能频繁发生线程调度与切换
+// 线程切换：时间片到了，来了优先级跟高的线程。线程等待的时候。
+// 线程是在什么时候检查上面的问题呢？内核态--》用户态。线程对调度状态进行检查，如果可以，就直接发生线程切换。
+
+int tickets = 10000;
+void* getTickets(void* args)
+{
+  std::string user_name = static_cast<const char*>(args);
+  while(true)
+  {
+    if(tickets > 0)
+    {
+      // 进来睡觉了，前面的已经修改了ticket了
+      usleep(1000); // 1=1000=1000 000
+      std::cout<< user_name << "真正抢票 " << tickets <<std::endl;
+      tickets--; // 修改数据
+    }
+    else 
+    {
+      break;
+    }
+  }
+  return nullptr;
+}
+
+int main()
+{
+  std::unique_ptr<Thread> thread1(new Thread(getTickets, (void*)"hello lic1", 1));
+  std::unique_ptr<Thread> thread2(new Thread(getTickets, (void*)"hello lic2", 2));
+  std::unique_ptr<Thread> thread3(new Thread(getTickets, (void*)"hello lic3", 3));
+  std::unique_ptr<Thread> thread4(new Thread(getTickets, (void*)"hello lic4", 4));
+
+  thread1->join();
+  thread2->join();
+  thread3->join();
+  thread4->join();
+  return 0;
+}
+
+```
+
+**为什么出现问题了**
+
+**ticket只剩最后一张了**
+
+**判断的本质：1读取内存的数据到CPU里面，2进行判断**
+
+ticket
+ticket--
+1.
+进程1进来了，睡觉了，上下文切换，ticket>0
+进程2进来了，睡觉了，上下文切换，ticket>0
+进程3进来了，睡觉了，上下文切换，ticket>0
+进程4进来了，睡觉了，上下文切换，ticket>0
+2.
+进程1醒了，读数据ticket = 1
+进程2醒了，读数据ticket = -1
+进程3醒了，读数据ticket = -2
 
 
 
+![image-20251203111212090](picture/image-20251203111212090.png)
+
+**变量进行--(或者++)**
+
+**1 A加载1000到CPU里面**
+
+**2 1000--**
+
+**3 999写到内存里面**
 
 
 
+**不幸的是3就被切换走了**
 
 
 
+**1 B加载1000到CPU里面**
+
+**2 1000--  **
+
+**3 999写到内存里面**
+
+**然后A读写到了还是1000了**
 
 
 
+**加锁**
 
+**我们定义的全局变量，没有保护的时候，往往是不安全的，像上面多个线程在交替执行，造成的数据安全问题，数据不一致问题。
+多个执行流进行，安全访问的共享资源--临界资源    （小部分的代码）
+我们把多个执行流中，访问临界资源的代码，临界区  （小部分的代码） 往往是线程代码的很小一部分
+想让多个线程，串行访问共享资源--互斥
+对一个资源进行访问的时候，要么不做，要么做完---原子性，（解释不是原子性的场景）(刚才的123，三条汇编语句)--一个对资源进行操作，如果只用一条汇编就能完成，原子性操作。反之不是原子的。 
+反之：不是原子的，当前理解，方便表述。**
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**原子性：原子是不可以分的。就是要做就做完，不做就不做。**
 
 
 
