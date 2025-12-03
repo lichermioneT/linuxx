@@ -1008,11 +1008,259 @@ ticket--
 
 
 
+```c++
+#include <iostream>
+#include <memory>
+#include "Thread.hpp"
+#include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
+
+
+
+// 间接猪跑
+// pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // 定义锁
+// 需要多个线程交叉执行，
+// 交叉执行的本质，调度器尽可能频繁发生线程调度与切换
+// 线程切换：时间片到了，来了优先级跟高的线程。线程等待的时候。
+// 线程是在什么时候检查上面的问题呢？内核态--》用户态。线程对调度状态进行检查，如果可以，就直接发生线程切换。
+
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+int tickets = 10000;
+void* getTickets(void* args)
+{
+  std::string user_name = static_cast<const char*>(args);
+  while(true)
+  {
+    pthread_mutex_lock(&lock);
+    if(tickets > 0)
+    {
+      // 进来睡觉了，前面的已经修改了ticket了
+      usleep(1000); // 1=1000=1000 000
+      std::cout<< user_name << "真正抢票 " << tickets <<std::endl;
+      tickets--; // 修改数据
+    pthread_mutex_unlock(&lock);
+    }
+    else 
+    {
+      pthread_mutex_unlock(&lock);
+      break;
+    }
+  }
+  return nullptr;
+}
+
+int main()
+{
+  std::unique_ptr<Thread> thread1(new Thread(getTickets, (void*)"hello lic1", 1));
+  std::unique_ptr<Thread> thread2(new Thread(getTickets, (void*)"hello lic2", 2));
+  std::unique_ptr<Thread> thread3(new Thread(getTickets, (void*)"hello lic3", 3));
+  std::unique_ptr<Thread> thread4(new Thread(getTickets, (void*)"hello lic4", 4));
+
+  thread1->join();
+  thread2->join();
+  thread3->join();
+  thread4->join();
+  return 0;
+}
+
+```
 
 
 
 
 
+```c++
+#pragma once 
+#include <string>
+#include <iostream>
+#include <pthread.h>
+#include <functional>
+#include <cassert>
+#include <cstring>
+
+class Thread;
+
+class context
+{
+public:
+  Thread* this_;
+  void* args_;
+public:
+  context():this_(nullptr), args_(nullptr){}
+  ~context(){}
+};
+
+class Thread
+{
+public:
+  typedef std::function<void*(void*)> func_t;  // function pointer
+  const int num = 1024;
+public: 
+  Thread(func_t func, void* args = nullptr, int number = 0):func_(func), args_(args)
+  {
+    char buffer[num];
+    snprintf(buffer, sizeof(buffer), "thread-%d", number);         // thread-1,2,,n;
+    name_ = buffer;                                                // thread name
+
+    context* ctx = new context();     // store class address and agrs
+    ctx->this_ = this;
+    ctx->args_ = args_;
+
+    int n = pthread_create(&tid_, nullptr, start_routine, ctx);     // TODO
+    assert(n == 0);                                                 // assert 意料只中， if意料之外
+    (void)n;
+  }
+
+  // 类内创建线程，执行对应的方法，方法static this pointer
+  static void* start_routine(void* agrs)   // 缺省参数
+  {
+    context* ctx = static_cast<context*>(agrs);
+    
+    void* ret = ctx->this_->run(ctx->args_);
+    delete ctx;
+    return ret;
+    // 静态不能调用成员方法，成员变量。
+  }
+
+  void join()
+  {
+    int n = pthread_join(tid_, nullptr);
+    assert(n == 0);
+    (void)n;
+  }
+
+  void* run(void* args)
+  {
+    return func_(args);
+  }
+
+  ~Thread()
+  {
+    // do nothing
+  }
+
+private:
+  std::string name_;  // thread name
+  func_t func_;       // thread function
+  void* args_;        // thread args
+  pthread_t tid_;     // thread tid
+};
+
+```
+
+
+
+**复习**
+
+**原生线程库**
+
+**线程id，线程库结构体对象的id**
+
+**线程栈--库里面**
+
+**共享资源**
+
+**串行访问**
+
+**原子性**
+
+
+
+**1如何看待锁
+  锁本身就是一个共享资源，全局变量要是被保护的，锁是用来保护全局资源，锁的安全谁来保护？
+  pthread_mutex_lock，pthread_mutex_unlock;加锁的过程必须是安全的！,加锁过程其实是原子的！ 申请失败或者成功。
+  如果申请成功，继续向后执行。如果申请暂时没有呢？执行流会怎么办？执行流会阻塞。trylock：非阻塞申请
+  谁持有锁，谁进入临界区**
+
+
+
+![image-20251203200653900](picture/image-20251203200653900.png)
+
+
+
+![image-20251203200718379](picture/image-20251203200718379.png)
+
+
+
+**线程1**
+**线程2**
+**线程3**
+**如果线程1，申请锁成功，进入临界资源，正在访问临界资源，其它线程在做什么？？  阻塞等待**
+**如果线程1，申请锁成功，进入临界资源，正在访问临界资源，我可不可以被切换呢？？绝对可以的！，其它线程不能进来**
+  **当持有锁的线程被切走，是被抱着锁切走的，即便自己被切走了，其它线程依旧无法申请成功锁，也变变无法向后执行！**
+  **直到我最终释放这个锁！**
+**其它线程的角度，看待当前线程有锁的过程 ，就是原子的。**
+  **对应其它线程而言，有意义的锁的状态，无非两种**
+
+  **1申请锁前**
+  **2释放锁后**
+
+  **原子态，两态**
+**未来，我们在使用锁的时候，一定要尽量保证临界区的粒度非常小！**
+**加锁是程序员行为，必须做到要加都要加！**
+
+
+
+**2如何理解加锁和解锁的本质:加锁的过程是原子的。**
+  **swap或exchange指令,该指令的作用是把寄存器和内存单元的数据相交换 ,由于只有一条指令.**
+
+**mutex_t 锁变量**
+**lock:**
+  **movb $0, %a1  //a1是寄存器  0--》a1(0放到寄存器)（0放到上下文）。**
+  **xchgb %a1, mutex // 交换的本质：共享的数据，交换到我的上下文。**
+  **if(al寄存器的内容 > 0)**
+  **{**
+    **return 0**
+  **}**
+  **else**
+  **{**
+    **挂起等待**
+    **goto lock;**
+  **}**
+**unlock**
+  **movb $1, mutex**
+  **唤醒等待Mutex的线程**
+  **return 0;**
+**1cpu内寄存器只有一套被所有执行流共享**
+**2cpu内寄存器的内容，是每个执行流私有的，运行时的上下文。**
+
+
+
+![image-20251203202118291](picture/image-20251203202118291.png)
+
+
+
+**死锁的四个必要条件！**
+  **互斥**
+  **请求与保持**
+  **不剥夺**
+  **环路等待条件**
+**互斥条件：一个资源每次只能被一个执行流使用**
+**请求与保持条件：一个执行流因请求资源而阻塞时，对已获得的资源保持不放**
+**不剥夺条件:一个执行流已获得的资源，在末使用完之前，不能强行剥夺**
+**循环等待条件:若干执行流之间形成一种头尾相接的循环等待资源的关系**
+
+**能不用锁，就不用锁。除非不得已啊。**
+
+**线程同步问题**
+
+**同步：在保证数据安全的前提下，让线程能够按照某种特定的顺序访问临界资源，从而有效避免饥饿问**
+**题，叫做同步**
+
+
+
+**同步**
+
+**同步：在保证数据安全的前提下，让线程能够按照某种特定的顺序访问临界资源，从而有效避免饥饿问**
+
+
+
+****
 
 
 
