@@ -1,0 +1,3 @@
+/home/li/Desktop/gitee/linuxx/cmake/v11set/build/CMakeFiles/rebuild_cache.dir
+/home/li/Desktop/gitee/linuxx/cmake/v11set/build/CMakeFiles/edit_cache.dir
+/home/li/Desktop/gitee/linuxx/cmake/v11set/build/CMakeFiles/calc.dir
