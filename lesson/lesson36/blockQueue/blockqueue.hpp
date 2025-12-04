@@ -57,6 +57,7 @@ public:
     pthread_cond_destroy(&_pcond);
     pthread_cond_destroy(&_ccond);
   }
+  
 private:
   bool is_empty()
   {
@@ -66,6 +67,7 @@ private:
   {
     return  _q.size() == _maxcap;
   }
+
 private:
   std::queue<T> _q;
   int _maxcap;           // 队列的上线

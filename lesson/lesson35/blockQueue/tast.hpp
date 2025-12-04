@@ -1,8 +1,6 @@
 #pragma once 
-
 #include <iostream>
 #include <functional>
-
 
 class task
 {
@@ -18,11 +16,8 @@ public:
     return result;
   }
 
-
-
 private:
   int _x;
   int _y;
   func_t _callbacl;
 };
-

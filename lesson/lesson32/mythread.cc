@@ -24,7 +24,6 @@ public:
   int exit_result;
 };
 
-
 // 1.现在被几个执行流调用呢？10个。函数是什么状态？ 可重入状态 多个执行流同时执行
 // 2.该函数是可重入函数吗？是的。
 // 3.函数内部定义的变量，局部变量，具有临时属性，今天多线程任然合适。 每一个线程都有自己的独立的栈结构。
@@ -33,7 +32,7 @@ void* start_routine(void* args)
   // exit(0); eixt用来终止进程的，任何一个执行流调用exit，整个进程退出
   // 一个线程出现异常，会影响其它线程的
   // 进程信号，信号是发给整体发给进程的！
-    ThreadData* td = static_cast<ThreadData *>(args);
+    ThreadData* td = static_cast<ThreadData*>(args);
     int cnt = 1;
     while(cnt)
     {

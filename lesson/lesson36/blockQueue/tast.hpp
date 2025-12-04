@@ -16,9 +16,10 @@ public:
   {
     int result = _callbacl(_x, _y, _op);
     char buffer[1024];
-    snprintf(buffer, sizeof(buffer),"%d%c%d=%d", _x, _op, _y, result);
+    snprintf(buffer, sizeof(buffer),"%d %c %d = %d", _x, _op, _y, result);
     return buffer;
   }
+
 private:
   int _x;
   int _y;
@@ -42,8 +43,6 @@ private:
   std::string _message;
   func_t _func;
 };
-
-
 
 void Save(const std::string& message)
 {   

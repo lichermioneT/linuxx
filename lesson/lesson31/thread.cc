@@ -40,10 +40,5 @@ int main()
   
   cout<< "等待出来的参数" <<endl;
   cout<< "age:" << p->age_ << " height:" << p->height_ << " weight:" << p->weight_ <<endl;
-
-
-
-
-
   return 0;
 }

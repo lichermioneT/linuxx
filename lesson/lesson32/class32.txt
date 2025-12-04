@@ -6,7 +6,7 @@ int clone()
 int vfork()
 
 线程控制
-
+B等内核资源，防止内存泄漏。--暂时无法查看2.回收新线程对应的PCB等内核资源，防止内存泄漏。--暂时无法查看
     //pthread_create(&tid, nullptr, start_routine, (void*)"thread one");
 线程的调度，先后顺序不确定的
 

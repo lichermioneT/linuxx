@@ -1,5 +1,4 @@
 #pragma once 
-
 #include <iostream>
 #include <pthread.h>
 
@@ -31,8 +30,8 @@ public:
 
   ~LockGuard()
   {
-    mutex_.unlock();
+    mutex_.unlock();  // 解锁
   }
 private:
-  Mutex mutex_;
+  Mutex mutex_;  // 锁的对象
 };

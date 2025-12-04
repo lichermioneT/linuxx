@@ -21,28 +21,26 @@ public:
 class Thread
 {
 public:
-  typedef std::function<void*(void*)> func_t;
+  typedef std::function<void*(void*)> func_t;  // function pointer
+  const int num = 1024;
 public: 
   Thread(func_t func, void* args = nullptr, int number = 0):func_(func), args_(args)
   {
-    char buffer[number];
-    snprintf(buffer,sizeof(buffer), "thread-%d", number);
-    name_ = buffer;
+    char buffer[num];
+    snprintf(buffer, sizeof(buffer), "thread-%d", number);         // thread-1,2,,n;
+    name_ = buffer;                                                // thread name
 
-    context* ctx = new context(); 
+    context* ctx = new context();     // store class address and agrs
     ctx->this_ = this;
     ctx->args_ = args_;
-    int n = pthread_create(&tid_, nullptr, start_routine, ctx); //TODO
-    assert(n == 0); // assert 意料只中， if意料之外
+
+    int n = pthread_create(&tid_, nullptr, start_routine, ctx);     // TODO
+    assert(n == 0);                                                 // assert 意料只中， if意料之外
     (void)n;
   }
 
-  void start()
-  {
-  }
-
-  // 类内创建线程，执行对应的方法，方法static
-  static void* start_routine(void* agrs) // 缺省参数
+  // 类内创建线程，执行对应的方法，方法static this pointer
+  static void* start_routine(void* agrs)   // 缺省参数
   {
     context* ctx = static_cast<context*>(agrs);
     
@@ -70,8 +68,8 @@ public:
   }
 
 private:
-  std::string name_;
-  func_t func_;
-  void* args_;
-  pthread_t tid_;
+  std::string name_;  // thread name
+  func_t func_;       // thread function
+  void* args_;        // thread args
+  pthread_t tid_;     // thread tid
 };

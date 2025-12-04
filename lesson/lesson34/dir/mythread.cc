@@ -10,7 +10,6 @@
 #include <unistd.h>
 using namespace std;
 
-
 // 添加__thread,可以将一个内置类型设置为线程局部存储
 string changeId(const pthread_t& thread_id)
 {
@@ -34,7 +33,7 @@ void* start_routine(void* args)
 }
 
 // 间接猪跑
-// pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // 定义锁
+// pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // 定义锁 全局锁
 // 需要多个线程交叉执行，
 // 交叉执行的本质，调度器尽可能频繁发生线程调度与切换
 // 线程切换：时间片到了，来了优先级跟高的线程。线程等待的时候。
@@ -51,38 +50,37 @@ public:
   {}
   ~threadData(){}
 public:
-  std::string threadName_;    // 定义一个string对象
-  pthread_mutex_t* mutex_t_;  // 放一个锁
+  std::string threadName_;    // 定义一个string对象，线程的名字
+  pthread_mutex_t* mutex_t_;  // 放一个锁，
 };
 
 int tickets = 10000;
 
 void* getTickets(void* args)
 {
-  threadData* td = static_cast<threadData*>(args);
+  threadData* td = static_cast<threadData*>(args);        // 锁和线程名称
   // threadData* username = static_cast<threadData*>(args);
   while(true)
   {
-// 加锁和解锁是多个线程，串行执行的，所以程序变慢了。
+// 加锁和解锁是多个线程，串行执行的，所以程序变慢了。212321312322------
 // 锁只规定互斥访问，没有规定必须让谁，优先执行
 // 锁就是真是的让多个执行流进行竞争的结果
-    //pthread_mutex_lock(td->mutex_t_); // 加锁
-    //pthread_mutex_lock(td->mutex_t_); // 加锁
     {
-    LockGuard lockguard(&lock); // 直接用对象加锁,局部对象加锁 RAII风格的加锁
-    if(tickets > 0)
-    {
-      usleep(1000); // 1=1000=1000 000
-      std::cout<< td->threadName_ << "真正抢票 " << tickets <<std::endl;
-      // std::cout<< username << "真正抢票 " << tickets<<std::endl;
-      tickets--; // 修改数据
-     // pthread_mutex_unlock(td->mutex_t_);
-    }
-    else 
-    {
-      //pthread_mutex_unlock(td->mutex_t_);
-      break;
-    }
+      LockGuard lockguard(&lock); // 直接用对象加锁,局部对象加锁 RAII风格的加锁，局部变量{大括号里面的}， 利用class的构造函数和析构函数 加锁和解锁。
+      //pthread_mutex_lock(td->mutex_t_); // 加锁
+      if(tickets > 0)
+      {
+        usleep(1000); // 1=1000=1000 000
+        std::cout<< td->threadName_ << "真正抢票 " << tickets <<std::endl;
+        // std::cout<< username << "真正抢票 " << tickets<<std::endl;
+        tickets--; // 修改数据
+      // pthread_mutex_unlock(td->mutex_t_);
+      }
+      else 
+      {
+        //pthread_mutex_unlock(td->mutex_t_);
+        break;
+      }
     }
     // 抢完了票，就完了吗？
     usleep(1000); // 形成一个订单
@@ -90,14 +88,12 @@ void* getTickets(void* args)
   return nullptr;
 }
 
-
 int main()
 {
-
 #define NUM 4
-  pthread_mutex_t lock; // 定义一个锁 
-  pthread_mutex_init(&lock, nullptr); // 初始化一个锁
-  std::vector<pthread_t> tids(4); // 定义一个数组，用来存放线程 id值
+  pthread_mutex_t lock;                   // 定义一个锁，数据类型的 
+  pthread_mutex_init(&lock, nullptr);     // 初始化一个锁
+  std::vector<pthread_t> tids(4);         // 定义一个数组，用来存放线程 id值
 
   for(int i = 0; i < NUM; i++)
   {
@@ -112,7 +108,6 @@ int main()
     pthread_join(tid, nullptr); // 等待线程，第二个参数是输出型参数，二级指针
   }
 
-
 /*
   pthread_t t1, t2, t3, t4;
   pthread_create(&t1, nullptr, getTickets, (void*)"thread 1");
@@ -125,9 +120,7 @@ int main()
   pthread_join(t3, nullptr);
   pthread_join(t4, nullptr);
 */ 
-  pthread_mutex_destroy(&lock); //  删除锁 
-
-
+  pthread_mutex_destroy(&lock); //  删除锁 之间使用锁
 
 /*
   pthread_t tid;
@@ -147,7 +140,6 @@ int main()
   cout<< "result " << n << " n " << strerror(n) <<endl;
 
 */ 
-
   
 /*
   std::unique_ptr<Thread> thread1(new Thread(getTickets, (void*)"hello lic1", 1));
@@ -161,14 +153,5 @@ int main()
   thread3->join();
   thread4->join();
 */
-
-
-
-
-
-
-
-
-
   return 0;
 }

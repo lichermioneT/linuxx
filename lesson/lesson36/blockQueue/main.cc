@@ -13,7 +13,6 @@ class blockqueues
 public:
   blockqueue<C>* c_bp;
   blockqueue<S>* s_bp;
-  
 };
 
 int myadd(int x, int y, char op)
@@ -34,7 +33,7 @@ int myadd(int x, int y, char op)
       else 
         result = x / y;
     }
-      break;
+    break;
     case '%':
     {
       if(0 == y)
@@ -45,7 +44,7 @@ int myadd(int x, int y, char op)
       else 
         result = x % y;
     }
-      break;
+    break;
     default: break;
   }
   return result;
@@ -108,19 +107,20 @@ void* saver(void* bqs_)
 int main()
 {
   srand((unsigned long)time(nullptr)^getpid());
-  blockqueues<task, savetask> bqs;
+  blockqueues<task, savetask> bqs;              // 里面存放生产者和消费者模型 
   
-  bqs.c_bp = new blockqueue<task>();
-  bqs.s_bp = new blockqueue<savetask>();
+  bqs.c_bp = new blockqueue<task>();            // 生产者
+  bqs.s_bp = new blockqueue<savetask>();        // 消费者
+  
 /*
   blockqueue<task>* tast_bq = new blockqueue<task>(); // bq就是同一份资源 task可以是任务或者数据
   blockqueue<task>* save_bq = new blockqueue<task>(); // bq就是同一份资源 task可以是任务或者数据
 */ 
 
   pthread_t c, p, s;
-  pthread_create(&c,nullptr,consumer, &bqs);
-  pthread_create(&p,nullptr,productor, &bqs);
-  pthread_create(&s, nullptr,saver, &bqs);
+  pthread_create(&c,nullptr,consumer, &bqs);    // 生产者
+  pthread_create(&p,nullptr,productor, &bqs);   // 消费者
+  pthread_create(&s, nullptr,saver, &bqs);      // 保存着
 
   pthread_join(c, nullptr);
   pthread_join(p, nullptr);

@@ -6,11 +6,7 @@
 #include <unistd.h>
 using namespace std;
 
-// 添加__thread,可以将一个内置类型设置为线程局部存储
-__thread int g_val = 128;
 
-// 共享资源
-int shared = 44;
 string changeId(const pthread_t& thread_id)
 {
   char tid[128];

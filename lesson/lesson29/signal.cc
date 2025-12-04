@@ -5,7 +5,7 @@
 using namespace std;
 
 #define BLOCK_SIGNAL 2
-#define MAX_SIGNUM 32
+#define MAX_SIGNUM 31
 
 static void show_pendings(const sigset_t& pendings)
 {
@@ -33,7 +33,7 @@ static void myhander(int signo)
 int main()
 {
 
-  for(const auto&  sig : sigarr) signal(sig,myhander);
+  for(const auto&  sig : sigarr) signal(sig,myhander); // 捕捉了信号
 
 // 1.屏蔽指定的信
   sigset_t block, oblock, pendings;
@@ -58,12 +58,11 @@ int main()
   int cnt = 10;
   while(true)
   {
-    //2 初始化
+    //2.1初始化
     sigemptyset(&pendings);
     //2.2获取
     sigpending(&pendings);
     //2.3打印
-    
     show_pendings(pendings);
     sleep(1);
 
