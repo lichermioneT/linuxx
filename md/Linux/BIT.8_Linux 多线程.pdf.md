@@ -1264,6 +1264,418 @@ private:
 
 
 
+## 4生产者消费模型
+
+![image-20251204092222785](picture/image-20251204092222785.png)
+
+
+
+**学生--消费者   超市共享资源   供货商--生产者**
+
+**超市：集中需求，分发产品。交易场所。**
+
+**因为超市存在，生产和消费不相互干扰。解耦。**
+
+**临时的保存产品的场所。--缓冲区**
+
+**共享资源必须被保护起来**
+
+
+
+**反例**
+
+**函数调用！反例**
+
+**调用方：生产了数据** **形成变量：变量暂时保存数据**
+
+**目标函数：消费数据**
+
+**main-->fun:main函数等fun函数，强耦合关系**
+
+**改：生产消费**
+
+**mian函数的数据放到缓冲区**
+
+**调用fun函数,fun执行，打印结果**
+
+
+
+**生产者消费模型**
+
+**生产者和生产者之间：互斥关系 资源放谁的，只能一个人同时放数据**
+
+**消费者和消费者之间：互斥关系 谁能够拿到，只能一个人同时拿数据**
+
+**生产者和消费者之间：互斥关系&&同步关系 数据安全性。 放数据和拿数据分开。缓冲区的资源数量，生产者和消费者共享。 生产一部分消费一部分。数据资源协同起来。   **
+
+**共享资源被被保护起来的**
+
+**总结 "321"**
+
+**3种关系：生产者和生产者：互斥，消费者和消费者：互斥，生产者和消费者:互斥和同步 产品数据**
+
+**2种角色：生产者线程，消费者线程**
+
+**1一个交易场所：一段特定结构的缓冲区**
+
+**写生产者消费模型，本质就是维护321原则**
+
+**特点**
+
+**生产消费者模型特点：解耦，忙闲不均，高效**
+
+**1.未来生产线程和消费线程解耦**
+
+**2.支持生产和消费的一段时间的忙闲不均的问题**
+
+**3.提高效率 体现在哪里呢？ **
+
+
+
+**条件变量**
+
+![image-20251204095244163](picture/image-20251204095244163.png)
+
+**当一个线程互斥地访问某个变量时，它可能发现在其它线程改变状态之前，它什么也做不了。**
+
+
+
+
+
+![image-20251204095500003](picture/image-20251204095500003.png)
+
+
+
+**根据条件变量生产和消费资源。**
+
+**当条件不满足的时候，我们线程必须去某些定义好的条件变量上等待**
+
+
+
+**见见猪跑**
+
+```c++
+#include <iostream>
+#include <unistd.h>
+#include <string>
+#include <pthread.h>
+
+int tickets = 1000;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;  // 初始化锁
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;     // 初始化条件变量
+
+void* start_routine(void* args)
+{
+  std::string name = static_cast<const char*>(args);
+  while(true)
+  {
+    pthread_mutex_lock(&mutex);
+    pthread_cond_wait(&cond,&mutex);                  // 为什么要有mutex？ 带锁等待？这里在等待，拿到条件变量，等待被唤醒的。
+    // 判断暂时省略
+    std::cout<< name << " - " << tickets << std::endl;
+    tickets--;
+    pthread_mutex_unlock(&mutex);
+  }
+}
+
+int main()
+{
+  // 通过条件变量控制线程的执行
+  pthread_t t[5];
+  for(int i = 0; i < 5; i++)
+  {
+    char* name = new char[64];
+    snprintf(name, 64, "thread %d", i+1);              // 线程名称
+    pthread_create(t+i, nullptr, start_routine, name); // 创建线程
+  }
+
+  while(true)
+  {
+    sleep(1);
+    // pthread_cond_signal(&cond); // 唤醒一个线程 _broadcast唤醒一批线程， 这里在唤醒数据
+    pthread_cond_broadcast(&cond); // 唤醒一批线程  这里为什么是五个被唤醒呢？
+    std::cout<< "main thread wake up ..." <<std::endl;
+  }
+
+  for(int i = 0; i < 5; i++)
+  {
+    pthread_join(t[i],nullptr);
+  }
+  return 0;
+}
+
+```
+
+
+
+**完整版本生产者，消费者模型**
+
+```c++
+#pragma once 
+#include <iostream>
+#include <functional>
+
+class task
+{
+  using func_t = std::function<int(int, int)>;
+public:
+  task(){}
+  task(int x, int y, func_t func):_x(x), _y(y), _callbacl(func)
+  {}
+  
+  int operator()()
+  {
+    int result = _callbacl(_x, _y);
+    return result;
+  }
+
+private:
+  int _x;
+  int _y;
+  func_t _callbacl;
+};
+```
+
+
+
+```c++
+#pragma once 
+#include <iostream>
+#include <queue>
+#include <pthread.h>
+
+static const int gmaxcap = 5;
+
+template<class T>
+class blockqueue
+{
+public:
+// 构造函数
+  blockqueue(const int& maxcap = gmaxcap):_maxcap(maxcap)
+  {
+    pthread_mutex_init(&_mutex, nullptr);
+    pthread_cond_init(&_pcond, nullptr);
+    pthread_cond_init(&_ccond, nullptr);
+  }
+
+//放数据
+// 判断是否满的
+  void push(const T& in) // 输入型参数 const &
+  {
+    pthread_mutex_lock(&_mutex);
+    //细节2
+    //充当条件判断必须是while
+    //if要换成whlie----》
+    while(is_full())
+    {
+      pthread_cond_wait(&_pcond, &_mutex); // 条件不足，无法生产，继续等待
+                                           // 细节1
+                                           // 该函数调用的时候，会以原子性的方式，将锁释放，并且将自己挂起。 
+                                           // 该函数返回的时候，会自动重新获取你传入的锁
+    }
+    _q.push(in);                           // 里面绝对有数据了
+    pthread_cond_signal(&_ccond);          // 唤醒消费者，可以放在解锁之后的
+    pthread_mutex_unlock(&_mutex);         // 释放锁了
+  }
+
+// 拿数据
+// 判断是否空的
+  void pop(T* out) // 输出型参数*， 输入输出型参数&
+  {
+    pthread_mutex_lock(&_mutex);
+    //1.先判断
+    while(is_empty())
+    {
+      pthread_cond_wait(&_ccond, &_mutex);      // 等待，释放锁，将自己挂起
+    }
+    //2保证有数据的
+    *out = _q.front();
+    _q.pop();
+    
+    //3这里保证至少空一个位置
+    pthread_cond_signal(&_pcond);    // 唤醒消费者,可以再解锁之后。
+    pthread_mutex_unlock(&_mutex);
+  }
+
+// 析构函数
+  ~blockqueue()
+  {
+    pthread_mutex_destroy(&_mutex);
+    pthread_cond_destroy(&_pcond);
+    pthread_cond_destroy(&_ccond);
+  }
+
+private:
+  bool is_empty()
+  {
+    return _q.empty();
+  }
+  bool is_full()
+  {
+    return  _q.size() == _maxcap;
+  }
+
+private:
+  std::queue<T> _q;          // 队列
+  int _maxcap;               // 队列的上线
+  pthread_mutex_t _mutex;    // 锁
+  pthread_cond_t _pcond;    // 生产者对应的条件变量
+  pthread_cond_t _ccond;    // 消费者对于的条件变量
+};
+
+```
+
+
+
+```c++
+#include "blockqueue.hpp"
+#include "tast.hpp"
+#include <ctime>
+#include <sys/types.h>
+#include <unistd.h>
+#include <cstdlib>
+
+
+int myadd(int x, int y)
+{
+  return x + y;
+}
+
+// 消费者函数
+void* consumer(void* bq_)
+{
+  blockqueue<task>* bp = static_cast<blockqueue<task> *>(bq_);
+  while(true)
+  {
+    task t;
+    bp->pop(&t);
+    std::cout<<"消费数据："<< t() <<std::endl;
+  }
+  sleep(2);
+  return nullptr;
+}
+
+// 生产者函数
+void* productor(void* bq_)
+{
+  blockqueue<task>* bp = static_cast<blockqueue<task>*>(bq_);
+  while(true)
+  {
+    int x = rand() % 10 + 1; // 随机数构建一个数据[1,10]
+    int y = rand() % 5  + 1;
+    
+    std::cout<< "生产数据"<< x << " : " << y <<std::endl;
+    task t(x, y, myadd);
+    bp->push(t);
+    //std::cout<< "生产数据：" << data <<std::endl;
+  }
+  return nullptr;
+}
+
+
+int main()
+{
+  srand((unsigned long)time(nullptr)^getpid());
+
+  blockqueue<task>* bq = new blockqueue<task>(); // 同一份资源bq.
+  pthread_t c, p;
+
+  pthread_create(&c,nullptr,consumer, bq);
+  pthread_create(&p,nullptr,productor, bq);
+
+  pthread_join(c, nullptr);
+  pthread_join(p, nullptr);
+
+  delete bq;
+  return 0;
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
