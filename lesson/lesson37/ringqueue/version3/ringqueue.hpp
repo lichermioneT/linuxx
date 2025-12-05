@@ -55,7 +55,7 @@ public:
 
   void pop(T* out)
   {
-    p(_dataSem);
+    p(_dataSem);                // 先有资源在加锁
     pthread_mutex_lock(&_cmutex);
     *out = _queue[_consumerStep++];
 
@@ -68,7 +68,6 @@ public:
   {
     sem_destroy(&_spaceSem);
     sem_destroy(&_dataSem);
-
 
     pthread_mutex_destroy(&_pmutex);
     pthread_mutex_destroy(&_cmutex);

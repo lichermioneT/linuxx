@@ -4,7 +4,6 @@
 #include <functional>
 #include <cstring>
 
-
 const std::string oper = "+-*/%";
 class task
 {

@@ -1,5 +1,4 @@
 #pragma once 
-
 #include <iostream>
 #include <vector>
 #include <semaphore.h>
@@ -43,33 +42,31 @@ public:
 // 生产者 
   void push(const T& in)
   {
-
-    pthread_mutex_lock(&_pmutex);
+    pthread_mutex_lock(&_pmutex); // 加锁
     // 判断能够生产, 判断空间信号量
     p(_spaceSem);
     _queue[_productorStep++] = in; 
 
     _productorStep %= _cap; 
     v(_dataSem);
-    pthread_mutex_unlock(&_pmutex);
+    pthread_mutex_unlock(&_pmutex); // 解锁
   }
 
   void pop(T* out)
   {
-    pthread_mutex_lock(&_cmutex);
+    pthread_mutex_lock(&_cmutex);  // 加锁
     p(_dataSem);
     *out = _queue[_consumerStep++];
 
     _consumerStep %= _cap;
     v(_spaceSem);
-    pthread_mutex_unlock(&_cmutex);
+    pthread_mutex_unlock(&_cmutex); // 解锁
   }
 
   ~RingQueue()
   {
     sem_destroy(&_spaceSem);
     sem_destroy(&_dataSem);
-
 
     pthread_mutex_destroy(&_pmutex);
     pthread_mutex_destroy(&_cmutex);
@@ -81,6 +78,6 @@ private:
   sem_t _dataSem;  // 消费者 想消费，数据资源
   int _productorStep;
   int _consumerStep;
-  pthread_mutex_t _pmutex;
-  pthread_mutex_t _cmutex;
+  pthread_mutex_t _pmutex;  // 生产者锁
+  pthread_mutex_t _cmutex;  // 消费者锁
 };
