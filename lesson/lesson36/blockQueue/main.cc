@@ -59,7 +59,7 @@ void* consumer(void*bqs_)
   while(true)
   {
     task t;
-    bp->pop(&t);                        // 取数据
+    bp->pop(&t);                        // 取数据，后面处理
     std::string result = t();
     std::cout<<"消费数据："<< result <<std::endl;
 
@@ -80,7 +80,7 @@ void* productor(void*bqs_)
     // 
     int x = rand() % 10 + 1; // 随机数构建一个数据[1,10]
     int y = rand() % 5;
-    int opreCode = rand() % oper.size();
+    int opreCode = rand() % oper.size();  // 生产数据
 
     std::cout<< "生产数据"<< x << " : " << y <<std::endl;
     task t(x, y,oper[opreCode], myadd);
