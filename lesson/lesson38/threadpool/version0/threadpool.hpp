@@ -21,7 +21,6 @@ public:
 };
 
 using namespace ThreasNs;
-
 template<class T>
 class threadpool
 {
@@ -29,30 +28,31 @@ private:
   static void* handerTask(void* args)
   {
     ThreadData<T>* td = (ThreadData<T>*)args;
+    // threadpool<T>* threadpooL = static_cast<threadpool<T>*>(args);
     while(true)
     {
       T t;
       {
-        td->threadpooL->lockQueue();
+        // td->threadpooL->lockQueue();
+        LockGuard lockguard(td->threadpooL->mutex());
         while(td->threadpooL->isQueueEmpty())
         {
           td->threadpooL->threadWait();
         }
-        T t = td->threadpooL->pop();
-        td->threadpooL->unlockQueue();
-        std::cout<< td->name << " 获取任务 "  << t.totaskstring()<< " 处理完成 结果是" << t() <<std::endl;
+      
+        t = td->threadpooL->pop();
+        //td->threadpooL->unlockQueue();
       }
+      std::cout<< td->name << " 获取任务 "  << t.totaskstring()<< " 处理完成 结果是" << t() <<std::endl;
     }
     delete td;
     return nullptr;
   }
-
 public:
-  void lockQueue()    { pthread_mutex_lock(&_mutex);}
-  void unlockQueue()  { pthread_mutex_unlock(&_mutex);}
+  void lockQueue()  { pthread_mutex_lock(&_mutex);}
+  void unlockQueue() { pthread_mutex_unlock(&_mutex);}
   bool isQueueEmpty() { return _task_queue.empty();}
-  void threadWait()   { pthread_cond_wait(&_cond, &_mutex);}
-
+  void threadWait() { pthread_cond_wait(&_cond, &_mutex);}
   T pop()
   {
       T t = _task_queue.front();
@@ -73,8 +73,7 @@ public:
   
       for(int i = 0; i < _num; i++)
       {
-        _threads.push_back(new Thread()); // 创建一个线程
-        // _threads.push_back(new Thread(handerTask)); // 创建一个线程
+        _threads.push_back(new Thread());
       }
   }
  
@@ -108,10 +107,10 @@ public:
   }
 private:
   int _num;
-  std::vector<Thread*>  _threads;
-  std::queue<T>         _task_queue;
-  pthread_mutex_t       _mutex;
-  pthread_cond_t        _cond;
+  std::vector<Thread*> _threads;
+  std::queue<T> _task_queue;
+  pthread_mutex_t _mutex;
+  pthread_cond_t _cond;
 };
 
 

@@ -6,20 +6,9 @@
 #include <cassert>
 #include <cstring>
 
-//class Thread;
-/*
-class context
-{
-public:
-  Thread* this_;
-  void* args_;
-public:
-  context():this_(nullptr), args_(nullptr){}
-  ~context(){}
-};
-*/
 
-namespace ThreasNs
+
+namespace ThreadNs
 {
 typedef std::function<void*(void*)> func_t;
 const int num = 1024;
@@ -36,17 +25,15 @@ private:
   }
 
 public: 
-  Thread()
+  Thread(func_t func, void* args = nullptr):func_(func), args_(args)
   {
     char namebuffer[num];
     snprintf(namebuffer,sizeof(namebuffer), "thread-%d", threadnum++);
     name_ = namebuffer;
   }
 
-  void start(func_t func, void* args = nullptr)
+  void start()
   {
-    func_ = func;
-    args_ = args;
     int n = pthread_create(&tid_, nullptr, start_routine, this);  // 
     assert(n == 0);                                               // assert 意料只中， if意料之外
     (void)n;
