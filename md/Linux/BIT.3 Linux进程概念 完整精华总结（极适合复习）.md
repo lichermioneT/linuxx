@@ -340,8 +340,7 @@ int main()
         int cnt = 0;
         while (cnt < 10) 
         {
-            printf("子进程: pid=%d, ppid=%d, g_val=%d, &g_val=%p\n",
-                   getpid(), getppid(), g_val, &g_val);
+            printf("子进程: pid=%d, ppid=%d, g_val=%d, &g_val=%p\n", getpid(), getppid(), g_val, &g_val);
             sleep(1);
             cnt++;
         }
@@ -353,8 +352,7 @@ int main()
         int cnt = 0;
         while (cnt < 15) 
         {
-            printf("父进程: pid=%d, ppid=%d, g_val=%d, &g_val=%p\n",
-                   getpid(), getppid(), g_val, &g_val);
+            printf("父进程: pid=%d, ppid=%d, g_val=%d, &g_val=%p\n", getpid(), getppid(), g_val, &g_val);
             sleep(1);
             cnt++;
         }
