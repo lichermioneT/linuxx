@@ -49,15 +49,16 @@ public:
     memset(&server, 0, sizeof(server));
 
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr(_serverip.c_str());  // 服务器的IP地址
-    server.sin_port = htons(_serverport);                   // 服务器的port号
+    server.sin_addr.s_addr = inet_addr(_serverip.c_str());   // 服务器的IP地址
+    server.sin_port = htons(_serverport);                    // 服务器的port号
 
     string message;
     while(!_quit)
     {
       cout<< "Please Enter# ";
       cin>>message;
-      sendto(_sockfd, message.c_str(), message.size(), 0, (struct sockaddr*)&server, sizeof(server)); // 发送给谁的
+      sendto(_sockfd, message.c_str(), message.size(), 0, (struct sockaddr*)&server, sizeof(server)); // 发送给谁的，后面就是发送给谁，那个人的身份证。
+// 把消息发送到指定的 IP + port。
     }
   }
 

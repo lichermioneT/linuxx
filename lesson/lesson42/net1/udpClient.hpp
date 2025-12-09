@@ -56,7 +56,8 @@ public:
     while(!_quit)
     {
       cout<< "Please Enter# ";
-      cin>>message;
+      // cin>>message;
+      getline(cin, message);
       sendto(_sockfd, message.c_str(), message.size(), 0, (struct sockaddr*)&server, sizeof(server)); // 发送给谁的
 
       char buffer[1024];

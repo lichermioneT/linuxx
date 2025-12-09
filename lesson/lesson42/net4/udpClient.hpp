@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <pthread.h>
 
 namespace Client 
 {
@@ -43,8 +44,27 @@ public:
     //什么时候绑定的。
   }
 
+  static void *readMessage(void *args)
+  {
+    int sockfd = *(static_cast<int*>(args));
+    pthread_detach(pthread_self());
+    while(true)
+    {
+      char buffer[1024];
+      struct sockaddr_in temp;
+      socklen_t temp_len = sizeof(temp);
+      size_t n = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&temp, &temp_len);
+      if (n >= 0)
+        buffer[n] = 0;
+      cout << buffer << endl;
+    }
+    return nullptr;
+  }
+
   void run()
   {
+    pthread_create(&_reader, nullptr, readMessage, (void*)&_sockfd);
+
     struct sockaddr_in server;
     memset(&server, 0, sizeof(server));
 
@@ -57,39 +77,26 @@ public:
 
     while(!_quit)
     {
-      cout<< "[我的远程机器]xxx#";
+      fprintf(stderr, "Enter # ");
+      fflush(stderr);
       fgets(cmdline, sizeof(cmdline), stdin);
+
+      cmdline[strlen(cmdline) - 1] =  0;
       message = cmdline;
       sendto(_sockfd, message.c_str(), message.size(), 0, (struct sockaddr*)&server, sizeof(server)); // 发送给谁的
-
-      char buffer[1024];
-      struct sockaddr_in temp;
-      socklen_t temp_len=sizeof(temp);
-      size_t n = recvfrom(_sockfd,buffer, sizeof(buffer)-1,0,(struct sockaddr*)&temp,&temp_len);
-      if(n >= 0) buffer[n] = 0;
-      cout<<"服务器的翻译结果# \n"<<buffer<<endl;
     }
   }
 
   ~udpClient()
   {
   }
-
 private:
   int _sockfd;          // 通过套接字发送
   string _serverip;     // 服务端的ip
   uint16_t _serverport; // 服务端port
   bool _quit;
+  pthread_t _reader;
 };
   
-
-
-
-
-
-
-
-
-
 }
 

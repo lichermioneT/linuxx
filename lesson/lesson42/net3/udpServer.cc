@@ -126,10 +126,8 @@ int main(int argc, char* argv[])
   }
   uint16_t port = atoi(argv[1]);
 
-//   signal(2, reload);
   initDict();
 
-    //   std::unique_ptr<udpServe> usvr(new udpServe(handlerMessage, port));
     std::unique_ptr<udpServe> usvr(new udpServe(execCommand, port));
 
 

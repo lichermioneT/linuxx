@@ -1,45 +1,7 @@
 #include <iostream>
+#include "point.h"
+#include "circle.h"
 using namespace std;
-
-class Point
-{
-public:
-    void set_x(int x) {m_X = x;}
-    void set_Y(int y) {m_Y = y;}
-    int  get_Y()      {return m_Y;}
-    int  get_X()      {return m_X;}
-private:
-    int m_X;
-    int m_Y;
-};
-
-class circle
-{
-public:
-    void setR(int r)
-    {
-        m_R = r;
-    }
-
-    void setCenter(Point center)
-    {
-        m_Center = center;
-    }
-
-    int  getr()
-    {
-        return m_R;
-    }
-
-    Point getCenter()
-    {
-        return m_Center;
-    }
-
-private:
-    int m_R;
-    Point m_Center; // 类内的成员
-};
 
 void isInCircle(circle& c, Point& p)
 {
@@ -62,6 +24,8 @@ void isInCircle(circle& c, Point& p)
 
 }
 
+// g++ 105圆和点.cc circle.cc point.cc -o main
+// 编译指令的
 int main()
 {
 

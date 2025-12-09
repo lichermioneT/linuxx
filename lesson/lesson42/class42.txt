@@ -65,3 +65,13 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, const struct 
 | `addrlen`   | 地址结构体大小（sizeof(sockaddr_in) 等）                                 |
 
 FILE *popen(const char *command, const char *type);
+
+
+bind("0.0.0.0") 的意义：
+✔ 允许服务器监听本机所有网卡
+✔ 任何 IP 只要能连到这个机器，都可以访问服务器
+✔ 本机访问用 lo（127.0.0.1）
+✔ 其它电脑访问用网卡 IP（eth0 的 IP）
+
+**服务器 bind("0.0.0.0") 的意思是：
+「我愿意在所有网卡上监听这个端口，任何 IP 只要能访问到我，就能连接我。」**

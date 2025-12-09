@@ -53,7 +53,7 @@ public:
             client.sin_family = AF_INET;
             client.sin_port = htons(user.second.port());
             client.sin_addr.s_addr = inet_addr(user.second.ip().c_str());
-            string s =  ip + "-" + to_string(port) + "# ";
+            string s =  user.first + "# ";
             s += message;
             sendto(sockfd, s.c_str(), s.size(), 0, (struct sockaddr *)&client, sizeof(client));
         }

@@ -120,8 +120,8 @@ typedef function<void (int,string,uint16_t,string)> func_t;
           uint16_t clientport = ntohs(peer.sin_port);               // 网络序列到主机              客户端的port。
           string message = buffer;                                  // 数据
 
-          cout<< clientip << " [" << clientport << "] #" << message <<endl; // 这里接受了业务信息
-          _callback(_sockfd, clientip, clientport, message); // 回调函数处理业务了
+          cout<< clientip << " [" << clientport << "] #" << message <<endl;
+          _callback(_sockfd, clientip, clientport, message);
         }
       }
     }
