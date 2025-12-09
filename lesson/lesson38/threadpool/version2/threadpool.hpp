@@ -36,7 +36,7 @@ private:
       T t;
       {
         // td->threadpooL->lockQueue();
-        LockGuard lockguard(td->threadpooL->mutex());
+        LockGuard lockguard(td->threadpooL->mutex()); // RAII风格加锁
         while(td->threadpooL->isQueueEmpty())
         {
           td->threadpooL->threadWait();
@@ -112,7 +112,8 @@ public:
       delete t;
     }
   }
-  
+
+// 
   static threadpool<T>* getInstance()
   {
     if(nullptr == tp)

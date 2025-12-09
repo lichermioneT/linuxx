@@ -4,9 +4,6 @@
 
 int main()
 {
-  
- // std::unique_ptr<threadpool<task>> tp(new threadpool<task>());
-  
   threadpool<task>::getInstance()->run();
   int x, y;
   char op;
@@ -20,22 +17,10 @@ int main()
     std::cin>>op;
     
     task t(x, y, op, myadd);
-    /*
-    std::cout<< "您刚录入一个任务 ：" << t.totaskstring() << " 确认提交吗？[y/n]"<<std::endl;
-    char confirm = 0;
-    std::cin>>confirm;
 
-    if(confirm == 'y')
-    {
-      tp->push(t);
-    }
-    */ 
     threadpool<task>::getInstance()->push(t);
     sleep(1);
   }
-
-
-
   return 0;
 }
 

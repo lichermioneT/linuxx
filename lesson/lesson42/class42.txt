@@ -14,12 +14,16 @@ ip + port = socket
 发送数据的大小端：
 规定都是大端
 
-套接字种类很多。
+uint32_t htonl(uint32_t hostlong);
+uint16_t htons(uint16_t hostshort);
+uint32_t ntohl(uint32_t netlong);
+uint16_t ntohs(uint16_t netshort);
 
+套接字种类很多。
 
 struct sockaddr
 struct sockaddr_in
-struct sockaddr_nx
+struct sockaddr_un
 
 
 127.0.0.1:本队环回：服务器代码的测试
@@ -41,4 +45,23 @@ netstat -nuap
 
 
 ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
+| 参数         | 含义                                     |
+| ---------- | -------------------------------------- |
+| `sockfd`   | socket 文件描述符                           |
+| `buf`      | 存放接收到数据的缓冲区                            |
+| `len`      | 缓冲区大小（最多接收 len 字节）                     |
+| `flags`    | 一般填 0，可选 MSG_PEEK 等                    |
+| `src_addr` | 输出参数，保存发送者地址信息（可为 NULL）                |
+| `addrlen`  | 输入输出参数，输入为 `src_addr` 缓冲区大小，返回时为实际地址长度 |
 
+ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
+| 参数          | 含义                                                             |
+| ----------- | -------------------------------------------------------------- |
+| `sockfd`    | socket 文件描述符                                                   |
+| `buf`       | 要发送的数据缓冲区                                                      |
+| `len`       | 数据长度（字节数）                                                      |
+| `flags`     | 一般填 0，可选 MSG_DONTWAIT 等                                        |
+| `dest_addr` | 目标地址结构体（IPv4：sockaddr_in, IPv6：sockaddr_in6, UNIX：sockaddr_un） |
+| `addrlen`   | 地址结构体大小（sizeof(sockaddr_in) 等）                                 |
+
+FILE *popen(const char *command, const char *type);

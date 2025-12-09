@@ -1,10 +1,12 @@
 #pragma once 
 
-class udpServe
+class udpServer
 {
 public:
-  udpServe()
-  {}
+  udpServer()
+  {
+    
+  }
 
   void init()
   {
@@ -15,6 +17,8 @@ public:
   {
 
   }
-  ~udpServe()
-  {}
+  ~udpServer()
+  {
+
+  }
 };
