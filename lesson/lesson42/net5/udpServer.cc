@@ -152,14 +152,17 @@ int main(int argc, char* argv[])
     Usage(argv[0]);
     exit(USAGE_ERR);
   }
+
+
   uint16_t port = atoi(argv[1]);
 
     //   signal(2, reload);
     //   initDict();
     //   std::unique_ptr<udpServe> usvr(new udpServe(handlerMessage, port));
     // std::unique_ptr<udpServe> usvr(new udpServe(execCommand, port));
-    std::unique_ptr<udpServe> usvr(new udpServe(routeMessage, port));
-
+ std::unique_ptr<udpServe> usvr(new udpServe(routeMessage, port)); // 端口号，IP地址， 回调函数的解耦。
+// 服务器是一个进程。死循环进程。常驻内存进程。
+// 端口必须确定的。
 
   usvr->initserve();
   usvr->start();

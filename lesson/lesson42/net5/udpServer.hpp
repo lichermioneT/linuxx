@@ -12,23 +12,23 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-using namespace std;
 
 namespace Serve 
 {
-static const  string defaultIp = "0.0.0.0";  // 默认IP地址
-static const  int gnum = 1024; // 读取数据的缓冲区
-enum {USAGE_ERR = 1, SOCKET_ERR, BIND_ERR, OPEN_ERR};
-typedef function<void (int,string,uint16_t,string)> func_t;
+using namespace std;
+static const  string defaultIp = "0.0.0.0";            // 默认IP地址
+static const  int gnum = 1024;                         // 读取数据的缓冲区
+enum {USAGE_ERR = 1, SOCKET_ERR, BIND_ERR, OPEN_ERR};  // 错误码
+typedef function<void (int,string,uint16_t,string)> func_t; // 函数对象，支持回调
 
   class udpServe
   {
   public:
-        udpServe(const func_t &cb, const uint16_t &port, const string &ip = defaultIp)
+        udpServe(const func_t &cb, const uint16_t &port, const string &ip = defaultIp) // 回调，port,ip。云服务只能bind：0.0.0.0
         :_callback(cb)
         , _port(port)
-        , _ip(ip),
-         _sockfd(-1)
+        , _ip(ip)
+        ,_sockfd(-1)
          {}
 
     void initserve()
@@ -41,6 +41,8 @@ typedef function<void (int,string,uint16_t,string)> func_t;
       // 创建一个网络“文件”，后续所有网络通信都通过这个文件描述符进行。
 
 // 1.创建套接字（打开一个网络文件）
+// ip+port表示唯一性。为了用户方便，使用socket()。
+// 网卡文件系统
       _sockfd = socket(AF_INET, SOCK_DGRAM, 0);  // AF_INET:IPV4, SOCK_DGRAM:UDP, 
       if(_sockfd == -1)
       {
@@ -87,7 +89,7 @@ typedef function<void (int,string,uint16_t,string)> func_t;
       // 建议写法
       // local.sin_addr.s_addr = htonl(INADDR_ANY); // 说白了全零,任意地址bind，服务器的真实写法
       
-      int n = bind(_sockfd, (struct sockaddr*)&local, sizeof(local));
+      int n = bind(_sockfd, (struct sockaddr*)&local, sizeof(local)); // socket,port,id进行绑定起来。设置进内核的数据结构里面的。
       if(n == -1)
       {
         cerr<< " bind error " << errno << " : " <<  strerror(errno) <<endl;
@@ -106,22 +108,27 @@ typedef function<void (int,string,uint16_t,string)> func_t;
       char buffer[gnum];        
       for(;;)
       {
-        struct sockaddr_in peer;    // 输出型参数，谁发送的信息。
-        socklen_t len = sizeof(peer);
-        ssize_t s = recvfrom(_sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&peer, &len); // 0阻塞等待
-        //1.数据是什么。前面
-        //2.谁发的      后面
+        struct sockaddr_in peer;      // 输出型参数，谁发送的信息。
+        socklen_t len = sizeof(peer); // 
+        ssize_t s = recvfrom(_sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&peer, &len); // 0阻塞等待。
+        // 从套接字读取数的。
+        //1.数据是什么。 前面
+        //2.谁发的      后面 
+
 // ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
 // 最后两个数据，输出型参数。谁发的数据。        
         if(s > 0)
         {
           buffer[s] = 0;
+          // 谁给我发的，发的什么信息。
           string clientip = inet_ntoa(peer.sin_addr);               // 网络序列，int->点分十进制IP。客户端的ip地址值
           uint16_t clientport = ntohs(peer.sin_port);               // 网络序列到主机              客户端的port。
           string message = buffer;                                  // 数据
 
+          // 业务处理
           cout<< clientip << " [" << clientport << "] #" << message <<endl;
           _callback(_sockfd, clientip, clientport, message);
+          // 服务器收数据和处理数据的
         }
       }
     }

@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    std::string serverip = argv[1];
+    std::string serverip = argv[1];                       
     uint16_t serverport = static_cast<uint16_t>(atoi(argv[2]));
 
     auto ucli = std::make_unique<udpClient>(serverip, serverport);

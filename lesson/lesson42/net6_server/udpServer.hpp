@@ -1,15 +1,16 @@
 #pragma once 
 #include <iostream>
 #include <string>
-#include <cstring>
 #include <strings.h>
+#include <cerrno>
+#include <cstring>
 #include <cstdlib>
+#include <functional>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <ifaddrs.h>
 
 using namespace std;
 
@@ -17,37 +18,18 @@ namespace Serve
 {
 static const  string defaultIp = "0.0.0.0";  // 默认IP地址
 static const  int gnum = 1024; // 读取数据的缓冲区
-
-enum {USAGE_ERR = 1, SOCKET_ERR, BIND_ERR};
-
-void showLocalIPs()
-{
-    struct ifaddrs *addrs, *tmp;
-    getifaddrs(&addrs);
-    tmp = addrs;
-
-    while (tmp)
-    {
-        if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET)
-        {
-            struct sockaddr_in *p = (struct sockaddr_in *)tmp->ifa_addr;
-            string ip = inet_ntoa(p->sin_addr);
-            cout << tmp->ifa_name << ": " << ip << endl;
-        }
-        tmp = tmp->ifa_next;
-    }
-    freeifaddrs(addrs);
-}
-
+enum {USAGE_ERR = 1, SOCKET_ERR, BIND_ERR, OPEN_ERR};
+typedef function<void (int,string,uint16_t,string)> func_t;
 
   class udpServe
   {
   public:
-    udpServe(const uint16_t& port, const std::string& ip = defaultIp) // 服务器的端口号，和IP地址
-      :_port(port)
-      ,_ip(ip)
-      ,_sockfd(-1)
-    {}
+        udpServe(const func_t &cb, const uint16_t &port, const string &ip = defaultIp)
+        :_callback(cb)
+        , _port(port)
+        , _ip(ip),
+         _sockfd(-1)
+         {}
 
     void initserve()
     {
@@ -66,7 +48,7 @@ void showLocalIPs()
         exit(SOCKET_ERR);  // 失败了，我们就不玩了。
       }
       
-      cout<< "socket success: " << " : 网络文件描述符：" << _sockfd <<endl;
+      cout<< "socket success: " << " : " << _sockfd <<endl;
 
 //2 创建成功了 绑定ip和port
 // bind() 的作用：把一个 socket 绑定到一个 IP + 端口。
@@ -111,13 +93,12 @@ void showLocalIPs()
         cerr<< " bind error " << errno << " : " <<  strerror(errno) <<endl;
         exit(BIND_ERR);  // 失败了，我不跟你玩了的
       }
-
-
-     showLocalIPs();
+     
       //UDP Serve的预备工作完成。
     }
 
 // 127.0.0.1本地环回。服务器代码的测试
+// 
     void start()
     {
       // 服务器的本质就是一个死循环
@@ -128,8 +109,6 @@ void showLocalIPs()
         struct sockaddr_in peer;    // 输出型参数，谁发送的信息。
         socklen_t len = sizeof(peer);
         ssize_t s = recvfrom(_sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&peer, &len); // 0阻塞等待
-// 阻塞等待，直到有一个 UDP 报文到达，然后把内容复制到 buffer，并把“发送者的地址”放入 peer 中。
-// 从哪个 socket 的接收队列读数据
         //1.数据是什么。前面
         //2.谁发的      后面
 // ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
@@ -141,21 +120,20 @@ void showLocalIPs()
           uint16_t clientport = ntohs(peer.sin_port);               // 网络序列到主机              客户端的port。
           string message = buffer;                                  // 数据
 
-          // cout<< clientip << " [" << clientport << "] #" << message <<endl;
-          cout << "[Client] IP= " << clientip 
-               << " Port= " << clientport 
-               << " Message=\"" << message << "\""
-               << endl;
+          cout<< clientip << " [" << clientport << "] #" << message <<endl; // 这里接受了业务信息
+          _callback(_sockfd, clientip, clientport, message);               // 回调函数处理业务了
         }
       }
     }
 
     ~udpServe()
     {
+
     }
   private:
     uint16_t _port;    // 服务端口号
     std::string _ip;   // 实际上，一款网络服务器，不建议指明一个IP。
     int _sockfd;       // 网络文件描述符
+    func_t _callback; //回调
   };
 }

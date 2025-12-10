@@ -16,16 +16,16 @@ namespace Client
 class udpClient
 {
 public:
-    udpClient(const std::string& serverip, const uint16_t& serverport)
+    udpClient(const std::string& serverip, const uint16_t& serverport) // 目标服务器的ip和port
         : _sockfd(-1)
         , _serverip(serverip)
         , _serverport(serverport)
         , _quit(false)
-    {
-    }
+    {}
 
     void initClient()
     {
+        // 创建socket
         _sockfd = socket(AF_INET, SOCK_DGRAM, 0); 
         if(_sockfd == -1)
         {
@@ -33,7 +33,8 @@ public:
             exit(1);
         }
         std::cout << "socket success: " << _sockfd << std::endl;
-        // UDP客户端一般不需要手动bind
+        // UDP客户端一般不需要手动bind。不需要显示的bind port。
+        // 客户端的端口号只需要保证唯一性。是谁不重要的。
     }
 
     static void* readMessage(void* args)
@@ -70,9 +71,9 @@ public:
     {
         pthread_create(&_reader, nullptr, readMessage, &_sockfd);
 
+// 填充对方服务器的信息。
         struct sockaddr_in server;
         std::memset(&server, 0, sizeof(server));
-
         server.sin_family = AF_INET;
         server.sin_addr.s_addr = inet_addr(_serverip.c_str());
         server.sin_port = htons(_serverport);
@@ -97,7 +98,7 @@ public:
             if(strlen(cmdline) == 0)
                 continue;
 
-            sendto(_sockfd, cmdline, strlen(cmdline), 0, (struct sockaddr*)&server, sizeof(server));
+            sendto(_sockfd, cmdline, strlen(cmdline), 0, (struct sockaddr*)&server, sizeof(server)); // 将数据放松到目标服务器。
         }
     }
 
@@ -110,8 +111,8 @@ public:
 
 private:
     int _sockfd;
-    std::string _serverip;
-    uint16_t _serverport;
+    std::string _serverip; // 目标服务器的ip
+    uint16_t _serverport;  // 目标服务器的port
     bool _quit;
     pthread_t _reader;
 };
