@@ -139,11 +139,11 @@ int main()
   assert(0 == n);    
   (void)n;    
     
-  // tid是地址    
+  // tid是地址，进程地址空间里面的共享空间存放 pthread里面维护的栈结构。    
    char buffer[64];    
    // 主线程    
    snprintf(buffer, sizeof(buffer), "0x%zx \n", tid);    
-      while(true)    
+   while(true)    
    {    
      cout << "我是主线程， 我真正运行! " << "tid : " << tid << endl;;    
      sleep(2);
@@ -349,6 +349,7 @@ int main()
     ThreadData* td = new ThreadData();                                         // 创建一个存放线程信息的对象
     td->number = i + 1;                                                        // 线程id
     snprintf(td->namebuffer, sizeof(td->namebuffer), "%s : %d", "thread", i+1); // 线程name
+      
     pthread_create(&td->tid, nullptr, start_routine, td);                      // 创建线程，并且把线程的信息给执行的函数 td拷贝给线程
     threads.push_back(td);                                                     // 指针放到数组里面去
   } 
@@ -1600,73 +1601,607 @@ int main()
 
 
 
+**生产者而言，向blockqueue里面放置任务**
 
+​	**它的任务从哪里来的呢？它获取任务和构建任务要不要花时间？**
 
+​	**拿任务花费时间**
 
+**消费者而言，向blockqueue里面拿取任务**
 
+​	**对于消费者，难道把任务从任务队列拿出来就完了吗？消费者拿到任务之后，后续还有没有任务。**
 
+​	**处理任务花费时间**
 
 
 
+**生产之前和消费之后，高效率的。**
 
 
 
+## 5信号量
 
+**1.一个线程，在操作临界资源的时候，必须临界资源是满足条件的！**
 
+**2.可是，公共资源十分满足生产或者消费，我们无法直接得知，事前得知【在没有访问之前】**
 
+**3.只能先加锁，在检查，在操作，在解锁。先加锁---本质你也是在访问临界资源！**
 
+**因为我们再操作临界资源的时候，有可能不就绪，我们无法提前得知，只能先检查，根据检查结果决定下一步怎么走！**
 
+![image-20251205105224762](picture/image-20251205105224762.png)
 
 
 
+**信号量是什么**
 
+![image-20251205105300684](picture/image-20251205105300684.png)
 
 
 
+**只要我们对资源整体加锁，就默认我们对这个资源整体使用，**
 
+**实际情况：一份公共资源，允许同时访问不同的区域！**
 
+**先申请信号量**
 
 
 
+**信号量为什么**
 
+**a.信号量本质是一把计数器。衡量临界资源中资源数量多少的计数器。**
 
+**b.只要拥有信号量，就在未来一定能够拥有临界资源的一部分。申请信号量的本质：对临界资源中特定小块资源的预订机制。**
 
+**有可能，我们在访问真正的临界资源之前，我们其实就可以提前知道临界资源的使用情况。成功有你的资源，失败只有等  间接判断。**
 
+**间接不用判断锁的资源，转而判断信号量的数目。**
 
+**临界资源的预定机制。**
 
 
 
+![image-20251205110019029](picture/image-20251205110019029.png)
 
 
 
+**线程要访问临界资源中的某一区域----申请信号量--所有人得先看到信号量---未来信号量本身必须是：公共资源**
 
+**计数器-递减或者递增**
 
+**int sem=10;**
 
+**sem--; --申请资源   必须保证操作的原子性  --p操作**
 
+**sem++; ++归还资源   必须保证操作的原子性  --v操作**
 
+**信号量核心操作：PV原语**
 
 
 
+![image-20251205110715061](picture/image-20251205110715061.png)
 
 
 
+## 6环形队列
 
+**引入环形队列**
+**环形队列---判断空，判断满**
+**1.计数器**
+**2.空一个位置**
 
+**环形队列**
+**生产者和消费者在什么情况下访问同一个位置：**
+**1.空的时候**
+**2.满的时候**
+**3.其它情况，生产者和消费者，根本访问的就是不同的区域**
 
+**1.你不能超过我**
+**2.我不能把你套一个圈**
+**3.我们两个什么是时候会站到一起**
+  **盘子全为空**
+    **我们两个站在一起，谁先运行呢？生产者**
+  **盘子全都是满的**
+    **我们两个站在一起，谁先运行呢？消费者**
 
+  **其它情况，我们两个指向的是不同的位置**
+**环形队列中，大部分情况，单生产和单消费是可以并发指向的！**
+**只有在满和空，才满足互斥和同步的问题。**
+**完成环形队列的核心问题？123**
 
+**信号量是用来干什么的呢？**
+  **信号量是用来衡量临界资源中的资源数量的**
+  **对于生产者而言，看中什么？队列中的剩余空间-----------空间资源--定义信号量**
+  **对于消费者而言，看中什么？队列中的放入队列中的数据---数据资源--定义信号量**
+**代码**
 
 
 
+![image-20251205110933865](picture/image-20251205110933865.png)
 
 
 
+![image-20251205110947907](picture/image-20251205110947907.png)
 
 
 
+![image-20251205111000144](picture/image-20251205111000144.png)
 
 
 
+
+
+**生产者消费者模型1**
+
+```c++
+#include "ringqueue.hpp"
+#include <pthread.h>
+#include <ctime>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+// 生产者往队列里面放数据
+void* productorRontine(void* rq)
+{
+  RingQueue<int>* ringqueue = static_cast<RingQueue<int>*>(rq); 
+  while(true)
+  {
+    int data = rand() % 10 + 1;
+    ringqueue->push(data);    // 生产数据
+
+    std::cout<<"生产数据完成， 生产的数据是 ："<< data <<std::endl;
+    sleep(1);
+
+  }
+}
+
+// 消费者往队里里面去取数据
+void* consumerRoutine(void* rq)
+{
+  RingQueue<int>* ringqueue = static_cast<RingQueue<int>*>(rq); 
+  while(true)
+  {
+    int data;
+    ringqueue->pop(&data); // 消费数据
+
+    std::cout<<"消费数据完成， 消费的数据是 ："<< data <<std::endl;
+  }
+}
+
+int main()
+{
+  srand((unsigned int)time(nullptr)^getpid()^pthread_self()); // 随机数种子
+  
+  RingQueue<int>* rq = new RingQueue<int>();                  // 队列里面存放数据，统一份资源
+  pthread_t c, p;
+
+  pthread_create(&c, nullptr, productorRontine, rq);          //rq就是同一份资源
+  pthread_create(&p, nullptr, consumerRoutine,  rq);          //rq就是同一份资源
+
+  pthread_join(c, nullptr);
+  pthread_join(p, nullptr);
+  return 0;
+}
+```
+
+
+
+```c++
+#pragma once 
+#include <iostream>
+#include <vector>
+#include <semaphore.h>
+#include <cassert>
+
+static const int gcap = 5;
+
+template<class T>
+class RingQueue
+{
+private: 
+// p操作
+  void p(sem_t& sem)
+  {
+    int i = sem_wait(&sem); // 等待信号量， 信号量会减一
+    assert(0 == i);
+    (void)i;
+  }
+
+// v操作
+  void v(sem_t& sem)
+  {
+     int i = sem_post(&sem); // 释放信号，信号量会加一
+     assert(0 == i);
+     (void)i;
+  }
+
+public:
+  RingQueue(const int& cap = gcap):_queue(cap), _cap(cap)
+  {
+    int n = sem_init(&_spaceSem, 0, _cap);   // 信号量的大小
+    assert(0 == n);
+
+    n = sem_init(&_dataSem, 0, 0);           // 信号量的大小
+    assert(0 == n);
+
+    _productorStep = _consumerStep = 0;      // 初始化生产者，消费者一样的位置
+  }
+
+// 生产者 
+  void push(const T& in)
+  {
+    // 判断能够生产, 判断空间信号量
+    p(_spaceSem);                       // p--
+    _queue[_productorStep++] = in; 
+
+    _productorStep %= _cap;                // 生产者的步伐
+    v(_dataSem);                       // v++
+  }
+
+// 消费者
+  void pop(T* out)
+  {
+    p(_dataSem);                     // p--
+    *out = _queue[_consumerStep++];
+
+    _consumerStep %= _cap;                // 消费者的步伐
+    v(_spaceSem);                   // v++
+  }
+
+// 删除信号量，
+  ~RingQueue()
+  {
+    sem_destroy(&_spaceSem);
+    sem_destroy(&_dataSem);
+  }
+private:
+  std::vector<T> _queue;   // 模拟环形队列，
+  int _cap;                // 队列容量
+  sem_t _spaceSem;         // 生产者 想生产，空间资源，生产者需要空间
+  sem_t _dataSem;          // 消费者 想消费，数据资源，消费者需要数据
+  int _productorStep;
+  int _consumerStep;
+};
+
+```
+
+
+
+
+
+**生产者消费者模型2**
+
+```c++
+#include "ringqueue.hpp"
+#include <pthread.h>
+#include <ctime>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include "tast.hpp"
+
+std::string selfname()
+{
+  char name[128];
+  snprintf(name, sizeof(name), "thread[0x%zx]", pthread_self());
+  return name;
+}
+
+void* productorRontine(void* rq)
+{
+  RingQueue<task>* ringqueue = static_cast<RingQueue<task>*>(rq); 
+  while(true)
+  {
+    int x = rand() % 10;
+    int y = rand() % 10;
+    char op = oper[rand()%oper.size()];
+
+    task t(x, y, op, myadd);
+    
+    ringqueue->push(t);
+    std::cout<< selfname() <<" 生产者派发任务"<< t.totaskstring()<< " "<<std::endl; 
+  }
+}
+
+void* consumerRoutine(void* rq)
+{
+  RingQueue<task>* ringqueue = static_cast<RingQueue<task>*>(rq); 
+  while(true)
+  {
+    task t;
+    ringqueue->pop(&t);
+    std::string result = t();
+    std::cout<< selfname() <<"             消费者消费了一个任务："<< result <<std::endl; 
+    sleep(3);
+  }
+}
+
+int main()
+{
+  srand((unsigned int)time(nullptr)^getpid()^pthread_self()); // 随机数种子
+  
+  RingQueue<task>* rq = new RingQueue<task>();
+
+  pthread_t p[4], c[8];
+  for(int i = 0; i < 4; i++)pthread_create(p+i, nullptr, productorRontine, rq);  //rq就是同一份资源
+  for(int i = 0; i < 8; i++)pthread_create(c+i, nullptr, consumerRoutine, rq);   //rq就是同一份资源
+  // 单生产者 单消费者
+  // 多生产者 多消费者
+
+  for(int i = 0; i < 4; i++)pthread_join(p[i], nullptr);
+  for(int i = 0; i < 8; i++)pthread_join(c[i], nullptr);
+  return 0;
+}
+
+```
+
+
+
+```c++
+#pragma once 
+
+#include <iostream>
+#include <vector>
+#include <semaphore.h>
+#include <cassert>
+#include <pthread.h>
+
+static const int gcap = 5;
+
+template<class T>
+class RingQueue
+{
+private: 
+  void p(sem_t& sem)
+  {
+    int i = sem_wait(&sem); // 等待信号量， 信号量会减一
+    assert(0 == i);
+    (void)i;
+  }
+
+  void v(sem_t& sem)
+  {
+     int i = sem_post(&sem); // ++
+     assert(0 == i);
+     (void)i;
+  }
+
+public:
+  RingQueue(const int& cap = gcap):_queue(cap), _cap(cap)
+  {
+    int n = sem_init(&_spaceSem, 0, _cap);
+    assert(0 == n);
+    n = sem_init(&_dataSem, 0, 0);
+    assert(0 == n);
+
+    _productorStep = _consumerStep = 0;
+
+    pthread_mutex_init(&_pmutex, nullptr);
+    pthread_mutex_init(&_cmutex, nullptr);
+  }
+
+// 生产者 
+  void push(const T& in)
+  {
+
+    pthread_mutex_lock(&_pmutex);
+    // 判断能够生产, 判断空间信号量
+    p(_spaceSem);
+    _queue[_productorStep++] = in; 
+
+    _productorStep %= _cap; 
+    v(_dataSem);
+    pthread_mutex_unlock(&_pmutex);
+  }
+
+  void pop(T* out)
+  {
+    pthread_mutex_lock(&_cmutex);
+    p(_dataSem);
+    *out = _queue[_consumerStep++];
+
+    _consumerStep %= _cap;
+    v(_spaceSem);
+    pthread_mutex_unlock(&_cmutex);
+  }
+
+  ~RingQueue()
+  {
+    sem_destroy(&_spaceSem);
+    sem_destroy(&_dataSem);
+
+
+    pthread_mutex_destroy(&_pmutex);
+    pthread_mutex_destroy(&_cmutex);
+  }
+private:
+  std::vector<T> _queue;
+  int _cap;
+  sem_t _spaceSem; // 生产者 想生产，空间资源
+  sem_t _dataSem;  // 消费者 想消费，数据资源
+  int _productorStep;
+  int _consumerStep;
+  pthread_mutex_t _pmutex;
+  pthread_mutex_t _cmutex;
+};
+
+```
+
+
+
+```c++
+#pragma once 
+#include <string>
+#include <iostream>
+#include <functional>
+#include <cstring>
+
+
+const std::string oper = "+-*/%";
+class task
+{
+  using func_t = std::function<int(int, int, char)>;
+public:
+  task(){}
+  task(int x, int y, char op, func_t func):_x(x), _y(y), _op(op), _callbacl(func)
+  {}
+  
+  std::string operator()()
+  {
+    int result = _callbacl(_x, _y, _op);
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer),"%d%c%d=%d", _x, _op, _y, result);
+    return buffer;
+  }
+  std::string totaskstring()
+  {
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "%d %c %d = ?", _x, _op, _y);
+    return buffer;
+  }
+private:
+  int _x;
+  int _y;
+  char _op;
+  func_t _callbacl;
+};
+
+class savetask
+{
+  typedef std::function<void(const std::string&)> func_t; // 函数模板吧？
+public:
+  savetask(){}
+  savetask(const std::string& message, func_t func):_message(message), _func(func)
+  {}
+
+  void operator()()
+  {
+    _func(_message);
+  }
+private:
+  std::string _message;
+  func_t _func;
+};
+
+int myadd(int x, int y, char op)
+{
+  int result = 0;
+  switch(op)
+  {
+    case '+': result = x+y; break;
+    case '-': result = x-y; break;
+    case '*': result = x*y; break;
+    case '/': 
+    {
+      if(0 == y)
+      {
+        std::cerr<< "div zero error" <<std::endl;
+        result = -1;
+      }
+      else 
+        result = x / y;
+    }
+      break;
+    case '%':
+    {
+      if(0 == y)
+      {
+        std::cerr<< "mod zero error" <<std::endl;
+        result = -1;
+      }
+      else 
+        result = x % y;
+    }
+      break;
+    default: break;
+  }
+  return result;
+}
+
+void Save(const std::string& message)
+{   
+  const std::string target = "./lag.txt";
+  FILE* fp = fopen(target.c_str(), "a+");
+
+  if(!fp)
+  {
+    std::cerr<< "fopen error" <<std::endl;
+  }
+  
+  fputs(message.c_str(), fp);
+  fputs("\n", fp);
+  fclose(fp);
+}
+
+```
+
+
+
+**高效拿去任务需要 花费时间的**
+
+**高效消费任务需要 花费时间的**
+
+
+
+## 7线程池
+
+
+
+![image-20251205165145672](picture/image-20251205165145672.png)
+
+
+
+
+
+
+
+
+
+## 8设计模型
+
+**饿汉模式：提前准则**
+
+**懒汉模型：需要的时候才准备**
+
+**内存申请：懒汉模型，地址空间扩大，用的时候给你的。**
+
+**OS，你需要的时候我才给你的。**
+
+**全局静态**
+
+
+
+## 9自旋锁
+
+**自旋锁是一种锁机制**，当一个线程尝试获取锁但发现锁已被别的线程占用时，它**不会睡眠、不会阻塞**，而是**在原地一直循环等待（自旋）**，反复检查锁是否可用。
+
+**“我就在这里一直盯着，等你把锁放开，我马上抢过来。”**
+
+**自旋锁是一种忙等锁，非常轻量，但会浪费 CPU，因此只适合锁持有时间极短的情况。**
+
+
+
+
+
+
+
+
+
+## 10读者写者问题
+
+**多个线程需要同时访问同一个共享资源（例如数据库、全局变量）时，如何保证安全？**
+
+# 🔒 规则（基本要求）
+
+1. **多个读者可以同时读**（互不影响）
+2. **写者写的时候必须独占**
+    → 此时不能有其他读者或写者
+3. **读与写互斥，写与写互斥**
+
+**场景：一次发布很长时间不去修改，大部分时间是被读取的。**
+
+**在任何时刻，一个人写入，但是可能多个读者读去。**
 
 
 

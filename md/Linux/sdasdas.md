@@ -1,3 +1,0 @@
-sdasdas
-
-![image-20251202142210873](picture/image-20251202142210873.png)
