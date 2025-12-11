@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include <memory>
 #include <fstream>
-
 using namespace std;
 using namespace Serve;
 
@@ -13,10 +12,6 @@ static void Usage(string proc)
 
 // ./udpServe port 
 //  getopt()
-
-unordered_map<string, string> dict;
-const std::string dictTxt="./dict.txt";
-
 void handlerMessage(int sockfd, string clientip, uint16_t clientport, string message)
 {
     // 就可以对message进行特定的业务处理，而不关心message怎么来的 ---- server通信和业务逻辑解耦！
@@ -32,9 +27,8 @@ void handlerMessage(int sockfd, string clientip, uint16_t clientport, string mes
     client.sin_port = htons(clientport);
     client.sin_addr.s_addr = inet_addr(clientip.c_str());
 
-    sendto(sockfd, response_message.c_str(), response_message.size(), 0, (struct sockaddr*)&client, sizeof(client)); // 
+    sendto(sockfd, response_message.c_str(), response_message.size(), 0, (struct sockaddr*)&client, sizeof(client)); // 消费返回去
 }
-
 
 int main(int argc, char* argv[])
 {

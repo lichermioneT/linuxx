@@ -1,4 +1,4 @@
- #include <stdio.h>    
+  #include <stdio.h>    
   #include <string.h>    
   #include <string.h>    
   #include <unistd.h>    
@@ -14,8 +14,8 @@
       
       
 int main(int argc, char* agrv[])    
-  {    
-    while(1)    
+{    
+    while(1)  // 父进程一直循环，给子进程提供一个环境。
     {    
       
     // 获取用户输入    
@@ -33,11 +33,10 @@ int main(int argc, char* agrv[])
       
       
     // 循环切割    
-      
     myargv[0] = strtok(lineCommand, " ");    
     int i = 1;    
       
-  while(myargv[i++] = strtok(NULL, " "));    
+    while(myargv[i++] = strtok(NULL, " "));    
       
     /*    
      *for(int i = 0; myargv[i]; i++)    
@@ -50,7 +49,7 @@ int main(int argc, char* agrv[])
         
     pid_t id = fork();    
     assert(id != -1);    
-            if(id == 0)
+    if(id == 0)
     {
       execvp(myargv[0], myargv);
       exit(1);
@@ -61,4 +60,5 @@ int main(int argc, char* agrv[])
   
     }
   
-
+  return 0;
+}
