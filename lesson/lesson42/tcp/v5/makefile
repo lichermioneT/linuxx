@@ -1,8 +1,8 @@
 .PHONY:all
 all: tcpserver tcpclient 
 
-tcpserver : tcpServer.cc
-	g++ $^ -o $@
+tcpserver : tcpServer.cc 
+	g++ $^ -o $@ -l pthread
 tcpclient : tcpClient.cc
 	g++ $^ -o $@
 

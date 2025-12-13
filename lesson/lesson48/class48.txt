@@ -1,0 +1,13 @@
+TCP定制协议：就是让TCP，发送和接收消息不乱来的
+TCP
+服务端
+close 
+listen:获取连接 
+syn_rcvd:
+established
+
+客户端
+close
+syn_sent:发起请求(connect()) 这里面存在三次握手。OS自动完成的。OS自动完成的。OS自动完成的。OS自动完成的。
+established
+

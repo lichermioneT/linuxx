@@ -1,0 +1,9 @@
+[NORMAL][1765593909][1992]create socket success 1992
+[NORMAL][1765593909][1992]bind success
+[NORMAL][1765593909][1992]listen success
+[NORMAL][1765593938][1992]accept a new link success
+[NORMAL][1765593938][1992]accept a new link success
+[NORMAL][1765593938][1992]accept a new link success
+[DEBUG][1765593938][1992]accept a new link success
+[NORMAL][1765593938][1992]accept a new link success
+[NORMAL][1765593940][1992]client quit, me to

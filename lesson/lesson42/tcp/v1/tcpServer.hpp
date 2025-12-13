@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "log.hpp"
+#include <unistd.h>
+using namespace std;
 
 namespace server
 {
@@ -66,6 +68,7 @@ public:
             // sock和client进行通信的fd
             sockaddr_in peer;
             socklen_t len = sizeof(peer);
+            
             int sock = accept(_listensock, (struct sockaddr*)&peer, &len);
             if(sock < 0)
             {
@@ -74,16 +77,41 @@ public:
             }
 
             logMessage(NORMAL,"accept a new link success");
-            cout<< "sock: " << sock <<endl;
+            cout<< "sock: " << sock <<endl;               //  print a new file discriptor
 
-            //5.用sock,进行通信。
-            serverIO(sock);
+            //5.用new sock,进行通信。面向字节流的。后续全部都是文件操作。
+            serverIO(sock); // callback function
+            close(sock);  // 已经使用完的sock，必须关闭，要不然会导致,文件描述符泄漏。这里没有进行并发，一次只能链接一个的。
+            // 后面高并发的
         }
+
     }
 
     void serverIO(int sock)
     {
-        
+        char buffer[1024];
+        while(true)
+        {
+            ssize_t n = read(sock, buffer, sizeof(buffer) - 1); // 目前当做字符串
+            if(n > 0)
+            {
+                // 目前我们把我们读到的数据当做字符串，截至目前
+                buffer[n] = 0;
+                cout<< "recv message : " << buffer <<endl;
+
+                std::string outbuffer = buffer;
+                outbuffer += "server[echo]";
+
+                write(sock, outbuffer.c_str(), outbuffer.size());
+            }
+            else if(n == 0) 
+            {
+                // 客户端退出了
+                logMessage(NORMAL, "client quit, me to");
+                break;
+
+            }
+        }
     }
 
 
