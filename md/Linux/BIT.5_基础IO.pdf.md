@@ -231,6 +231,23 @@ return 0
 }
 ```
 
+```
+O_CREAT      文件不存在则创建
+O_EXCL       与 O_CREAT 搭配：文件存在则报错
+O_TRUNC      清空文件
+O_APPEND     写入自动追加
+O_NONBLOCK   非阻塞模式（设备/网络）
+O_CLOEXEC    exec 时自动关闭 fd（安全）
+
+1. 日志文件                    O_WRONLY | O_CREAT | O_APPEND
+2. 锁文件（防重复启动）       O_WRONLY | O_CREAT | O_EXCL
+3. 清空后写入                 O_WRONLY | O_CREAT | O_TRUNC
+4. 非阻塞设备                 O_RDWR   | O_NONBLOCK
+5. 安全读取（不泄漏 FD）      O_RDONLY | O_CLOEXEC
+```
+
+
+
 
 
 **read**
