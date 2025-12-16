@@ -1,0 +1,4 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "workbench.sideBar.location": "left",  // 或 "left"
+}

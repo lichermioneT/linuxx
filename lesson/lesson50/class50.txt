@@ -1,0 +1,98 @@
+TCP面向字节流，注意数据读取的完整性。
+URL:Uniform Resource Locator，统一资源定位符
+
+urlencode:编码
+urldecode:解码
+
+1.如何编码如何解码
+
+2.如何验证这个过程
+
+
+HTTP     : request
+请求行   :   GET  url   http version  (http1.0, 1.1, 2.0)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+请求报头 : name:value (attribute)
+空行     : \r\n
+请求正文 : 可以选择有没有
+
+tcp链接，向服务器发送过去
+
+HTTP    : response
+状态行  : http/1.1 状态码 状态码描述\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+相应报头: name:value\r\n
+空行    : \r\n
+相应正文: 文件
+
+根据tcp链接socket,向客户端返回响应。
+
+
+细节:
+1.请求和响应怎么保证应用层完整读取完毕了呢？
+  a.我可以读取完整的一行
+  b.while(读取完整的一行)-所有的请求行+请求报头全部读取--直到空行！
+  c.我们能保证把报头读完，报头有一个属性: Content-Length:XXX正文长度。(不管请求和回应)
+  d.解析出来内容长度，在根据内容长度，读取正文即可！
+
+2.请求好响应是怎么做到序列化和反序列化的？
+  http自己实现的，第一行+请求/响应报头，只要按照\r\n将字符串1->n分开即可
+  正文不用做。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

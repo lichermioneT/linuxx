@@ -77,3 +77,9 @@ bind("0.0.0.0") 的意义：
 「我愿意在所有网卡上监听这个端口，任何 IP 只要能访问到我，就能连接我。」**
 
 云服务器的端口，一般不需要开放很多。需要去后开放端口。
+没人规定我们网络通信的时候，只能使用一种通信协议
+怎么让系统知道我们的协议是哪一种呢？可以添加协议编号。
+
+HTTP （HyperText Transfer Protocol）
+HTTPS（HyperText Transfer Protocol Secure）
+https://gitee.com/lichermione/projects
