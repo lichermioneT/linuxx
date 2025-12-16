@@ -7,6 +7,8 @@ git add .
 git commit -m "xxx"
 git push origin master
 
+git pull origin master
+
 # Git 仓库从 Gitee 备份到 GitHub —— 标准流程总结
 
 ## 一、前提条件（只需配置一次）
