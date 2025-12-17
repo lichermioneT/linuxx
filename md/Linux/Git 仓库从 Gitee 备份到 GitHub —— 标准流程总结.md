@@ -5,9 +5,14 @@
 
 git add .
 git commit -m "xxx"
+
 git push origin master
 
 git pull origin master
+
+
+
+git remote set-url --add --push origin git@github.com:lichermioneT/linuxx.git
 
 # Git 仓库从 Gitee 备份到 GitHub —— 标准流程总结
 
