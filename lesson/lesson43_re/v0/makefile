@@ -10,4 +10,4 @@ updClient: udpClient.cc
 
 .PHONY:clean
 clean:
-	rm udpServer updClient -rf
+	rm udpServer udpClient -rf
