@@ -234,9 +234,22 @@
 
 
 
+```c++
+struct sockaddr_in 
+{
+    sa_family_t    sin_family;   // 地址族（协议族）
+    in_port_t      sin_port;     // 端口号（网络字节序）
+    struct in_addr sin_addr;     // IP 地址
+    unsigned char  sin_zero[8];  // 填充字节（对齐用）
+};
+
+```
 
 
 
+**服务器端口必须是确定的。**
+
+**服务器死循环，常驻内存进行。**
 
 
 

@@ -14,6 +14,8 @@ git pull origin master
 
 git remote set-url --add --push origin git@github.com:lichermioneT/linuxx.git
 
+**fetch 只留一个，push 可以有多个**
+
 # Git 仓库从 Gitee 备份到 GitHub —— 标准流程总结
 
 ## 一、前提条件（只需配置一次）
