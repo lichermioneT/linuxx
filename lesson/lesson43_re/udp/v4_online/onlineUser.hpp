@@ -55,7 +55,6 @@ public:
             client.sin_addr.s_addr = inet_addr(user.second.ip().c_str());
             string s =  ip + "-" + to_string(port) + "# ";
             s += message;
-            
             sendto(sockfd, s.c_str(), s.size(), 0, (struct sockaddr *)&client, sizeof(client));
         }
     }

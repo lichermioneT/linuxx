@@ -5,3 +5,36 @@ struct sockaddr_in
     struct in_addr sin_addr;     // IP 地址
     unsigned char  sin_zero[8];  // 填充字节（对齐用）
 };
+
+udp面向数据报
+tcp面向字节流
+
+守护进程 
+[root@lic lesson43_re]# sleep 2000 | sleep 2000 &
+[1] 21723
+[root@lic lesson43_re]# sleep 2000 | sleep 2000 &
+[2] 21727
+[root@lic lesson43_re]# 
+[root@lic lesson43_re]# jobs
+[1]-  Running                 sleep 2000 | sleep 2000 &
+[2]+  Running                 sleep 2000 | sleep 2000 &
+[root@lic lesson43_re]# jobs
+[1]-  Running                 sleep 2000 | sleep 2000 &
+[2]+  Running                 sleep 2000 | sleep 2000 &
+[root@lic lesson43_re]# ps ajx | head -1 && ps ajx | grep sleep
+ PPID   PID  PGID   SID TTY      TPGID STAT   UID   TIME COMMAND
+19803 21722 21722 19803 pts/0    21768 S        0   0:00 sleep 2000
+19803 21723 21722 19803 pts/0    21768 S        0   0:00 sleep 2000
+
+19803 21726 21726 19803 pts/0    21768 S        0   0:00 sleep 2000
+19803 21727 21726 19803 pts/0    21768 S        0   0:00 sleep 2000
+
+20135 21744 20135 20135 ?           -1 S        0   0:00 sleep 180
+19803 21769 21768 19803 pts/0    21768 S+       0   0:00 grep --color=auto sleep
+[root@lic lesson43_re]# 
+
+fg
+bg
+有且只能有一个前台作业。
+很多个后台作业。
+

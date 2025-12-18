@@ -35,6 +35,7 @@ public:
 int _age;
 };
 
+// 默认提供拷贝构造函数
 void test1()
 {
     person p1;
@@ -42,6 +43,8 @@ void test1()
     person p2(p1);
     cout<< "p2的年龄" <<endl;
 }
+
+
 
 
 int main()

@@ -1,0 +1,31 @@
+[NORMAL][1765593909][1992]create socket success 1992
+[NORMAL][1765593909][1992]bind success
+[NORMAL][1765593909][1992]listen success
+[NORMAL][1765593938][1992]accept a new link success
+[NORMAL][1765593938][1992]accept a new link success
+[NORMAL][1765593938][1992]accept a new link success
+[DEBUG][1765593938][1992]accept a new link success
+[NORMAL][1765593938][1992]accept a new link success
+[NORMAL][1765593940][1992]client quit, me to
+[NORMAL][1766058929][23273]create socket success 23273
+[NORMAL][1766058929][23273]bind success
+[NORMAL][1766058929][23273]listen success
+[NORMAL][1766058931][23286]create socket success 23286
+[NORMAL][1766058934][23292]create socket success 23292
+[NORMAL][1766058936][23296]create socket success 23296
+[NORMAL][1766059004][23364]create socket success 23364
+[NORMAL][1766059009][23370]create socket success 23370
+[NORMAL][1766059011][23374]create socket success 23374
+[NORMAL][1766059012][23377]create socket success 23377
+[NORMAL][1766059042][23273]accept a new link success
+[NORMAL][1766059042][23273]accept a new link success
+[NORMAL][1766059042][23273]accept a new link success
+[DEBUG][1766059042][23273]accept a new link success
+[NORMAL][1766059042][23273]accept a new link success
+[NORMAL][1766059051][23273]client quit, me to
+[NORMAL][1766059118][23273]accept a new link success
+[NORMAL][1766059118][23273]accept a new link success
+[NORMAL][1766059118][23273]accept a new link success
+[DEBUG][1766059118][23273]accept a new link success
+[NORMAL][1766059118][23273]accept a new link success
+[NORMAL][1766059123][23273]client quit, me to

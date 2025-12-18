@@ -1,0 +1,5 @@
+apple:苹果
+bit:比特
+banana:香蕉
+suc:成功
+man:男人

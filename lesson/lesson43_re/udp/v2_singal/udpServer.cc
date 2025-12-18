@@ -1,22 +1,22 @@
 #include "udpServer.hpp"
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
+#include <iostream>
 #include <fstream>
 #include <signal.h>
 
-using namespace std;
-using namespace Serve;
+using namespace server;
+// usage
+// ./udpserver ip port
+// getopt
 
-static void Usage(string proc)
+void Usage(string proc)
 {
-  cout<< "Usage:\n \t  "<< proc << "  local_port\n\n";
+  cout<< "Usage " << proc << "local_port" <<endl;
 }
 
-// ./udpServe port 
-//  getopt()
-
 unordered_map<string, string> dict;
-const std::string dictTxt="./dict.txt";
+const string dictTxt = "./dict.txt";
 
 static bool cutString(const string &target, string *s1, string *s2, const string &sep)
 {
@@ -50,18 +50,18 @@ static void initDict()
     cout << "load dict success" << endl;
 }
 
-void reload(int signo)
-{
-    (void)signo;
-    initDict();
-}
-
 static void debugPrint()
 {
     for(auto &dt : dict)
     {
         cout << dt.first << " # " << dt.second<< endl;
     }
+}
+
+void reload(int sig)
+{
+    (void)sig;
+    initDict();
 }
 
 void handlerMessage(int sockfd, string clientip, uint16_t clientport, string message)
@@ -81,59 +81,25 @@ void handlerMessage(int sockfd, string clientip, uint16_t clientport, string mes
     client.sin_port = htons(clientport);
     client.sin_addr.s_addr = inet_addr(clientip.c_str());
 
-    sendto(sockfd, response_message.c_str(), response_message.size(), 0, (struct sockaddr*)&client, sizeof(client)); // 
+    sendto(sockfd, response_message.c_str(), response_message.size(), 0, (struct sockaddr*)&client, sizeof(client)); // 这里返回，知道了客户端的ip和地址。
 }
-
-// demo2
-void execCommand(int sockfd, string clientip, uint16_t clientport, string cmd)
-{
-    //1. cmd解析，ls -a -l
-    //2. 如果必要，可能需要fork, exec*
-
-    if(cmd.find("rm") != string::npos || cmd.find("mv") != string::npos || cmd.find("rmdir") != string::npos)
-    {
-        cerr << clientip << ":" << clientport << " 正在做一个非法的操作: " << cmd << endl;
-        return;
-    }
-
-    string response;
-    FILE *fp = popen(cmd.c_str(), "r");
-    if(fp == nullptr) response = cmd + " exec failed";
-    char line[1024];
-    while(fgets(line, sizeof(line), fp))
-    {
-        response += line;
-    }
-    pclose(fp);
-
-    // 开始返回
-    struct sockaddr_in client;
-    bzero(&client, sizeof(client));
-
-    client.sin_family = AF_INET;
-    client.sin_port = htons(clientport);
-    client.sin_addr.s_addr = inet_addr(clientip.c_str());
-
-    sendto(sockfd, response.c_str(), response.size(), 0, (struct sockaddr*)&client, sizeof(client));
-}
-
 
 int main(int argc, char* argv[])
 {
+
   if(argc != 2)
   {
     Usage(argv[0]);
     exit(USAGE_ERR);
   }
-  uint16_t port = atoi(argv[1]);
 
+    signal(2,reload);
   initDict();
+  // debugPrint();
 
-    std::unique_ptr<udpServe> usvr(new udpServe(execCommand, port));
-
-
-  usvr->initserve();
+  uint16_t port = atoi(argv[1]);
+  std::unique_ptr<udpServe> usvr(new udpServe(handlerMessage, port));
+  usvr->init();
   usvr->start();
-
   return 0;
 }

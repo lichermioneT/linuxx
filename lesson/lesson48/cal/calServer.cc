@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     uint16_t port = atoi(argv[1]);
 
     unique_ptr<CalServer> tsvr(new CalServer(port));
+    
     tsvr->initServer();
     tsvr->start(cal); // 启动的时候，进行什么业务逻辑处理
     return 0;

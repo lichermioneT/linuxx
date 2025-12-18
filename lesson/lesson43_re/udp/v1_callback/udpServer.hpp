@@ -9,24 +9,29 @@
 #include <cstring>
 #include <strings.h>
 #include <netinet/in.h>
+#include <functional>
+#include <unistd.h>    // 缺少 close() 函数
 
 using namespace std;
 namespace server
 {
   static const std::string defaultIp = "0.0.0.0";
   static const int gnum = 1024;
-  enum {USAGE_ERR,SOCKET_ERR = 2, BIND_ERR};
+  typedef function<void (int,string,uint16_t,string)> func_t;
+
+  enum {USAGE_ERR,SOCKET_ERR = 2, BIND_ERR, OPEN_ERR};
 
   class udpServe
   {
   public:
-    udpServe(const uint16_t &port, const std::string &ip = defaultIp) : _port(port), _ip(ip), _socket(-1)
+    udpServe(const func_t&cb, const uint16_t &port, const std::string &ip = defaultIp) : _callback(cb),_port(port), _ip(ip), _socket(-1)
     {
     }
 
     void init()
     {
 // 1. int socket(int domain, int type, int protocol)
+      // 网卡文件打开了。
       // domain   本地还是网络
       // type     socket提供能力
       // protocol 0
@@ -50,6 +55,7 @@ namespace server
       // local.sin_addr.s_addr =  inet_addr(_ip.c_str());           // 1.string->uint32_t 2.htonl()
       local.sin_addr.s_addr =  htonl(INADDR_ANY);                   // 任意地址bind
 
+// 设置进内核里面
       int n = bind(_socket, (struct sockaddr*)&local, sizeof(local));
       if(n == -1)
       {
@@ -66,12 +72,14 @@ namespace server
       char buffer[gnum] = {0};
       for(;;)
       {
-        // ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
+
+// ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
         // 消息本身和消息的发送者。
+        // 输出型参数
         struct sockaddr_in peer;
         socklen_t len = sizeof(peer);
         ssize_t s = recvfrom(_socket, buffer, sizeof(buffer)-1,  0, (struct sockaddr*)&peer, &len);
-        //1.数据是什么，2.谁发的
+//1.数据是什么，2.谁发的
         if(s > 0)
         {
           buffer[s]  = 0;
@@ -79,15 +87,16 @@ namespace server
           uint16_t clientport = ntohs(peer.sin_port);
           string message = buffer;
           cout<< clientip << "[" << clientport << "]# " << message <<endl;
+          _callback(_socket, clientip, clientport, message);       // 回调函数处理业务了，处理收到的信息message
         }
       }
-
     }
     ~udpServe()
     {
     }
 
   private:
+    func_t _callback;
     uint16_t _port;
     std::string _ip;  // 实际上一款服务器，不建议指明一个IP地址。
     int _socket;

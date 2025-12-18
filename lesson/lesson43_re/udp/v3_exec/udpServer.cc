@@ -1,22 +1,23 @@
 #include "udpServer.hpp"
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
+#include <iostream>
 #include <fstream>
 #include <signal.h>
+#include <stdio.h>
 
-using namespace std;
-using namespace Serve;
+using namespace server;
+// usage
+// ./udpserver ip port
+// getopt
 
-static void Usage(string proc)
+void Usage(string proc)
 {
-  cout<< "Usage:\n \t  "<< proc << "  local_port\n\n";
+  cout<< "Usage " << proc << "local_port" <<endl;
 }
 
-// ./udpServe port 
-//  getopt()
-
 unordered_map<string, string> dict;
-const std::string dictTxt="./dict.txt";
+const string dictTxt = "./dict.txt";
 
 static bool cutString(const string &target, string *s1, string *s2, const string &sep)
 {
@@ -50,18 +51,18 @@ static void initDict()
     cout << "load dict success" << endl;
 }
 
-void reload(int signo)
-{
-    (void)signo;
-    initDict();
-}
-
 static void debugPrint()
 {
     for(auto &dt : dict)
     {
         cout << dt.first << " # " << dt.second<< endl;
     }
+}
+
+void reload(int sig)
+{
+    (void)sig;
+    initDict();
 }
 
 void handlerMessage(int sockfd, string clientip, uint16_t clientport, string message)
@@ -81,10 +82,11 @@ void handlerMessage(int sockfd, string clientip, uint16_t clientport, string mes
     client.sin_port = htons(clientport);
     client.sin_addr.s_addr = inet_addr(clientip.c_str());
 
-    sendto(sockfd, response_message.c_str(), response_message.size(), 0, (struct sockaddr*)&client, sizeof(client)); // 
+    sendto(sockfd, response_message.c_str(), response_message.size(), 0, (struct sockaddr*)&client, sizeof(client)); // 这里返回，知道了客户端的ip和地址。
 }
 
-// demo2
+// dome2
+// popen
 void execCommand(int sockfd, string clientip, uint16_t clientport, string cmd)
 {
     //1. cmd解析，ls -a -l
@@ -120,20 +122,17 @@ void execCommand(int sockfd, string clientip, uint16_t clientport, string cmd)
 
 int main(int argc, char* argv[])
 {
+
   if(argc != 2)
   {
     Usage(argv[0]);
     exit(USAGE_ERR);
   }
+ 
+
   uint16_t port = atoi(argv[1]);
-
-  initDict();
-
-    std::unique_ptr<udpServe> usvr(new udpServe(execCommand, port));
-
-
-  usvr->initserve();
+  std::unique_ptr<udpServe> usvr(new udpServe(execCommand, port));
+  usvr->init();
   usvr->start();
-
   return 0;
 }
