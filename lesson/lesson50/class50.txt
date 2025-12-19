@@ -8,9 +8,9 @@ urldecode:解码
 
 2.如何验证这个过程
 
-
+HTTP是以行为单位的请求
 HTTP     : request
-请求行   :   GET  url   http version  (http1.0, 1.1, 2.0)
+请求行   :   GET  url   http version  (http1.0, 1.1, 2.0) \r\n
 请求报头 : name:value (attribute)
 请求报头 : name:value (attribute)
 请求报头 : name:value (attribute)
@@ -23,10 +23,14 @@ HTTP     : request
 请求报头 : name:value (attribute)
 请求报头 : name:value (attribute)
 空行     : \r\n
-请求正文 : 可以选择有没有
+请求正文 : 可以选择有没有。 
 
-tcp链接，向服务器发送过去
+完整的四部分。
+HTTP请求四部分：请求行，请求报头，请求行，请求正文。四部分。
 
+tcp链接，向服务器发送过去。
+
+HTTP响应过程
 HTTP    : response
 状态行  : http/1.1 状态码 状态码描述\r\n
 相应报头: name:value\r\n
@@ -42,7 +46,7 @@ HTTP    : response
 相应报头: name:value\r\n
 空行    : \r\n
 相应正文: 文件
-
+HTTP响应四部分：状态行，响应报头，空行，相应的正文。
 根据tcp链接socket,向客户端返回响应。
 
 

@@ -45,8 +45,9 @@ int main(int argc, char *argv[])
     }
     uint16_t port = atoi(argv[1]);
     unique_ptr<HttpServer> httpsvr(new HttpServer(Get, port));
+
+
     httpsvr->initServer();
     httpsvr->start();
-
     return 0;
 }

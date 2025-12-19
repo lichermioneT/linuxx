@@ -33,8 +33,7 @@ namespace server
     {
     public:
         HttpServer(func_t func, const uint16_t &port = gport) : _func(func), _listensock(-1), _port(port)
-        {
-        }
+        {}
         void initServer()
         {
             // 1. 创建socket文件套接字对象
@@ -61,6 +60,7 @@ namespace server
                 exit(LISTEN_ERR);
             }
         }
+        
         void HandlerHttp(int sock)
         {
             // 1. 读到完整的http请求
@@ -81,6 +81,7 @@ namespace server
                 send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0);
             }
         }
+
         void start()
         {
             for (;;)

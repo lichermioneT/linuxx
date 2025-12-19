@@ -26,9 +26,9 @@ enum
 std::string enLength(const std::string &text)
 {
     std::string send_string = std::to_string(text.size());
-    send_string += LINE_SEP;
+    send_string += LINE_SEP; // + "\r\n"
     send_string += text;
-    send_string += LINE_SEP;
+    send_string += LINE_SEP; // + "\r\n"
 
     return send_string;
 }
@@ -45,6 +45,7 @@ bool deLength(const std::string &package, std::string *text)
     return true;
 }
 
+
 // 没有人规定我们网络通信的时候，只能有一种协议！！
 // 我们怎么让系统知道我们用的是哪一种协议呢？？
 // "content_len"\r\n"协议编号"\r\n"x op y"\r\n
@@ -53,12 +54,8 @@ bool deLength(const std::string &package, std::string *text)
 class Request
 {
 public:
-    Request() : x(0), y(0), op(0)
-    {
-    }
-    Request(int x_, int y_, char op_) : x(x_), y(y_), op(op_)
-    {
-    }
+    Request() : x(0), y(0), op(0) {}
+    Request(int x_, int y_, char op_) : x(x_), y(y_), op(op_) {}
     // 1. 自己写
     // 2. 用现成的
     bool serialize(std::string *out)
@@ -94,6 +91,7 @@ public:
         // "x op y" -> 结构化
         auto left = in.find(SEP);
         auto right = in.rfind(SEP);
+
         if (left == std::string::npos || right == std::string::npos)
             return false;
         if (left == right)
@@ -108,6 +106,8 @@ public:
             return false;
         if (y_string.empty())
             return false;
+
+
         x = std::stoi(x_string);
         y = std::stoi(y_string);
         op = in[left + SEP_LEN];
@@ -165,8 +165,10 @@ public:
         auto mid = in.find(SEP);
         if (mid == std::string::npos)
             return false;
+
         std::string ec_string = in.substr(0, mid);
         std::string res_string = in.substr(mid + SEP_LEN);
+
         if (ec_string.empty() || res_string.empty())
             return false;
 
@@ -188,6 +190,7 @@ public:
     int result;   // 计算结果
 };
 
+
 // "content_len"\r\n"x op y"\r\n"content_len"\r\n"x op y"\r\n"content_len"\r\n"x op
 bool recvPackage(int sock, std::string &inbuffer, std::string *text)
 {
@@ -206,6 +209,7 @@ bool recvPackage(int sock, std::string &inbuffer, std::string *text)
             std::string text_len_string = inbuffer.substr(0, pos);
             int text_len = std::stoi(text_len_string);
             int total_len = text_len_string.size() + 2 * LINE_SEP_LEN + text_len;
+            
             // text_len_string + "\r\n" + text + "\r\n" <= inbuffer.size();
             std::cout << "处理前#inbuffer: \n" << inbuffer << std::endl;
 

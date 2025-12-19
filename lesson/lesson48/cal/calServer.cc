@@ -10,6 +10,7 @@ static void Usage(string proc)
 }
 // req: 里面一定是我们的处理好的一个完整的请求对象
 // resp: 根据req，进行业务处理，填充resp，不用管理任何读取和写入，序列化和反序列化等任何细节
+
 bool cal(const Request &req, Response &resp)
 {
     // req已经有结构化完成的数据啦，你可以直接使用
@@ -18,34 +19,34 @@ bool cal(const Request &req, Response &resp)
 
     switch (req.op)
     {
-    case '+':
-        resp.result = req.x + req.y;
+        case '+':
+            resp.result = req.x + req.y;
+            break;
+        case '-':
+            resp.result = req.x - req.y;
+            break;
+        case '*':
+            resp.result = req.x * req.y;
+            break;
+        case '/':
+        {
+            if (req.y == 0)
+                resp.exitcode = DIV_ZERO;
+            else
+                resp.result = req.x / req.y;
+        }
         break;
-    case '-':
-        resp.result = req.x - req.y;
+        case '%':
+        {
+            if (req.y == 0)
+                resp.exitcode = MOD_ZERO;
+            else
+                resp.result = req.x % req.y;
+        }
         break;
-    case '*':
-        resp.result = req.x * req.y;
-        break;
-    case '/':
-    {
-        if (req.y == 0)
-            resp.exitcode = DIV_ZERO;
-        else
-            resp.result = req.x / req.y;
-    }
-    break;
-    case '%':
-    {
-        if (req.y == 0)
-            resp.exitcode = MOD_ZERO;
-        else
-            resp.result = req.x % req.y;
-    }
-    break;
-    default:
-        resp.exitcode = OP_ERROR;
-        break;
+        default:
+            resp.exitcode = OP_ERROR;
+            break;
     }
 
     return true;
