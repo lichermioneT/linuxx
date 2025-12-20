@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <jsoncpp/json/json.h>
+#define MYSELF
 
 #define SEP " "
 #define SEP_LEN strlen(SEP)           // 不敢使用sizeof()
@@ -21,8 +22,9 @@ enum
 };
 
 // [有效长度][长度的内容]
-// "x op y" -> "content_len"\r\n"x op y"\r\n
+// "x op y"          -> "content_len"\r\n"x op y"\r\n
 // "exitcode result" -> "content_len"\r\n"exitcode result"\r\n
+
 std::string enLength(const std::string &text)
 {
     std::string send_string = std::to_string(text.size());
@@ -33,12 +35,15 @@ std::string enLength(const std::string &text)
     return send_string;
 }
 
-// "content_len"\r\n"exitcode result"\r\n
+// "x op y"          <- "content_len"\r\n"x op y"\r\n
+// "exitcode result" <- "content_len"\r\n"exitcode result"\r\n
+
 bool deLength(const std::string &package, std::string *text)
 {
     auto pos = package.find(LINE_SEP);
     if (pos == std::string::npos)
         return false;
+
     std::string text_len_string = package.substr(0, pos);
     int text_len = std::stoi(text_len_string);
     *text = package.substr(pos + LINE_SEP_LEN, text_len);
@@ -106,7 +111,6 @@ public:
             return false;
         if (y_string.empty())
             return false;
-
 
         x = std::stoi(x_string);
         y = std::stoi(y_string);
@@ -192,20 +196,23 @@ public:
 
 
 // "content_len"\r\n"x op y"\r\n"content_len"\r\n"x op y"\r\n"content_len"\r\n"x op
+// 数据读取的
 bool recvPackage(int sock, std::string &inbuffer, std::string *text)
 {
     char buffer[1024];
     while (true)
     {
-        ssize_t n = recv(sock, buffer, sizeof(buffer) - 1, 0);
+        ssize_t n = recv(sock, buffer, sizeof(buffer) - 1, 0); // 阻塞读取
         if (n > 0)
         {
             buffer[n] = 0;
-            inbuffer += buffer;
+            inbuffer += buffer; // 一直存放读取的数据。
+
             // 分析处理
             auto pos = inbuffer.find(LINE_SEP);
             if (pos == std::string::npos)
                 continue;
+
             std::string text_len_string = inbuffer.substr(0, pos);
             int text_len = std::stoi(text_len_string);
             int total_len = text_len_string.size() + 2 * LINE_SEP_LEN + text_len;

@@ -45,12 +45,13 @@ namespace server
       // sockfd文件描述符
       struct sockaddr_in local;
       bzero(&local, sizeof(local));
+
       local.sin_family = AF_INET;
       local.sin_port   = htons(_port);                              // 给别人发消息，你的port和ip发不发？ 发送的。 字节序列 host to net short
       // local.sin_addr.s_addr =  inet_addr(_ip.c_str());           // 1.string->uint32_t 2.htonl()
       local.sin_addr.s_addr =  htonl(INADDR_ANY);                   // 任意地址bind
 
-      int n = bind(_socket, (struct sockaddr*)&local, sizeof(local));
+      int n = bind(_socket, (struct sockaddr*)&local, sizeof(local)); // ip + port 绑定道已经创建的socket上面。
       if(n == -1)
       {
         cerr<< " bind error " << errno << strerror(errno) <<endl;

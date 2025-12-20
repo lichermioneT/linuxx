@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     uint16_t serverport = atoi(argv[2]);
 
     unique_ptr<CalClient> tcli(new CalClient(serverip, serverport));
+    
     tcli->initClient();
     tcli->start();
     return 0;

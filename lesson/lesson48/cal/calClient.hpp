@@ -51,127 +51,131 @@ public:
             std::string inbuffer;
             while (true)
             {
+// 双工的发数据
                 std::cout << "mycal>>> ";
                 std::getline(std::cin, line);  // 1+1
-                Request req = ParseLine(line); // "1+1"
+                Request req = ParseLine(line); // "1+1"                           输入的数据进行request
 
                 std::string content;
-                req.serialize(&content);
+                req.serialize(&content);  //                                      输入数据序列化  x op y;
 
-                std::string send_string = enLength(content);
-                std::cout << "sendstring:\n" << send_string << std::endl;
-                send(_sock, send_string.c_str(), send_string.size(), 0); // bug?? 不管
+                std::string send_string = enLength(content);  // contentlen\r\n x op y\r\n
 
+                std::cout << "输入的数据序列化和加长版本: " << send_string << std::endl;
+                send(_sock, send_string.c_str(), send_string.size(), 0); //       bug?? 不管 数据发送出去
+
+// 双工的读数据
                 std::string package, text;
                 //  "content_len"\r\n"exitcode result"\r\n
 
                 if (!recvPackage(_sock, inbuffer, &package)) continue;
                 if (!deLength(package, &text)) continue;
+
                 // "exitcode result"
                 // 拿到报文
-                Response resp;
-                resp.deserialize(text);
-                std::cout << "exitCode: " << resp.exitcode << std::endl;
-                std::cout << "result: " << resp.result << std::endl;
+                Response resp;                                               // 响应数据了
+                resp.deserialize(text);                                      // 拿到数据进行相应了
+                std::cout << "exitCode: " << resp.exitcode << std::endl;     // 
+                std::cout << "result:   " << resp.result << std::endl;
             }
         }
     }
     
-    // Request ParseLine(const std::string &line)
-    // {
-    //     // 建议版本的状态机！
-    //     //"1+1" "123*456" "12/0"
-    //     int status = 0; // 0:操作符之前，1:碰到了操作符 2:操作符之后
-    //     int i = 0;
-    //     int cnt = line.size();
-    //     std::string left, right;
-    //     char op;
-    //     while (i < cnt)
-    //     {
-    //         switch (status)
-    //         {
-    //         case 0:
-    //         {
-    //             if(!isdigit(line[i]))
-    //             {
-    //                 op = line[i];
-    //                 status = 1;
-    //             }
-    //             else left.push_back(line[i++]);
-    //         }
-    //         break;
-    //         case 1:
-    //             i++;
-    //             status = 2;
-    //             break;
-    //         case 2:
-    //             right.push_back(line[i++]);
-    //             break;
-    //         }
-    //     }
-    //     std::cout << std::stoi(left)<<" " << std::stoi(right) << " " << op << std::endl;
-    //     return Request(std::stoi(left), std::stoi(right), op);
-    // }
-
     Request ParseLine(const std::string &line)
     {
-        int status = 0; // 0: left, 1: op, 2: right
-        size_t i = 0;
-        size_t cnt = line.size();
+        // 建议版本的状态机！
+        //"1+1" "123*456" "12/0"
+        int status = 0; // 0:操作符之前，1:碰到了操作符 2:操作符之后
+        int i = 0;
+        int cnt = line.size();
         std::string left, right;
-        char op = 0;
-
+        char op;
         while (i < cnt)
         {
-            char c = line[i];
-
-            if (isspace(c))
-            {
-                i++;
-                continue; // 忽略空格
-            }
-
             switch (status)
             {
             case 0:
-                if (isdigit(c))
+            {
+                if(!isdigit(line[i]))
                 {
-                    left.push_back(c);
-                    i++;
-                }
-                else
-                {
-                    op = c;
+                    op = line[i];
                     status = 1;
-                    i++;
                 }
-                break;
-
+                else left.push_back(line[i++]);
+            }
+            break;
             case 1:
+                i++;
                 status = 2;
                 break;
-
             case 2:
-                if (isdigit(c))
-                {
-                    right.push_back(c);
-                    i++;
-                }
-                else
-                {
-                    throw std::invalid_argument("right operand invalid");
-                }
+                right.push_back(line[i++]);
                 break;
             }
         }
-
-        if (left.empty() || right.empty() || op == 0)
-        {
-            throw std::invalid_argument("input format error");
-        }
-
+        std::cout << std::stoi(left)<<" " << std::stoi(right) << " " << op << std::endl;
         return Request(std::stoi(left), std::stoi(right), op);
     }
+
+    // Request ParseLine(const std::string &line)
+    // {
+    //     int status = 0; // 0: left, 1: op, 2: right
+    //     size_t i = 0;
+    //     size_t cnt = line.size();
+    //     std::string left, right;
+    //     char op = 0;
+
+    //     while (i < cnt)
+    //     {
+    //         char c = line[i];
+
+    //         if (isspace(c))
+    //         {
+    //             i++;
+    //             continue; // 忽略空格
+    //         }
+
+    //         switch (status)
+    //         {
+    //         case 0:
+    //             if (isdigit(c))
+    //             {
+    //                 left.push_back(c);
+    //                 i++;
+    //             }
+    //             else
+    //             {
+    //                 op = c;
+    //                 status = 1;
+    //                 i++;
+    //             }
+    //             break;
+
+    //         case 1:
+    //             status = 2;
+    //             break;
+
+    //         case 2:
+    //             if (isdigit(c))
+    //             {
+    //                 right.push_back(c);
+    //                 i++;
+    //             }
+    //             else
+    //             {
+    //                 throw std::invalid_argument("right operand invalid");
+    //             }
+    //             break;
+    //         }
+    //     }
+
+    //     if (left.empty() || right.empty() || op == 0)
+    //     {
+    //         throw std::invalid_argument("input format error");
+    //     }
+
+    //     return Request(std::stoi(left), std::stoi(right), op);
+    // }
 
 
     ~CalClient()

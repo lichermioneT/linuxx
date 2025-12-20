@@ -42,11 +42,14 @@ namespace server
 // 1.1 你怎么保证你读到的消息是 【一个】完整的请求
             std::string req_text, req_str;
             // 1.2 我们保证，我们req_text里面一定是一个完整的请求："content_len"\r\n"x op y"\r\n
+
+// inbuffer里面一直接受数据
+// req_text一个完整的数据
             if (!recvPackage(sock, inbuffer, &req_text)) return;
-            std::cout << "带报头的请求：\n" << req_text << std::endl;
+            std::cout << "带报头的请求：" << req_text << std::endl;
 
             if (!deLength(req_text, &req_str)) return;
-            std::cout << "去掉报头的正文：\n" << req_str << std::endl;
+            std::cout << "去掉报头的正文：" << req_str << std::endl; // x op y;
             
 // 2. 对请求Request，反序列化
 // 2.1 得到一个结构化的请求对象
@@ -69,7 +72,7 @@ namespace server
 // 5. 然后我们在发送响应
 // 5.1 构建成为一个完整的报文
             std::string send_string = enLength(resp_str);
-            std::cout << "构建完成完整的响应\n" <<  send_string << std::endl;
+            std::cout << "构建完成完整的响应: " <<  send_string << std::endl;
         
             send(sock, send_string.c_str(), send_string.size(), 0); // 其实这里的发送也是有问题的，不过后面再说
         }
