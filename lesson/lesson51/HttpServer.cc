@@ -36,6 +36,7 @@ bool Get(const HttpRequest &req, HttpResponse &resp)
     //     // 使用我们自己写的C++的方法，提供服务
     // }
     // for test
+
     cout << "----------------------http start---------------------------" << endl;
     cout << req.inbuffer << std::endl;
     std::cout << "method: " << req.method << std::endl;
@@ -55,9 +56,7 @@ bool Get(const HttpRequest &req, HttpResponse &resp)
         respheader += "\r\n";
     }
 
-    // respheader += "Location: https://www.qq.com/\r\n";
     std::string respblank = "\r\n";
-    // std::string body = "<html lang=\"en\"><head><meta charset=\"UTF-8\"><title>for test</title><h1>hello world</h1></head><body><p>北京交通广播《一路畅通》“交通大家谈”节目，特邀北京市交通委员会地面公交运营管理处处长赵震、北京市公安局公安交通管理局秩序处副处长 林志勇、北京交通发展研究院交通规划所所长 刘雪杰为您解答公交车专用道6月1日起社会车辆进出公交车道须注意哪些？</p></body></html>";
 
     std::string body;
     body.resize(req.size+1);
@@ -75,9 +74,6 @@ bool Get(const HttpRequest &req, HttpResponse &resp)
     cout << "----------------------http response end---------------------------" << endl;
 
     resp.outbuffer += body;
-
-
-
     return true;
 }
 

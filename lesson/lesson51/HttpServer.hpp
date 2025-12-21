@@ -80,11 +80,14 @@ namespace server
             if(n > 0)
             {
                 buffer[n] = 0;
-                req.inbuffer = buffer;
-                req.parse();
+                req.inbuffer = buffer;  // 存储全部请求的数据
+
+                req.parse();  // 分离请求的各种东西。
+
                 // funcs[req.path](req, resp);
-                _func(req, resp); // req -> resp
-                send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0);
+                _func(req, resp); // req -> resp // 响应请求
+
+                send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0); // 返回相应
             }
         }
         void start()
@@ -107,7 +110,9 @@ namespace server
                 {
                     close(_listensock);
                     if(fork()>0) exit(0);
-                    HandlerHttp(sock);
+
+                    HandlerHttp(sock); // 回调方法
+
                     close(sock);
                     exit(0);
                 }

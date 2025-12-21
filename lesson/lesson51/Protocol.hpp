@@ -26,6 +26,7 @@ public:
         std::string line = Util::getOneLine(inbuffer, sep);
         if (line.empty())
             return;
+        
         // 2. 从请求行中提取三个字段
         // std::cout << "line: " << line << std::endl;
         std::stringstream ss(line);

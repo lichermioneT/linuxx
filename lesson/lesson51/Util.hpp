@@ -17,12 +17,14 @@ public:
         //buffer.erase(0, sub.size()+sep.size());
         return sub;
     }
+
     static bool readFile(const std::string resource, char *buffer, int size)
     {
         std::ifstream in(resource, std::ios::binary);
-        if(!in.is_open()) return false; // resource not found
+        if(!in.is_open()) return false;               // resource not found
 
         in.read(buffer, size);
+        
         // std::string line;
         // while(std::getline(in, line))
         // {
