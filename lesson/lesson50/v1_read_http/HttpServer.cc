@@ -15,8 +15,6 @@ bool Get(const HttpRequest &req, HttpResponse &resp)
 {
     cout << "----------------------http start---------------------------" << endl;
     cout << req.inbuffer << std::endl;
-    std::cout.flush();  // 刷到终端
-
     cout << "----------------------http end---------------------------" << endl;
     return true;
 }

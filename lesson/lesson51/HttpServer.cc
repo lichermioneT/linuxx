@@ -19,6 +19,7 @@ std::string suffixToDesc(const std::string suffix)
     ct += "\r\n";
     return ct;
 }
+
 // 1. 服务器和网页分离，html
 // 2. url -> / : web根目录
 // 3. 我们要正确的给客户端返回资源类型，我们首先要自己知道！所有的资源都有后缀！！
@@ -77,6 +78,7 @@ bool Get(const HttpRequest &req, HttpResponse &resp)
     return true;
 }
 
+
 // ./httpServer 8080
 int main(int argc, char *argv[])
 {
@@ -91,6 +93,7 @@ int main(int argc, char *argv[])
     // httpsvr->registerCb("/", Get); // 功能路由！
     // httpsvr->registerCb("/search", Search);
     // httpsrv->registerCb("/test.py", Other);
+    
     httpsvr->initServer();
     httpsvr->start();
 

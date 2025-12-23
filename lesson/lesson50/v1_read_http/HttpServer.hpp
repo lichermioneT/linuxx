@@ -75,10 +75,10 @@ namespace server
             if(n > 0)
             {
                 buffer[n] = 0;
-
                 req.inbuffer = buffer; // 读到的数据
                 _func(req, resp);      // req -> resp  请求到响应。
-                send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0);
+
+                send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0); // 然后开始返回
             }
         }
 
@@ -103,7 +103,7 @@ namespace server
                     close(_listensock);
                     if(fork()>0) exit(0);
 
-                    HandlerHttp(sock);
+                    HandlerHttp(sock); // 收到请求进行处理 http请求
 
                     close(sock);
                     exit(0);

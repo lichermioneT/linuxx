@@ -78,6 +78,7 @@ namespace server
                 req.inbuffer = buffer;
                 req.parse();
                 _func(req, resp); // req -> resp
+                
                 send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0);
             }
         }
