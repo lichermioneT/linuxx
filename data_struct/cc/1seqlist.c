@@ -154,9 +154,7 @@ int main()
 {
 
   seqlist s;                  // 创建一个结构体，如果一个函数需要拿到结构体，就需要用指针接收
-
   seqlistInit(&s, 4);
-
   seqlistPushBack(&s, 1);
   seqlistPushBack(&s, 2);
   seqlistPushBack(&s, 3);
