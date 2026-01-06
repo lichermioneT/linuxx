@@ -20,7 +20,6 @@ SListNode* BuySListNode(SLTDataType x)
   
   newNode->data = x;
   newNode->next = NULL;
-
   return newNode;
 }
 
@@ -47,12 +46,10 @@ void SListNodePushBack(SListNode** phead, SLTDataType x)
   else 
   {
     SListNode* tail= *phead;
-    
     while(tail->next != NULL)
     {
       tail = tail->next;
     }
-    
     tail->next = newNode;
   }
 }
@@ -166,7 +163,7 @@ void SListNodeEraseAfter(SListNode* pos)
 
 int main()
 {
-  SListNode* phead = NULL;
+  SListNode* phead = NULL; // 一级指针，存放变量的地址，如果要操作它的话，需要取地址，然后接受他的话需要二级指针的。
   
   for(int i = 0; i < 10; i++)
   {

@@ -1,17 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
-typedef int SeqListDataType;
-
-typedef struct seqlist 
-{ 
-  SeqListDataType* _data;
-  size_t _size;
-  size_t _capacity;
-}seqlist;
-
-void seqlistInit(seqlist* ps, size_t capacity)
+#include "seqlist.h"
+void seqlistInit(seqlist* ps, size_t capacity) // 需要操作结构体，所有传入指针。这里结构体是变量s，所以是一级指针。
 {
   assert(ps);
   assert(capacity > 0);
@@ -23,6 +11,7 @@ void seqlistInit(seqlist* ps, size_t capacity)
     return;
   }
 
+// 初始化三个数据
   ps->_data = temp;
   ps->_size = 0;
   ps->_capacity = capacity;
@@ -32,8 +21,8 @@ void seqlistDestory(seqlist* ps)
 {
   assert(ps);
   free(ps->_data);
-  ps->_data = NULL;
-  ps->_size = ps->_capacity = 0;
+  ps->_data = NULL; // 防止指针变量里面还存储原来空间的大小
+  ps->_size = ps->_capacity = 0; // 归零
 }
 
 void seqlistPrint(seqlist* ps)
@@ -46,13 +35,14 @@ void seqlistPrint(seqlist* ps)
   printf("\n");
 }
 
+// 数据结构里面涉及到扩容 就要 扩容！
 void seqlistCheckCapacity(seqlist* ps)
 {
   assert(ps);
   if(ps->_size == ps->_capacity)
   {
     size_t newCapacity = ps->_capacity == 0 ? 4 : ps->_capacity * 2;
-    SeqListDataType* temp = (SeqListDataType*)realloc(ps->_data, sizeof(SeqListDataType) * newCapacity);
+    SeqListDataType* temp = (SeqListDataType*)realloc(ps->_data, sizeof(SeqListDataType) * newCapacity); // realloc会释放原来的空间大小的！
 
     if(temp == NULL)
     {
@@ -86,10 +76,10 @@ void seqlistPusFront(seqlist* ps, SeqListDataType x)
   seqlistCheckCapacity(ps);
 // pushfront 
 // [1, size]
-//
-  for(size_t i = ps->_size; i > 0; i--)
+// [0, size-1]
+  for(size_t i = ps->_size; i > 0; i--) // 数据全部往后面移动一个，留出第一个位置。
   {
-    ps->_data[i] = ps->_data[i - 1];
+    ps->_data[i] = ps->_data[i - 1];    // [size-1, 1];
   }
   
   ps->_data[0] = x;
@@ -101,12 +91,11 @@ void seqlistPopFront(seqlist* ps)
   assert(ps != NULL);
   assert(ps->_size > 0);
 
-// 
+//[1,szie-1] 
   for(size_t i = 1; i <  ps->_size; i++)
   {
-    ps->_data[i-1] = ps->_data[i];
+    ps->_data[i-1] = ps->_data[i];//[1, size-1];
   }
-
   ps->_size--;
 }
 
@@ -118,7 +107,6 @@ int seqlistFind(seqlist* ps, SeqListDataType x)
     if(ps->_data[i] == x)
       return i;
   }
-
   return -1; 
 }
 
@@ -148,67 +136,5 @@ void seqlistErase(seqlist* ps, size_t pos)
   }
 
   ps->_size--;
-}
-
-int main()
-{
-
-  seqlist s;                  // 创建一个结构体，如果一个函数需要拿到结构体，就需要用指针接收
-  seqlistInit(&s, 4);
-  seqlistPushBack(&s, 1);
-  seqlistPushBack(&s, 2);
-  seqlistPushBack(&s, 3);
-  seqlistPushBack(&s, 4);
-  seqlistPushBack(&s, 5);
-  seqlistPushBack(&s, 6);
-  seqlistPrint(&s);
-
-  seqlistPopBack(&s);
-  seqlistPrint(&s);
-  seqlistPopBack(&s);
-  seqlistPrint(&s);
-  seqlistPopBack(&s);
-  seqlistPrint(&s);
-  seqlistPopBack(&s);
-  seqlistPrint(&s);
-  seqlistPopBack(&s);
-  seqlistPrint(&s);
-  seqlistPopBack(&s);
-  
-  seqlistPrint(&s);
-
-  for(int i = 0; i <10; i++)
-  {
-    seqlistPusFront(&s, i);
-  }
-  
-  for(int i = 0; i < 10; i++)
-  {
-    seqlistPopFront(&s);
-    seqlistPrint(&s);
-  }
-  
-  for(int i = 0; i < 20; i++)
-  {
-    seqlistPushBack(&s, i);
-  }
-  
-  seqlistPrint(&s);
-  int i = seqlistFind(&s, 22);
-  printf("%d \n", i);
-  i = seqlistFind(&s, 3);
-  printf("%d \n", i);
-
-  seqlistInsert(&s, 20, 1000);
-  seqlistPrint(&s);
-  seqlistInsert(&s, 0, 100);
-  seqlistPrint(&s);
-
-  seqlistErase(&s, 21);
-  seqlistPrint(&s);
-
-
-  seqlistDestory(&s);
-  return 0;
 }
 

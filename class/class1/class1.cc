@@ -162,14 +162,5 @@ int main()
   //const double& d = i; // i=temp ,temp=d; 临时变量具有常性
 
   // 函数返回值也是临时变量的
-
-
-
-
-
-
-
-
-
   return 0;
 }
