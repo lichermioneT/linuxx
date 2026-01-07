@@ -114,11 +114,23 @@ RARP逆地址解析
 
 
 ARP收到应答的时候，会以最新的为主！
+ARP欺骗
 
 
+DNS(Domain Name System)
+域名
+.com 商业公司
+.org开源
+
+输入www.baidu.com
+解析一下这个过程
+1概念
+2应用
+3问题
 
 
-
+ICMP功能
+就是一个检查网络出错的工具
 
 
 
