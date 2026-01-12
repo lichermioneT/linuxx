@@ -13,8 +13,8 @@ namespace select_ns
     {
     public:
         SelectServer(int port = defaultport) : _port(port), _listensock(-1), fdarray(nullptr)
-        {
-        }
+        {}
+        
         void Print()
         {
             std::cout << "fd list: ";
@@ -29,7 +29,7 @@ namespace select_ns
             //? 目前一定是listensock，只有这一个
             if (FD_ISSET(_listensock, &rfds))
             {
-                // 走到这里，accept 函数，会不会阻塞？？？1 0
+                // 走到这里，accept 函数，会不会阻塞？？？1 0  不会的
                 // select 告诉我， listensock读事件就绪了
                 std::string clientip;
                 uint16_t clientport = 0;
@@ -43,8 +43,10 @@ namespace select_ns
                 int i = 0;
                 for(; i < fdnum; i++)
                 {
-                    if(fdarray[i] != defaultfd) continue;
-                    else break;
+                    if(fdarray[i] != defaultfd) 
+                        continue;
+                    else 
+                        break;
                 }
                 if(i == fdnum)
                 {
@@ -55,7 +57,6 @@ namespace select_ns
                 {
                     fdarray[i] = sock;
                 }
-
                 Print();
             }
         }
@@ -65,17 +66,20 @@ namespace select_ns
             _listensock = Sock::Socket();
             Sock::Bind(_listensock, _port);
             Sock::Listen(_listensock);
+
             fdarray = new int[fdnum];
             for (int i = 0; i < fdnum; i++)
-                fdarray[i] = defaultfd;
-            fdarray[0] = _listensock; // 不变了
+                fdarray[i] = defaultfd;   // defaultfd = -1;
+            fdarray[0] = _listensock;     // 不变了
         }
+
+// 链接就绪了，你再来叫我。
         void start()
         {
             for (;;)
             {
-                fd_set rfds;
-                FD_ZERO(&rfds);
+                fd_set rfds;         // 读文件描述符集合
+                FD_ZERO(&rfds);      // 全部初始化为零的。
                 int maxfd = fdarray[0];
 
                 for (int i = 0; i < fdnum; i++)
@@ -90,9 +94,11 @@ namespace select_ns
                 // struct timeval timeout = {1, 0};
                 // int n = select(_listensock + 1, &rfds, nullptr, nullptr, &timeout); // ??
                 // 一般而言，要是用select，需要程序员自己维护一个保存所有合法fd的数组！
+
                 int n = select(maxfd + 1, &rfds, nullptr, nullptr, nullptr); // ??
                 switch (n)
                 {
+                // 没有在特定时间，发生任何事情了。
                 case 0:
                     logMessage(NORMAL, "timeout...");
                     break;
@@ -122,6 +128,6 @@ namespace select_ns
     private:
         int _port;
         int _listensock;
-        int *fdarray;
+        int *fdarray;    // 用于保存 所有“合法、需要被监控的 fd”，这是 select 模型的本质要求。
     };
 }

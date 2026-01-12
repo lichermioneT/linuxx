@@ -108,7 +108,9 @@ fd_set:位图用来描述文件描述符集合
 
 
 2.快速写代码---tcpserver,只处理读取，只获取数据的server
-listensock首先的交给select，能交给的，listensock的连接就行
+listensock首先的交给select，能交给的，listensock的连接就行,读事件就行就行的。
+fd_set是linux的内核提供数数据类型，一定有大小的结构。
+
 
 
 

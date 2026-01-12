@@ -37,10 +37,13 @@ public:
         // 2. bind绑定自己的网络信息
         struct sockaddr_in local;
         memset(&local, 0, sizeof(local));
-        local.sin_family = AF_INET;
-        local.sin_port = htons(port);
-        local.sin_addr.s_addr = INADDR_ANY;
-        if (bind(sock, (struct sockaddr *)&local, sizeof(local)) < 0)
+
+        local.sin_family = AF_INET;          // 协议家族
+        local.sin_port = htons(port);        // 端口
+        local.sin_addr.s_addr = INADDR_ANY;  // 地址
+
+        // 服务器必须绑定，指定知名端口！ 客户端OS会自动随机bind。
+        if (bind(sock, (struct sockaddr *)&local, sizeof(local)) < 0) // 告诉socket要使用哪个地址。
         {
             logMessage(FATAL, "bind socket error");
             exit(BIND_ERR);
@@ -48,10 +51,11 @@ public:
         logMessage(NORMAL, "bind socket success");
     }
 
+// 将一个已经bind的ip和port的打开
     static void Listen(int sock)
     {
-        // 3. 设置socket 为监听状态
-        if (listen(sock, backlog) < 0) // 第二个参数backlog后面在填这个坑
+        // 3. 设置socket 为监听状态  
+        if (listen(sock, backlog) < 0) // 第二个参数backlog后面在填这个坑  内核允许“排队”的最大连接数（不是最大客户端数）
         {
             logMessage(FATAL, "listen socket error");
             exit(LISTEN_ERR);
@@ -59,6 +63,7 @@ public:
         logMessage(NORMAL, "listen socket success");
     }
 
+// accept函数 等+获取
     static int Accept(int listensock, std::string *clientip, uint16_t *clientport)
     {
         struct sockaddr_in peer;
@@ -72,7 +77,6 @@ public:
             *clientip = inet_ntoa(peer.sin_addr);
             *clientport = ntohs(peer.sin_port);
         }
-
         return sock;
     }
 };

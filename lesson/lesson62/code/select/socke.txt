@@ -1,0 +1,6 @@
+| 阶段         | socket 状态               |
+| ---------- | ----------------------- |
+| `socket()` | `CLOSED`                |
+| `bind()`   | `CLOSED`（只是绑定地址）        |
+| `listen()` | `LISTEN`                |
+| `accept()` | `ESTABLISHED`（新 socket） |
