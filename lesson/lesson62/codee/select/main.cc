@@ -1,84 +1,32 @@
-#include "util.hpp"
-#include <stdio.h>
-#include <functional>
-#include <vector>
-using func_t = std::function<void()>;
+#include "selectServer.hpp"
+#include "err.hpp"
+#include <memory>
 
-#define INIT(V) do{\
-        V.push_back(printlog);\
-        V.push_back(download);\
-        V.push_back(execuate);\
-        }while(0);
+using namespace std;
+using namespace select_ns;
 
-#define EXEC_OTHER(cbs) do{\
-    for(auto const& cb : cbs) cb();\
-}while(0)
-
-
-int main()
+static void usage(std::string proc)
 {
-  std::vector<func_t> cbs;
-  INIT(cbs);
+    std::cerr << "Usage:\n\t" << proc << " port" << "\n\n";
+}
 
-  setNoneBlock(0);
-  char buffer[1024] = {0};
-  while(true)
-  {
-    /*
-     *printf(">>> ");
-     *fflush(stdout);
-     */
-    ssize_t s = read(0, buffer, sizeof(buffer) - 1);
-    if(s > 0)
-    {
-      buffer[s] = 0;
-      std::cout<< "echo#: "<< buffer;
-    }
-    else if(s == 0) 
-    {
-      std::cout<< "read end" <<std::endl;
-      break;
-    }
-    else 
-    {
+// ./select_server 8081
+int main(int argc, char *argv[])
+{
+    // if(argc != 2)
+    // {
+    //     usage(argv[0]);
+    //     exit(USAGE_ERR);
+    // }
 
-      /*
-       *std::cout<< "result : " << s <<" : " << strerror(errno) <<std::endl; // 值是-1,不输入的时候算错误吗
-       */
-      /*
-       *std::cout<< "EAGAIN : " << EAGAIN << " EWOULDBLOCK : " << EWOULDBLOCK <<std::endl;
-       */
-      // 1.不算做错误，只不过是以错误的形式返回了。
-      // 2.我如何区分是真的错了，还是底层没有数据？
-      //    单纯返回值，无法区分的
-      //
-      
-      if(errno == EAGAIN || errno == EWOULDBLOCK)
-      {
-        std::cout<< "我没错 只是没有数据" <<std::endl;
-        EXEC_OTHER(cbs);
-      }
-      else if(errno == EINTR)
-      {
-        continue;
-      }
-      else 
-      {
-       std::cout<< "result : " << s <<" : " << strerror(errno) <<std::endl; // 值是-1,不输入的时候算错误吗
-       break;
-      }
+    // unique_ptr<SelectServer> svr(new SelectServer(atoi(argv[1])));
 
-    }
+    // std::cout << "test: " << sizeof(fd_set) * 8 << std::endl;
+    unique_ptr<SelectServer> svr(new SelectServer());
 
-    sleep(1);
-  }
+    svr->initServer();
 
+    svr->start();
 
-
-
-
-
-
-
-  return 0;
+    return 0;
 }
