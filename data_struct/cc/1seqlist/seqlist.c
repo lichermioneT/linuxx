@@ -49,7 +49,6 @@ void seqlistCheckCapacity(seqlist* ps)
       perror("realloc failed");
       exit(1);
     }
-    
     ps->_capacity = newCapacity;
     ps->_data = temp;
   }
@@ -134,7 +133,6 @@ void seqlistErase(seqlist* ps, size_t pos)
   {
     ps->_data[i] = ps->_data[i+1];
   }
-
   ps->_size--;
 }
 

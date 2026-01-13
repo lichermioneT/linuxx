@@ -1,0 +1,42 @@
+port: 7890
+socks-port: 7891
+redir-port: 7892
+allow-lan: false
+mode: Rule
+log-level: info
+external-controller: '127.0.0.1:9090'
+secret: ''
+
+proxies:
+  - name: SS_Node
+    type: ss
+    server: vfiles.gtimg.cn.e791.com
+    port: 29802
+    cipher: chacha20-ietf-poly1305
+    password: 43c331c1-8cf6-4ecd-9065-58478c5c1192
+    udp: true
+
+  - name: "SOCKS5_Node"
+    type: socks5
+    server: accel.ipflygates.com
+    port: 5001
+    username: RBj6XSxJzykqcQ
+    password: Tf1pcN8J
+    udp: true
+   
+
+proxy-groups:
+  - name: "链式代理"
+    type: relay
+    proxies:
+      - SS_Node
+      - SOCKS5_Node
+  - name: "节点选择"
+    type: select 
+    proxies:
+      - SOCKS5_Node
+      - SS_Node
+      - 链式代理
+
+rules:
+  - 'MATCH,链式代理'

@@ -86,7 +86,7 @@ namespace select_ns
                 {
                     if (fdarray[i] == defaultfd)
                         continue;
-                    FD_SET(fdarray[i], &rfds); // 合法 fd 全部添加到读文件描述符集中
+                    FD_SET(fdarray[i], &rfds);                // 合法 fd 全部添加到读文件描述符集中
 
                     if(maxfd < fdarray[i]) maxfd = fdarray[i]; // 更新所有fd中最大的fd
                 }

@@ -1,0 +1,93 @@
+select参数的输入输出型。
+输入用户关系哪些
+输出哪些就绪了的
+
+1select能够等待的文件fd是有上限的，除非重新改内核，否则无法解决
+2必须借助第三方数组，来维护合法的fd
+3select的大部分参数是输入输出型的，调用select前，需要重新设置fd,调用之后，还要检查更新fd。
+4select第一个参数是最大文件描述符加-呢？ 需要遍历的---内核层面的。
+5select采用位图，用户--》内核  内核--》用户。来回的数据拷贝。数据拷贝的问题。
+
+poll也是linux的多路转接的方案。
+1.select上限的问题
+2.每次都要设置的的问题
+
+select和poll作用是一模一样的。
+int epoll(struct pollfd *fds, nfds_t nfds, int timeout);
+fds:动态数组，nfds数组对应的长度, 
+时间单位毫秒
+大于零：在timeout内阻塞，否则，非阻塞返回一下的。
+等于零：非阻塞方式
+小于零：阻塞方式
+ppoll
+1输入和输出分类。不需要对参数进行重新设定
+2select等待文件有上限的问题。
+
+
+epoll
+1epoll接口
+  a.int = epoll_create()
+    创建一个epoll模型。
+    返回个文件描述符
+  b.int epoll_ctl() 用户告诉内核，你要帮我关系哪些文件描述符的哪些事件
+    int epfd,
+    int op  增，修，删除。
+            epoll_ctl_add mod del.
+  c.
+  epoll_event{
+    uint32_t, event;
+    epoll_data_t data;
+  }
+
+非常重要的
+struct epoll_data{
+  void* ptr;
+  int fd;
+  uint32_t u32;
+  uint64_t u64;
+}
+
+int epoll_wait()
+返回值 0超时 小于零错误，大于零准备的个数。
+
+2epoll的底层原理
+
+用户
+系统调用
+OS
+驱动程序
+硬件
+question:OS怎么知道网络中有数据到来了？输入网卡设备。
+
+
+OS
+epoll模型
+epoll维护一颗红黑数。
+每一个节点 int sock; uint32_t events。用户告诉内核，哪些sock上的events事件需要OS关系。和其它信息的。     用户到内核
+就绪队列。核心数据 int sock; uint32_t events.每一个节点：内核告诉用户，哪些sock上的evnet事件已经就绪了。 内核到用户
+就绪的本质就是 红黑树到就绪队列。
+每一个节点对应的是一个fd,底层有对应的struct file对象
+ 
+struct file{
+  void* private_data;
+}
+
+ 网络协议栈
+
+网卡驱动
+create ctl wait
+
+不需要遍历，只需要检查，
+
+
+
+3只关心epoll的server
+
+
+算法
+git
+mysql
+redis
+protobuf
+docker
+

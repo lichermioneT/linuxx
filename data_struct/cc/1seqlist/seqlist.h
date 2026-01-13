@@ -10,6 +10,7 @@ typedef struct seqlist
   size_t _size;           // 当前里面有多少个数据
   size_t _capacity;       // 开辟空间的大小
 }seqlist;
+
 void seqlistInit(seqlist* ps, size_t capacit) ;// 需要操作结构体，所有传入指针。这里结构体是变量s，所以是一级指针。
 void seqlistDestory(seqlist* ps);
 void seqlistPrint(seqlist* ps);
