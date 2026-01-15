@@ -229,7 +229,8 @@
 
 
 ```c
-struct task_struct {
+struct task_struct 
+{
     pid_t pid;                     // 进程号
     long state;                    // 进程状态
     int prio;                      // 优先级
@@ -560,7 +561,7 @@ int main()
 
 **并行：多个CPU执行，多个 进程。**
 
-**并发：多个进程轮流到CPU执行。 看起来，大家都在执行。**   **时间片轮转的策略。进程不断切换**
+**并发：多个进程轮流到CPU执行。 看起来，大家都在执行。**   **时间片轮转的策略。进程不断切换。**
 
 **CPU任何一个时刻只能执行一个进程。**
 
@@ -881,8 +882,6 @@ int main()
 int putenv(char *string);**
 
 **putenv不重要**
-
-
 
 
 
