@@ -1,0 +1,6 @@
+apple:苹果
+banana:香蕉
+hello:你好
+bite:比特
+success:成功
+lic:军少
