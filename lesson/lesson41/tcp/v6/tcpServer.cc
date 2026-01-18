@@ -1,5 +1,4 @@
 #include "tcpServer.hpp"
-#include "daemon.hpp"
 #include <memory>
 
 using namespace server;
@@ -23,8 +22,9 @@ int main(int argc, char* argv[])
 
   uint16_t port = atoi(argv[1]);
   unique_ptr<TcpServer> tsvr(new TcpServer());
-  daemonSelf();
   tsvr->initServer(); // 初始化
   tsvr->start();      // 启动服务器
-  return 0;
+
+
+    return 0;
 }
