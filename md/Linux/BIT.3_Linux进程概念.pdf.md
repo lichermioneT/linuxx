@@ -94,7 +94,7 @@
 
 
 
-## 2操作系统(Operator System)
+## 2操作系统(OS)
 
 **OS是一个进行软硬件的资源管理的软件。**
 
@@ -222,12 +222,6 @@
 
 
 
-
-
-
-
-
-
 ```c
 struct task_struct 
 {
@@ -322,7 +316,7 @@ int main()
 
 ```
 
-
+![image-20260119105646884](picture/image-20260119105646884.png)
 
 
 
@@ -415,9 +409,41 @@ int main()
  **7.停止**
  **8.挂机**
  **9.死亡**
+
+**总体先说明一句**（非常重要）
+
+**Linux 内核中主要状态定义在 `task_struct->state` 中。**
+
+| 进程状态（概念）     | Linux 内核状态          | 是否可运行 | 本质在等待什么     | 典型示例                 |
+| -------------------- | ----------------------- | ---------- | ------------------ | ------------------------ |
+| 运行（Running）      | `TASK_RUNNING`          | 是         | 无                 | 正在 CPU 上执行          |
+| 就绪（Ready）        | `TASK_RUNNING`          | 是         | **CPU**            | 等待调度                 |
+| 阻塞（Blocked）      | `TASK_INTERRUPTIBLE`    | 否         | I/O、锁、条件变量  | `read()`、`mutex_lock()` |
+| 不可中断阻塞         | `TASK_UNINTERRUPTIBLE`  | 否         | 关键 I/O（磁盘等） | 磁盘读写                 |
+| 等待（Waiting）      | 阻塞态统称              | 否         | 事件 / 资源        | `waitpid()`              |
+| 睡眠（Sleep / 挂机） | `TASK_INTERRUPTIBLE`    | 否         | **时间**           | `sleep()`                |
+| 停止（Stopped）      | `TASK_STOPPED`          | 否         | **恢复信号**       | `Ctrl+Z`                 |
+| 挂起（Suspended）    | `TASK_STOPPED / TRACED` | 否         | 信号 / 调试器      | `SIGSTOP` / gdb          |
+| 僵尸（Zombie）       | `EXIT_ZOMBIE`           | 否         | **父进程回收**     | 父进程未 `wait()`        |
+| 死亡（Dead）         | `EXIT_DEAD`             | 否         | 无                 | PCB 已释放               |
+
+| 你给的名称 | Linux 内核状态                       | 说明          |
+| ---------- | ------------------------------------ | ------------- |
+| 新建       | 短暂过渡                             | 不暴露        |
+| 运行       | TASK_RUNNING                         | 含运行 + 就绪 |
+| 就绪       | TASK_RUNNING                         | Linux 不单列  |
+| 阻塞       | TASK_INTERRUPTIBLE / UNINTERRUPTIBLE | 等资源        |
+| 等待       | 阻塞态                               | 抽象概念      |
+| 挂机       | TASK_INTERRUPTIBLE                   | 等时间        |
+| 挂起       | TASK_STOPPED / TRACED                | 信号控制      |
+| 停止       | TASK_STOPPED / TRACED                | 同上          |
+| 死亡       | EXIT_ZOMBIE / EXIT_DEAD              | 生命周期结束  |
+
+一句话高质量总结（推荐你记住）
+
+> **Linux 将“运行”和“就绪”统一为 TASK_RUNNING，其余状态本质上是进程因等待资源、事件或信号而暂时无法被调度，最终在 EXIT_ZOMBIE/EXIT_DEAD 中结束生命周期。**
+
  **都是操作系统的说法，太抽象了，不是具体的一款操作系统。**
-
-
 
 ![image-20251109191450337](./picture/image-20251109191450337.png)
 
@@ -603,9 +629,21 @@ int main()
 
 ![image-20251112115132338](./picture/image-20251112115132338.png)
 
-
-
 **难学的东西是知识，简单的东西是信息。**
+
+### 总结
+
+**进程切换的本质，是 CPU 从一个进程的“执行上下文”切换到另一个进程；因此，凡是与“继续正确执行”相关的状态，都必须被保存和恢复。**
+
+| 类别       | 保存 / 恢复内容           | 说明         |
+| ---------- | ------------------------- | ------------ |
+| CPU 上下文 | PC、通用寄存器、SP、FLAGS | 核心         |
+| 内核栈     | 栈指针、栈内容            | 每进程独立   |
+| 地址空间   | 页表基址（CR3）           | 切换虚拟内存 |
+| PCB        | 状态、优先级、时间片      | 调度依据     |
+| 信号       | pending / mask            | 语义一致     |
+| FPU / SIMD | 浮点与向量寄存器          | 延迟保存     |
+| TLB        | 刷新或标记                | 架构相关     |
 
 
 
@@ -890,8 +928,6 @@ int putenv(char *string);**
 **#include <unistd.h>**
 
 **int stat(const char *pathname, struct stat *statbuf);**
-
-
 
 
 
