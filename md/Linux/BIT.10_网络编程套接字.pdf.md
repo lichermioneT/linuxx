@@ -1779,11 +1779,17 @@ private:
 
 
 
+## 17setsockopt
 
 
 
-
-
+int setsockopt(
+    int sockfd,
+    int level,
+    int optname,
+    const void *optval,
+    socklen_t optlen
+);
 
 
 
