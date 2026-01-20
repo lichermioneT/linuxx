@@ -44,10 +44,12 @@ namespace server
             // 1.2 我们保证，我们req_text里面一定是一个完整的请求："content_len"\r\n"x op y"\r\n
             if (!recvPackage(sock, inbuffer, &req_text))
                 return;
-            std::cout << "带报头的请求：\n" << req_text << std::endl;
+
+            std::cout << "带报头的请求：\n" << req_text << std::endl; // 
+            // "x op y"
             if (!deLength(req_text, &req_str))
                 return;
-            std::cout << "去掉报头的正文：\n" << req_str << std::endl;
+            std::cout << "去掉报头的正文：\n" << req_str << std::endl; // 
             
 
             // 2. 对请求Request，反序列化

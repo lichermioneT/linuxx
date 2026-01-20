@@ -32,6 +32,7 @@ std::string enLength(const std::string &text)
 }
 
 // "content_len"\r\n"exitcode result"\r\n
+// "exitcode result"
 bool deLength(const std::string &package, std::string *text)
 {
     auto pos = package.find(LINE_SEP);
