@@ -11,7 +11,7 @@ urldecode:解码
 HTTP是以行为单位的请求
 HTTP     : request
 请求行   :   GET  url   http version  (http1.0, 1.1, 2.0) \r\n
-请求报头 : name:value (attribute)
+请求报头 : name:value (attribute) \r\n
 请求报头 : name:value (attribute)
 请求报头 : name:value (attribute)
 请求报头 : name:value (attribute)
@@ -60,12 +60,6 @@ HTTP响应四部分：状态行，响应报头，空行，相应的正文。
 2.请求好响应是怎么做到序列化和反序列化的？
   http自己实现的，第一行+请求/响应报头，只要按照\r\n将字符串1->n分开即可
   正文不用做。
-
-
-
-
-
-
 
 
 

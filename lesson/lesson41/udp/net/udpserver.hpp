@@ -75,6 +75,9 @@ public:
       socklen_t len = sizeof(peer);      
       ssize_t s =recvfrom(_sockfd, buffer, sizeof(buffer)-1, 0, (struct sockaddr*)&peer, &len);
       //1.数据是什么 2.谁发的的
+      /*
+       *必须传入地址参数来获取发送方信息
+       */
       
       if(s > 0)
       {
@@ -88,13 +91,9 @@ public:
       }
 
     }
-
-
   }
   ~udpServe()
   {
-
-
   }
 private:
   func_t _callback;

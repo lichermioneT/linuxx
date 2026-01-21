@@ -37,31 +37,32 @@ public:
       //写服务器是一家公司，客户端是无数家公司。
       //os帮你合理安排端口资源
       //什么时候bind
-
-
   }
 
   void run()
   {
     struct sockaddr_in server;
     memset(&server, 0, sizeof(server));
-
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr(_serverip.c_str());
-    server.sin_port = htons(_serverport);
+    server.sin_addr.s_addr = inet_addr(_serverip.c_str()); // in_addr_t internet address(const char*) 主机到网络字节序号
+    server.sin_port = htons(_serverport);                  // 同样这里也是主机字节序到网络字节序 
 
     string message;
     while(!_quit)
     {
       cout<<"message enter#";
       cin>>message;
-      sendto(_sockfd, message.c_str(), message.size(), 0, (struct sockaddr*)&server, sizeof(server));
+
+      //UDP协议需要使用sendto, 每次发送带上服务端的信息
+      sendto(_sockfd, message.c_str(), message.size(), 0, (struct sockaddr*)&server, sizeof(server)); // udp不是面向连接的，所以每次都必须指明地址的。
+      /*
+       *简单说：因为 UDP 是无连接的，操作系统不知道你要把数据发给谁，所以每次发送都必须明确指定接收方的地址信息。
+       */
     }
   }
-  ~udpclient()
-  {
 
-  }
+  ~udpclient()
+  {}
 
 private:
   string _serverip;
@@ -69,6 +70,4 @@ private:
   int _sockfd;
   bool _quit;
 };
-
-
 }
