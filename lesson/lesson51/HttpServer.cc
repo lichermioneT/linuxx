@@ -16,6 +16,7 @@ std::string suffixToDesc(const std::string suffix)
         ct += "text/html";
     else if (suffix == ".jpg")
         ct += "application/x-jpg";
+    
     ct += "\r\n";
     return ct;
 }

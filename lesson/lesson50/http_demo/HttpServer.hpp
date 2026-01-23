@@ -60,7 +60,8 @@ namespace server
                 exit(LISTEN_ERR);
             }
         }
-        
+
+// 这里就是处理http的请求。
         void HandlerHttp(int sock)
         {
             // 1. 读到完整的http请求
@@ -69,15 +70,15 @@ namespace server
             // 4. resp序列化
             // 5. send
             char buffer[4096];
-            HttpRequest req;
-            HttpResponse resp;
+            HttpRequest req;    // 请求对象
+            HttpResponse resp;  // 响应对象
             size_t n = recv(sock, buffer, sizeof(buffer)-1, 0); // 大概率我们直接就能读取到完整的http请求
             if(n > 0)
             {
                 buffer[n] = 0;
-                req.inbuffer = buffer;
-                req.parse();
-                _func(req, resp); // req -> resp
+                req.inbuffer = buffer;  // 假设一个完整的请求。
+                req.parse();            // method url httpversion path 
+                _func(req, resp);       // req -> resp  开始响应了
                 send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0);
             }
         }
@@ -102,7 +103,9 @@ namespace server
                 {
                     close(_listensock);
                     if(fork()>0) exit(0);
+
                     HandlerHttp(sock);
+
                     close(sock);
                     exit(0);
                 }

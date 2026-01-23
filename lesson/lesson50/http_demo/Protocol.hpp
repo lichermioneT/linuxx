@@ -22,6 +22,10 @@ public:
         if(line.empty()) return;
         // 2. 从请求行中提取三个字段
         // std::cout << "line: " << line << std::endl;
+// GET /a/b/c.html HTTP/1.1
+// method      = "GET"
+// url         = "/a/b/c.html"
+// httpversion = "HTTP/1.1"
         std::stringstream ss(line);
         ss >> method >> url >> httpversion;
 

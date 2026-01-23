@@ -11,6 +11,7 @@ public:
     {
         auto pos = buffer.find(sep);
         if(pos == std::string::npos) return "";
+        
         std::string sub = buffer.substr(0, pos);
         buffer.erase(0, sub.size()+sep.size());
         return sub;
