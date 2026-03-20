@@ -18,6 +18,8 @@
 
 
 
+**公网IP，唯一的一台主机**
+
 ![image-20251217095440194](picture/image-20251217095440194.png)
 
 
@@ -50,6 +52,8 @@
 
 **网络通信的本质：其实就是进程间通信！！**
 
+**端口号：2字节（16位）**
+
 
 
 **服务端   网络   客户端**
@@ -80,13 +84,17 @@
 
 **pcb可能是多个数据结构的 点。多种数据结构的组合点。**
 
-**根据网络端口找到进程数据。**
+**根据网络端口找到进程数据。 根据 pcb   和 port  的映射关系**
+
+**找到port就找到了进程的了。**
 
 
 
 **一个进程可以绑定多个端口号，但是一个端口号不能被多个进程绑定。**
 
 **我们在网络通信的过程中，IP+PORT标识唯一性  client-->server。除了数据，需要把自己的ip和port发给对方吗？需要的，我们还要发回来 **
+
+**除了数据，需要把自己的ip和port发给对方吗？需要的，我们还要发回来 **
 
 **未来发数据的时候，一定会  多发 一部分数据--以协议的形式呈现。**
 
@@ -103,6 +111,8 @@
  **我们在网络通信的过程中，IP+PORT标识唯一性  client-->server。除了数据，需要把自己的ip和port发给对方吗？需要的，我们还要发回来**
 
  **未来发数据的时候，一定会  多发 一部分数据--以协议的形式呈现。**
+
+**服务端已经写死了的。**
 
 
 
@@ -203,6 +213,8 @@
 
 ## 3网络字节序
 
+**IP和PORT的字节序需要进行  主机序列和网络序列的。**
+
 **发送主机通常将发送缓冲区中的数据按内存地址从低到高的顺序发出** **加加比较方便**
 
 **c语言：小小小。小端。**
@@ -255,6 +267,8 @@
 
 ## 4SOCKET编程接口
 
+![image-20260320155007482](picture/image-20260320155007482.png)
+
 **IP + PORT  == 套接字(SOCKET)**
 
 **socket:插头**
@@ -285,13 +299,17 @@
 
 **操作系统级别的接口**
 
+**inet unix inet6。**
+
 ![image-20251217104348773](picture/image-20251217104348773.png)
 
 ![image-20260116095711206](picture/image-20260116095711206.png)
 
 **基类，这不就还是多态吗**
 
+**套接字编程的关键信息的。**
 
+**通信的协议 + ip + port。**
 
 
 
@@ -352,6 +370,72 @@ struct in_addr
 **IP1: 127.0.0.1     (环回地址，只能本机访问)
 IP2: 192.168.1.100 (局域网地址，内网可访问)
 IP3: 203.0.113.5   (公网地址，互联网可访问)**
+
+
+
+### 5.1socketAPI
+
+```c++
+// 创建一个网络文件描述符
+int socket(int domain, int type, int protocol);
+// domain:AF_INET(PF_INET)
+// type:SOCK_STREAM, SOCK_DGRAM
+// protocol:0
+// return value: file discriptor
+
+ void bzero(void *s, size_t n);
+
+// port的接口
+// htons
+// htonl
+// ntohs
+// ntohl
+
+// ip地址
+// 点分十进制转换成数字滴
+in_addr_t inet_addr(const char *cp);
+
+/*
+struct sockaddr_in
+{
+	//1.通信的协议
+	//2.port
+	//3.ip 
+	
+	sa_family_t     sin_famiiy
+	in_port_t       sin_port
+	struct in_addr  sin_addr.s_addr
+}
+*/
+ int bind(int socket, const struct sockaddr *address, socklen_t address_len);
+ // socket: file discriptor
+ // 
+
+// 127.0.0.1 本地环回地址测试用的。
+// 公网ip地址
+
+ ssize_t recvfrom(int sockfd, // 那个文件符读
+                  void *buf,  // 读到哪里
+                  size_t len, // 缓冲区的长度
+                  int flags,  // 0 阻塞式读取
+                  struct sockaddr *src_addr, // 谁发数据的，他的信息存在。输出型参数。sockaddr_in
+                  socklen_t *addrlen);
+
+char *inet_ntoa(struct in_addr in); // 网络字节序的数字转换成点分十进制的数据
+
+ssize_t sendto(int sockfd, 
+               const void *buf, 
+               size_t len, 
+               int flags,
+               const struct sockaddr *dest_addr, 
+               socklen_t addrlen);
+
+
+```
+
+
+
+
 
 
 
@@ -1793,11 +1877,15 @@ int setsockopt(
 
 
 
+## 18总结
 
+**1.ip主机的唯一性，port进程的唯一性。网络通信实际上就是进程间通信的。**
 
+**2.tcp和udp，一个可靠一个不可靠。相对而言的。可靠维护麻烦，不可靠简单方便的。**
 
+**3.网络字节序都是大端的， htons htonl, ntohs ntohl. 字节序只需要关系 ip + port就行了的**
 
-
+**4.struct add_in.需要填充的三个数据段。  通信的协议是什么？ ip+port.**
 
 
 
