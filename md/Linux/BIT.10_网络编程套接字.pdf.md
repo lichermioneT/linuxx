@@ -373,13 +373,13 @@ IP3: 203.0.113.5   (公网地址，互联网可访问)**
 
 
 
-### 5.1socketAPI
+### 5.1socketAPI_udp
 
 ```c++
 // 创建一个网络文件描述符
 int socket(int domain, int type, int protocol);
 // domain:AF_INET(PF_INET)
-// type:SOCK_STREAM, SOCK_DGRAM
+// type:SOCK_STREAM, SOCK_DGRAM datagram(数据报的意思)
 // protocol:0
 // return value: file discriptor
 
@@ -393,7 +393,7 @@ int socket(int domain, int type, int protocol);
 
 // ip地址
 // 点分十进制转换成数字滴
-in_addr_t inet_addr(const char *cp);
+in_addr_t inet_addr(const char *cp); // internet address
 
 /*
 struct sockaddr_in
@@ -402,11 +402,13 @@ struct sockaddr_in
 	//2.port
 	//3.ip 
 	
-	sa_family_t     sin_famiiy
-	in_port_t       sin_port
-	struct in_addr  sin_addr.s_addr
+	sa_family_t     sin_famiiy  // socketaddress_famiiy_type             socket internet family
+	in_port_t       sin_port    // internet_port_type                    socket internet port
+	struct in_addr  sin_addr.s_addr // Internet Address(Socket Address)  
 }
 */
+
+
  int bind(int socket, const struct sockaddr *address, socklen_t address_len);
  // socket: file discriptor
  // 
@@ -421,7 +423,7 @@ struct sockaddr_in
                   struct sockaddr *src_addr, // 谁发数据的，他的信息存在。输出型参数。sockaddr_in
                   socklen_t *addrlen);
 
-char *inet_ntoa(struct in_addr in); // 网络字节序的数字转换成点分十进制的数据
+char *inet_ntoa(struct in_addr in); // 网络字节序的数字转换成点分十进制的数据 Network To ASCII (network toaSCII)
 
 ssize_t sendto(int sockfd, 
                const void *buf, 
@@ -435,7 +437,71 @@ ssize_t sendto(int sockfd,
 
 
 
+```c++
 
+/*
+函数,缩写含义,方向,老函数对应
+inet_pton(),Presentation → Numeric,字符串 → 二进制,inet_aton()
+inet_ntop(),Numeric → Presentation,二进制 → 字符串,inet_ntoa()
+a = ASCII / address（老函数）
+n = network / numeric
+p = presentation
+to = 转换方向
+*/
+
+ FILE *popen(const char *command, const char *type);
+// pipe+forck+exec* = popen
+// command:指令
+// type:
+```
+
+
+
+### 5-2socketAPI_tcp
+
+```c++
+// server
+int listen(int sockfd, int backlog);
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen); // 吃鱼吗？小二为你在线服务。
+// netstat -nltp
+
+// client
+  int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+
+ssize_t read(int fildes, void *buf, size_t nbyte);
+ssize_t write(int fildes, const void *buf, size_t nbyte);
+
+```
+
+**一台机器的原因的**
+
+![image-20260322114422376](picture/image-20260322114422376.png)
+
+
+
+**总结和复习**
+
+**服务器的写法**
+
+**1.服务器和接收信息的解耦。**
+
+**2.服务器初始化就是 a.创建套接字和b.绑定套接字    细节绑定:ip INADDR_ANY.  bind设置进内核去。bind的字节序，ip+port。**
+
+**3.死循环然后接收信息。然后回调函数处理接收的信息。**
+
+​	**1.发的信息是什么。还知道谁发的。**
+
+​	**2.读完数据了，然后处理。进行回调函数的。**
+
+​	**3.服务器的ip一般不明确指定的， 必须是知名的端口信息。**
+
+**客户端的写法**
+
+**1.我们访问，必须知道服务器的IP + PORT.**
+
+**2.创建套接字，不需要显示的bind 。 sendto信息的时候OS自动给你bind。(客户端存在port就行的。)**
+
+**3.发给谁。**
 
 
 
@@ -707,8 +773,6 @@ private:
   int _sockfd;
   bool _quit;
 };
-
-
 }
 
 ```
