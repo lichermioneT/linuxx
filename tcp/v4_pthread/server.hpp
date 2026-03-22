@@ -6,6 +6,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <pthread.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <cstring>
 #include <stdio.h>
@@ -14,6 +17,18 @@
 using namespace std;
 static const uint16_t gport = 8080;
 
+class server;
+class threadData 
+{
+public:
+  threadData(server* self, int sock)
+    :_self(self)
+    ,_sock(sock) 
+    {}
+public:
+  server* _self;
+  int _sock;
+};
 
 class server
 {
@@ -67,7 +82,7 @@ public:
       
       struct sockaddr_in client;
       socklen_t len = sizeof(client);
-      int sock = accept(_sock, (struct sockaddr*)&client, &len);
+      int sock = accept(_sock, (struct sockaddr*)&client, &len); // 这里来一个监听一个文件描述符号的。
       if(sock < 0)
       {
         logmessage(ERROR, "accept failed");
@@ -76,13 +91,23 @@ public:
       logmessage(NORMAL, "accept a new link success");
 
       cout<< "sock:" << sock <<endl;
-
-      // 2.通信了，面向字节流的，都是文件操作的。
-      serverio(sock);
-      close(sock);   // 关闭已经使用完的文件描述符。 
-
-      // 这里需要重新设计一下的
+      
+      pthread_t tid;
+      threadData* td = new threadData(this, sock);
+      pthread_create(&tid, nullptr, threadRoutine, td);
     }
+  }
+
+  static void* threadRoutine(void* args)
+  {
+    pthread_detach(pthread_self()); // 线程分离了的
+
+    threadData* td = static_cast<threadData*>(args);
+    td->_self->serverio(td->_sock);
+
+    delete td;
+    close(td->_sock);
+    return nullptr;
   }
 
   void serverio(int sockfd)
@@ -106,6 +131,7 @@ public:
       {
         // 这里n==0代表clien退出了的。
         logmessage(NORMAL, "client quit");
+        break;
       }
     }
   }

@@ -28,6 +28,7 @@ public:
 
   void init()
   {
+// 1.客户端创建套接字。套接字使用的通信协议 和 通信类型。然后摸就是零。
    _socketfd = socket(AF_INET, SOCK_DGRAM, 0);
    if(_socketfd == -1)
    {
@@ -52,8 +53,16 @@ public:
      server.sin_family = AF_INET;
      server.sin_addr.s_addr = inet_addr(_ip.c_str());
      server.sin_port = htons(_port);
-
+// 2.客户端不需要显示的bind，OS会自动帮你bind，socket和你的ip+port信息的。
+// 3.send的时候给你bind滴。sendto.send的消息之外还有,自己的信息需要发送过去的呢。
      sendto(_socketfd, buffer, send_len, 0, (struct sockaddr*)&server, len);
+      
+     char outbuffer[1024] = {0};
+     struct sockaddr_in server_info;
+     socklen_t len_in =  sizeof(server_info);
+     recvfrom(_socketfd, outbuffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&server_info, &len_in);
+     cout<< outbuffer <<endl;
+
     }
   }
 

@@ -2,7 +2,16 @@
 
 
 
-
+//1.服务端
+//  1.socket
+//  2.bind
+//  3.recvfrom
+//  4.sendto
+//
+//2.客户端
+//  1.socket
+//  2.sendto
+//  3.recvfrom
 
 int main(int argc, char* argv[])
 {
