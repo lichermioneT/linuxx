@@ -1,0 +1,6 @@
+apple:苹果
+hello:你好
+socket:套接字
+hi:嗨
+lic:军少
+goodman:你是个好人
