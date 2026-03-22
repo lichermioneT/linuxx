@@ -470,7 +470,8 @@ int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen); // 吃鱼吗�
 
 ssize_t read(int fildes, void *buf, size_t nbyte);
 ssize_t write(int fildes, const void *buf, size_t nbyte);
-
+sighandler_t signal(int signum, sighandler_t handler);
+	// signal(SIGCHLD, SIG_IGN);
 ```
 
 **一台机器的原因的**
@@ -1953,7 +1954,11 @@ int setsockopt(
 
 
 
+## **线程池结束了回来补充 谢谢。**
 
+**47  47**
+
+**![image-20260322163400706](picture/image-20260322163400706.png)**
 
 
 
