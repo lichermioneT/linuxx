@@ -10,13 +10,18 @@ using namespace std;
 #define SEP_LEN strlen(SEP)
 
 #define LINE_SEP "\r\n"
-#define LINE_SEP_lEN strlen(LINE_SEP)
-
+#define LINE_SEP_LEN strlen(LINE_SEP)
 
 //"exotcode result"  --> content_len "\r\n" exotcode result "\r\n"
+// enlength:后的结果
+// size 
+// exotcode result 
+
+// 
 string enlength(const string& text)
 {
     string send_string = to_string(text.size());
+
     send_string += LINE_SEP;
     send_string += text;
     send_string += LINE_SEP;
@@ -24,8 +29,8 @@ string enlength(const string& text)
     return send_string;
 }
 
-
-// "x op y"
+// content_len "\r\n" exotcode result "\r\n"
+// *text = exotcode result
 bool delength(const string& package, string* text)
 {
   auto pos = package.find(LINE_SEP); 
@@ -34,20 +39,15 @@ bool delength(const string& package, string* text)
   string text_len_string = package.substr(0, pos);
   size_t text_len = stoi(text_len_string);
   
-  *text = package.substr(pos + LINE_SEP_lEN, text_len);
-  
+  *text = package.substr(pos + LINE_SEP_LEN, text_len);
   return true; 
 }
 
+// 请求序列化和反序列化
 class request 
 {
 public:
-  request()
-    :_x(0)
-    ,_y(0)
-    ,_op(0)
-  {}
-  request(int x, int y, char op)
+  request(int x = 0, int y = 0, char op = '+')
     :_x(x)
     ,_y(y)
     ,_op(op)
@@ -62,6 +62,10 @@ public:
     string x_string = to_string(_x);
     string y_string = to_string(_y);
     
+// x\r\nop\r\ny
+// x
+// op 
+// y
     *out += x_string;
     *out += SEP;
     *out += _op;
@@ -72,7 +76,7 @@ public:
   }
 
 //2.反序列化
-//"x op y"
+// x\r\nop\r\ny
   bool deserialize(const string& in)
   {
     auto left = in.find(SEP);
@@ -84,8 +88,8 @@ public:
     if(right - left - SEP_LEN != 1)
       return false;
 
-    string x_string = in.substr(left);
-    string y_string = to_string(right + SEP_LEN);
+    string x_string = in.substr(0,left);
+    string y_string = in.substr(right + SEP_LEN);
     if(x_string.empty()) return false;
     if(y_string.empty()) return false;
 
@@ -104,7 +108,7 @@ public:
 };
 
 
-
+// 响应的序列化
 class response
 {
 public:
@@ -113,6 +117,7 @@ public:
     ,result(result_)
   {}
 
+// exotcode\r\nresult
   bool serialize(string* out) 
   {
     *out = "";
@@ -126,6 +131,9 @@ public:
     return true;
   }
 
+// exotcode\r\nresult
+// exotcode 
+// result
   bool deserialize(const string& in)
   {
     // exit result;
@@ -164,7 +172,7 @@ while (true)
         std::string text_len_string = inbuffer.substr(0, pos);
         int text_len = std::stoi(text_len_string);
 
-        size_t total_len = text_len_string.size() + 2*LINE_SEP_lEN + text_len;
+        size_t total_len = text_len_string.size() + 2*LINE_SEP_LEN + text_len;
         // text_len_string + "\r\n" + text + "\r\n" <= inbuffer.size();
         if(inbuffer.size() < total_len) continue;
 

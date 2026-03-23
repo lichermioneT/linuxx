@@ -33,7 +33,7 @@ typedef function<bool(const request& req, response& resp)> func_t;
      //1.怎么保证是一个完整的数据请求呢？
 // 不能保证，明确报文的边界信息的。
     string req_text, req_str;                // 服务端读取一个明确的请求来的
-    if(!recvRequset(sock, inbuffer,  &req_text)) return;
+    if(!recvRequset(sock, inbuffer,  &req_text)) return; // req_text。请求的文本， content_Len \r\n x \r\n op \r\n y
     if(!delength(req_text, &req_str)) return;
 
     // 2.反序列化
@@ -55,7 +55,6 @@ typedef function<bool(const request& req, response& resp)> func_t;
     string send_string = enlength(resp_str);
 
     send(sock, send_string.c_str(), send_string.size(), 0);
-  
     }
   }
 class server
