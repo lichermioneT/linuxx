@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
 using namespace std;
 
 #define SEP " "
@@ -10,20 +12,41 @@ using namespace std;
 #define LINE_SEP "\r\n"
 #define LINE_SEP_lEN strlen(LINE_SEP)
 
-const string& enlength(const string& text)
+
+//"exotcode result"  --> content_len "\r\n" exotcode result "\r\n"
+string enlength(const string& text)
 {
-  
+    string send_string = to_string(text.size());
+    send_string += LINE_SEP;
+    send_string += text;
+    send_string += LINE_SEP;
+
+    return send_string;
 }
 
 
-const string& delength(const string& package)
+// "x op y"
+bool delength(const string& package, string* text)
 {
+  auto pos = package.find(LINE_SEP); 
+  if(pos == string::npos) return false;
+
+  string text_len_string = package.substr(0, pos);
+  size_t text_len = stoi(text_len_string);
   
+  *text = package.substr(pos + LINE_SEP_lEN, text_len);
+  
+  return true; 
 }
 
 class request 
 {
 public:
+  request()
+    :_x(0)
+    ,_y(0)
+    ,_op(0)
+  {}
   request(int x, int y, char op)
     :_x(x)
     ,_y(y)
@@ -44,14 +67,33 @@ public:
     *out += _op;
     *out += SEP;
     *out += y_string;
-    *out += LINE_SEP;
+
+    return true;
   }
 
 //2.反序列化
-//"x op y\r\n"
+//"x op y"
   bool deserialize(const string& in)
   {
+    auto left = in.find(SEP);
+    auto right = in.rfind(SEP);
+    if(left == string::npos || right == string::npos)
+      return false;
+    if(left == right)
+      return false;
+    if(right - left - SEP_LEN != 1)
+      return false;
 
+    string x_string = in.substr(left);
+    string y_string = to_string(right + SEP_LEN);
+    if(x_string.empty()) return false;
+    if(y_string.empty()) return false;
+
+    _x = stoi(x_string);
+    _y = stoi(y_string);
+    _op = in[left + SEP_LEN];
+    
+    return true;
   }
 
 public:
@@ -66,14 +108,82 @@ public:
 class response
 {
 public:
-  response()
-    :exotcode(0)
-    ,result(0)
+  response(int exotcode_ = 0, int result_ = 0)
+    :exotcode(exotcode_)
+    ,result(result_)
   {}
 
-  bool serialize(string* out){}
-  bool deserialize(){}
+  bool serialize(string* out) 
+  {
+    *out = "";
+    string ec_string = to_string(exotcode);
+    string re_string = to_string(result); 
+
+    *out += ec_string;
+    *out += SEP;
+    *out += re_string;
+
+    return true;
+  }
+
+  bool deserialize(const string& in)
+  {
+    // exit result;
+    auto mid = in.find(SEP);
+    if(mid == string::npos) return false;
+    
+    string ec_string = in.substr(0, mid);
+    string re_string = in.substr(mid + SEP_LEN);
+
+    if(ec_string.empty() || re_string.empty()) return false;
+
+    exotcode = stoi(ec_string);
+    result = stoi(re_string);
+
+    return true;
+  }
 public:
   int exotcode; // 0成功，!0失败。
   int result;   // 真正的计算的结果
 };
+
+bool recvRequset(int sock, string& inbuffer, string* text)
+{
+char buffer[1024];
+while (true)
+{
+    ssize_t n = recv(sock, buffer, sizeof(buffer)-1, 0);
+    if(n > 0)
+    {
+        buffer[n] = 0;
+        inbuffer += buffer;
+        // 分析处理
+        auto pos = inbuffer.find(LINE_SEP);
+        if(pos == std::string::npos) continue;
+
+        std::string text_len_string = inbuffer.substr(0, pos);
+        int text_len = std::stoi(text_len_string);
+
+        size_t total_len = text_len_string.size() + 2*LINE_SEP_lEN + text_len;
+        // text_len_string + "\r\n" + text + "\r\n" <= inbuffer.size();
+        if(inbuffer.size() < total_len) continue;
+
+        // 至少有一个完整的报文
+        *text = inbuffer.substr(0, total_len);
+        inbuffer.erase(0, total_len);
+        break;
+    }
+    else if(n  == 0)
+    {
+      return false;
+    }
+    else 
+    {
+      return false;
+    }
+}
+
+return true;
+  
+}
+

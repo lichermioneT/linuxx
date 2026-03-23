@@ -1,4 +1,5 @@
 #pragma once 
+#include "protocol.hpp"
 #include "log.hpp"
 #include <string>
 #include <iostream>
@@ -55,24 +56,28 @@ public:
     else 
     {
       string msg;
+      string inbuffer;
       while(1)
       {
-        cout<<"请输入信息:";
-        std::getline(cin, msg);
-        write(_sock, msg.c_str(), msg.size());
-        
+        cout<<"mycal:";  
+        getline(cin, msg);
 
-        char buffer[1024];
-        int n = read(_sock, buffer, sizeof(buffer)-1);
-        if(n > 0)
-        {
-          buffer[n] = '\0';
-          cout<< "服务端回显的消息:" << buffer << endl;
-        }
-        else 
-        {
-          break;
-        }
+        request req(10, 10, '+');
+        string content;
+        req.serialize(&content);
+
+        string send_string = enlength(content);
+
+        send(_sock, send_string.c_str(), send_string.size(), 0); //bug不管的？
+        string package, text;
+        if(!recvRequset(_sock, inbuffer, &package)) continue;
+        if(!delength(package, &text)) continue;
+
+        response resp;
+        resp.deserialize(text);
+        
+        cout<< "exitcode:" << resp.exotcode <<endl;
+        cout<< "result:" << resp.result << endl;
       }
     }
   }
