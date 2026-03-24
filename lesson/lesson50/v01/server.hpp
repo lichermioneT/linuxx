@@ -18,6 +18,7 @@ static const uint16_t gport = 8080;
 
 using func_t = std::function<bool(const httprequest&, httpresponse&)>;
 
+
 class server
 {
 public:
@@ -102,6 +103,8 @@ public:
     {
       buffer[n] = 0;
       req.inbuffer = buffer;
+      req.parse();
+
       _func(req, resp);
 
       send(sock, resp.outbuffer.c_str(), resp.outbuffer.size(), 0);

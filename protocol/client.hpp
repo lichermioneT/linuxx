@@ -99,8 +99,10 @@ public:
         cout << "input format error, please input like: 10 + 20" << endl;
         continue;
       }
+      cout<< "输入的数据:" << msg <<endl;
 
 // 序列化x" "op" "y。
+
       string content;
       if(!req.serialize(&content))
       {
