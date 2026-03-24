@@ -12,7 +12,7 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include "Protocol.hpp"
+#include "protocol.hpp"
 
 namespace server
 {    

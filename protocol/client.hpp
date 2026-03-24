@@ -75,6 +75,7 @@ public:
 
     string msg;
     string inbuffer;
+// contentSize" "text" "。 
 
     while(true)
     {
@@ -90,7 +91,8 @@ public:
       }
 
       // [修改5] 用用户输入来构造请求，而不是写死 10 10 +
-      // 输入格式要求：x op y
+// 输入格式要求：x op y
+// 请求的反序列化就是 request成员属性可以拿到 x,op,y。
       request req;
       if(!req.deserialize(msg))
       {
@@ -98,14 +100,19 @@ public:
         continue;
       }
 
+// 序列化x" "op" "y。
       string content;
       if(!req.serialize(&content))
       {
         cout << "request serialize failed" << endl;
         continue;
       }
+      cout<< "客户端输入进行序列化的结果:" << content << endl;
 
+// 开始发送文本
+// contentlen \r\n text \r\n
       string send_string = enlength(content);
+      cout<< "客户端输入进行序列化的结果和加长的结果\n" << send_string << endl;
 
       // [修改6] 发送时必须保证完整发送
       if(!sendAll(send_string))
@@ -125,11 +132,13 @@ public:
         break;
       }
 
+      cout<< "客户端接收服务器的响应的结果:\n" << package <<endl;
       if(!delength(package, &text))
       {
         cout << "package decode failed" << endl;
         continue;
       }
+      cout<< "客户端接收服务器的响应的结果,然后剪短:" << package <<endl;
 
       response resp;
       // [修改8] 反序列化结果要检查

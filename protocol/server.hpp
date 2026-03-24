@@ -33,13 +33,17 @@ typedef function<bool(const request& req, response& resp)> func_t;
      //1.怎么保证是一个完整的数据请求呢？
 // 不能保证，明确报文的边界信息的。
     string req_text, req_str;                // 服务端读取一个明确的请求来的
-    if(!recvRequset(sock, inbuffer,  &req_text)) return; // req_text。请求的文本， content_Len \r\n x \r\n op \r\n y
-    if(!delength(req_text, &req_str)) return;
+    if(!recvRequset(sock, inbuffer,  &req_text)) return; // req_text。请求的文本， content_Len\r\n content \r\n y
+    cout<< "客户端请求的结果:  " << req_str <<endl; 
+
+
+    if(!delength(req_text, &req_str)) return;            //  text
+    cout<< "客户端请求的结果然后剪短:  " << req_text <<endl; 
 
     // 2.反序列化
     // 2.1得到一个结构化的请求对象
     request req;                          // req用来接收已经，序列化的数据 
-    if(!req.deserialize(req_text)) return; // 反序列化失败了，直接返回了的。
+    if(!req.deserialize(req_text)) return; // 反序列化失败了，直接返回了的。 x
 
     // 3.计算处理，req.x req.op, req.y; 业务逻辑处理的。
     // 3.1得到一个结构化的响应  

@@ -6,7 +6,6 @@
 class Util
 {
 public:
-    // XXXX XXX XXX\r\nYYYYY
     static std::string getOneLine(std::string &buffer, const std::string &sep)
     {
         auto pos = buffer.find(sep);
