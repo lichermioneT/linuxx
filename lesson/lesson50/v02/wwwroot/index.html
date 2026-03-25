@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GET 请求测试首页</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+
+        .container {
+            width: 420px;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 96%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .nav {
+            margin-top: 20px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #2196F3;
+            margin: 0 10px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GET 请求测试页面</h1>
+        <p>填写下面的信息，点击提交后将以 GET 方法发送到 a.html</p>
+
+        <form action="/test/a.html" method="get">
+            <input type="text" name="username" placeholder="请输入用户名">
+            <input type="text" name="age" placeholder="请输入年龄">
+            <input type="text" name="city" placeholder="请输入城市">
+            <button type="submit">GET 提交</button>
+        </form>
+
+        <div class="nav">
+            <a href="/test/a.html">进入 A 页面</a>
+            <a href="/test/b.html">进入 B 页面</a>
+        </div>
+    </div>
+</body>
+</html>

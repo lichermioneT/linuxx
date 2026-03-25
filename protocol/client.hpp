@@ -109,7 +109,6 @@ public:
         cout << "request serialize failed" << endl;
         continue;
       }
-      cout<< "客户端输入进行序列化的结果:" << content << endl;
 
 // 开始发送文本
 // contentlen \r\n text \r\n
@@ -134,13 +133,13 @@ public:
         break;
       }
 
-      cout<< "客户端接收服务器的响应的结果:\n" << package <<endl;
+      cout<< "客户端接收服务器的响应的结果:" << package <<endl;
       if(!delength(package, &text))
       {
         cout << "package decode failed" << endl;
         continue;
       }
-      cout<< "客户端接收服务器的响应的结果,然后剪短:" << package <<endl;
+      cout<< "客户端接收服务器的响应的结果,然后剪短:" << text <<endl;
 
       response resp;
       // [修改8] 反序列化结果要检查

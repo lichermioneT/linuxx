@@ -57,15 +57,11 @@ public:
   bool serialize(string* out)
   {
     *out = "";
-    //1.结构化 "x op y \r\n"
-    
+  
+// 请求的序列化就是把数据组织起来的。
     string x_string = to_string(_x);
     string y_string = to_string(_y);
     
-// x\r\nop\r\ny
-// x
-// op 
-// y
     *out += x_string;
     *out += SEP;
     *out += _op;
@@ -75,8 +71,7 @@ public:
     return true;
   }
 
-//2.反序列化
-// x\r\nop\r\ny
+// 请求的反序列化就是数据放到对象里面的
   bool deserialize(const string& in)
   {
     auto left = in.find(SEP);
@@ -117,7 +112,8 @@ public:
     ,result(result_)
   {}
 
-// exotcode\r\nresult
+
+// 响应的序列化就是把数据组织起来的。
   bool serialize(string* out) 
   {
     *out = "";
@@ -131,9 +127,7 @@ public:
     return true;
   }
 
-// exotcode\r\nresult
-// exotcode 
-// result
+// 响应的反序列化就是把结果放到对象里面的
   bool deserialize(const string& in)
   {
     // exit result;
