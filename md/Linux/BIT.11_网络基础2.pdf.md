@@ -144,6 +144,30 @@ class/struct message
 
 **![image-20251219100155415](picture/image-20251219100155415.png)**
 
+**上面就是应用层的协议。**
+
+![image-20260324083203697](picture/image-20260324083203697.png)
+
+
+
+**总结一下手写的协议：**
+
+**1.请求的序列化： x" "op" "y**
+
+**2.加长：contentlen \r\n content \r\n**
+
+​		**1.减短：content**
+
+​		**2.反序列化，x y op拿出来了**
+
+​		**3.响应序列化：exit_code \r\n result.**
+
+​		**4.加长：**
+
+**3.剪短：**
+
+**4反序列化：**
+
 
 
 ## 3HTTP
@@ -154,11 +178,63 @@ class/struct message
 
 ![image-20260121133039658](picture/image-20260121133039658.png)
 
+**协议和端口号，知名端口和知名协议强绑定的。**
+
+**http协议：通过http协议从服务器拿下来对用的资源。一切网络中你看到的就是资源的。资源就是文件，在服务器的的磁盘上，需要linux系统的路径资源的。**
+
+**文件资源的类型特别多，http都能够搞定，所以叫做超文本传输协议。**
+
 
 
 **HTTP**
 
 ![image-20260121133659213](picture/image-20260121133659213.png)
+
+```
+    
+HTTP是以行为单位的请求    
+HTTP    : request    
+请求行   :   GET  url   http version  (http1.0, 1.1, 2.0) \r\n    
+请求报头 : name:value (attribute) \r\n    
+请求报头 : name:value (attribute)                                                                                                                                                              
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+请求报头 : name:value (attribute)    
+空行     : \r\n    
+请求正文 : 可以选择有没有。    
+    
+完整的四部分。    
+HTTP请求四部分：请求行，请求报头，请求行，请求正文。四部分。    
+    
+tcp链接，向服务器发送过去。    
+    
+HTTP响应过程    
+HTTP    : response    
+状态行  : http/1.1 状态码 状态码描述 \r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+相应报头: name:value\r\n    
+空行    : \r\n    
+相应正文: 文件    
+HTTP响应四部分：状态行，响应报头，空行，相应的正文。    
+根据tcp链接socket,向客户端返回响应。
+```
+
+**状态码和状态描述码。**
 
 
 
@@ -180,6 +256,103 @@ class/struct message
 **HTTP一个完整的请求方法**
 
 ![image-20260121141005164](picture/image-20260121141005164.png)
+
+```
+------------------------------
+GET / HTTP/1.1
+Host: 8.140.211.98:8080        // 那个服务端的
+Upgrade-Insecure-Requests: 1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 26_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/146.0.7680.151 Mobile/15E148 Safari/604.1
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: keep-alive // 
+
+
+------------------------------
+```
+
+**没有请求特定的资源，会有一个默认的首页。**
+
+**http会交换bs通信双方的协议版本。 客户端不可能一来就更新，比如我。**
+
+**User-Agent:里面有客户端的信息呢。wget www.baidu.com.**
+
+```
+------------------------------
+GET / HTTP/1.1
+Host: 8.140.211.98:8080
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9,en-IE;q=0.8,en;q=0.7
+Connection: close
+Upgrade-Insecure-Requests: 1
+
+
+------------------------------
+
+```
+
+```
+------------------------------
+GET / HTTP/1.1
+Host: 8.140.211.98:8080
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Linux; Android 12; HarmonyOS; OCE-AN50; HMSCore 6.15.4.342) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.196 HuaweiBrowser/17.0.1.301 Mobile Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7
+
+
+------------------------------
+
+```
+
+**http默认访问根目录的。**
+
+ ![image-20260325093307903](picture/image-20260325093307903.png)
+
+![image-20260325094523099](picture/image-20260325094523099.png)
+
+![image-20260325110430987](picture/image-20260325110430987.png)
+
+
+
+**GET方法会在浏览器显示数据，显现出来的**
+
+![image-20260325110938062](picture/image-20260325110938062.png)
+
+
+
+![image-20260325111005333](picture/image-20260325111005333.png)
+
+![image-20260325111128381](picture/image-20260325111128381.png)
+
+
+
+**放心GET和POST都不安全的。**
+
+![image-20260325111606355](picture/image-20260325111606355.png)
+
+![image-20260325111914556](picture/image-20260325111914556.png)
+
+![image-20260325112444844](picture/image-20260325112444844.png)
+
+
+
+![image-20260325143156305](picture/image-20260325143156305.png)
+
+
+
+**重定向**
+
+![image-20260325144733896](picture/image-20260325144733896.png)
+
+![image-20260325144953538](picture/image-20260325144953538.png)
+
+![image-20260325150252230](picture/image-20260325150252230.png)
 
 
 
