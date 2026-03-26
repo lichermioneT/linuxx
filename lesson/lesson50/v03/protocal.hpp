@@ -20,11 +20,11 @@ class httprequest
 public:
     void parse()
     {
-      // 1.从inbuffer提取第一行
+// 1.从inbuffer提取第一行
       string line = util::getoneline(inbuffer, sep);  
       if(line.empty()) return;
 
-      // 2.从请求行中提取method,url,httpvsersion
+// 2.从请求行中提取method,url,httpvsersion
       stringstream ss(line);
       ss>>method>>url>>httpvsersion;
       

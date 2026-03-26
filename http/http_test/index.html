@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网站首页</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #2d89ef;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #1f5fae;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .banner {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: white;
+        }
+
+        .banner h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .banner p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .content {
+            width: 80%;
+            margin: 30px auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #2d89ef;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #222;
+            color: white;
+            padding: 15px 0;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>欢迎来到我的网站</h1>
+        <p>这是一个简单的首页示例</p>
+    </header>
+
+    <nav>
+        <a href="#">首页</a>
+        <a href="#">关于我</a>
+        <a href="#">服务</a>
+        <a href="#">联系我</a>
+    </nav>
+
+    <section class="banner">
+        <h1>你好，欢迎访问！</h1>
+        <p>这里可以展示你的网站介绍、个人信息或者项目内容。</p>
+    </section>
+
+    <section class="content">
+        <div class="card">
+            <h2>网站介绍</h2>
+            <p>这是首页的简介部分，你可以在这里写网站用途或者你的个人简介。</p>
+        </div>
+
+        <div class="card">
+            <h2>最新内容</h2>
+            <p>这里可以展示最近发布的文章、项目或者动态信息。</p>
+        </div>
+
+        <div class="card">
+            <h2>联系方式</h2>
+            <p>邮箱：example@email.com<br>电话：123456789</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 我的个人网站 版权所有</p>
+    </footer>
+
+</body>
+</html>

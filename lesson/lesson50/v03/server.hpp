@@ -28,7 +28,7 @@ public:
   
   void init()
   {
-    //1.创建socke
+    //1.创建socket
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if(_sock == -1)
     {

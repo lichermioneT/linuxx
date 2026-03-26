@@ -28,7 +28,7 @@ bool gget(const httprequest& req, httpresponse& resp)
   cout<< "method:         " << req.method << endl;
   cout<< "url:            " << req.url <<endl;
   cout<< "httpvsersion:   " << req.httpvsersion <<endl;
-  cout<< "paht            " << req.path <<endl;
+  cout<< "path            " << req.path <<endl;
   cout<< "suffix          " << req.suffix << endl;
   cout<< "size            " << req.size <<endl;
   cout<< "------------------------------" <<endl;
@@ -63,6 +63,7 @@ bool gget(const httprequest& req, httpresponse& resp)
   resp.outbuffer += body;
   return true;
 }
+
 
 int main(int argc, char* agrv[])
 {

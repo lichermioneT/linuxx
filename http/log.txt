@@ -1,0 +1,35 @@
+le
+├── main.cc                  // 程序入口
+├── server.hpp               // HttpServer 类
+├── server.cc
+├── http
+│   ├── http_request.hpp     // 请求结构体
+│   ├── http_response.hpp    // 响应结构体
+│   ├── http_parser.hpp      // 请求解析
+│   ├── http_parser.cc
+│   ├── http_protocol.hpp    // 完整请求读取、协议相关函数
+│   └── http_protocol.cc
+├── net
+│   ├── socket.hpp           // socket 封装
+│   ├── socket.cc
+│   ├── connection.hpp       // 连接对象
+│   └── connection.cc
+├── logic
+│   ├── router.hpp           // 路由分发（后面扩展）
+│   ├── router.cc
+│   ├── file_handler.hpp     // 静态文件处理
+│   └── file_handler.cc
+├── util
+│   ├── util.hpp             // 文件读取、字符串处理、路径工具
+│   ├── util.cc
+│   ├── log.hpp
+│   └── mime.hpp             // Content-Type 判断
+└── wwwroot
+    ├── 404.html
+    ├── index.html
+    ├── image
+    │   ├── 1.png
+    │   └── 2.png
+    └── test
+        ├── a.html
+        └── b.html  写一条指令创建这些文件和目录
