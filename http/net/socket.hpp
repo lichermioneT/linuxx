@@ -18,14 +18,13 @@
 class Socket
 {
 public:
-    using func_t = std::function<void(int)>;
 
 public:
     Socket(uint16_t port);
     ~Socket();
 
     void Init();
-    void Start(func_t handler);
+    void Start();
 
 private:
     int CreateSocket();

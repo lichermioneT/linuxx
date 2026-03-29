@@ -11,8 +11,9 @@
 
 using namespace std;
 
-server::server(uint16_t port)
+server::server(uint16_t port, int sock)
     : _listensock(port)
+    ,_con(sock)
 {}
 
 void server::init()
@@ -25,24 +26,4 @@ void server::start()
   _listensock.Start(handlerHttp);
 }
 
-void handlerHttp(int sock)
-{
-  Connection con(sock);
-  http_parser parser;
-  
-  while(true)
-  {
-    if(parser.getOneHttpRequest(con.InBuffer()))
-    {
-      continue;
-    }
-    else 
-    {
-      con.Read();
-    }
-
-  }
-  std::cout<< "一个完整的报文如下:" << std::endl;
-  std::cout<< parser._inbuffer << std::endl;
-}
 
