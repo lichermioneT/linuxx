@@ -121,9 +121,196 @@
 
 
 
+## 非阻塞IO
+
+```c++
+#include "util.hpp"    
+#include <vector>    
+#include <cstdio>    
+#include <functional>    
+    
+using func_t = std::function<void()>;    
+    
+#define INIT(cbs) do{\    
+      cbs.push_back(printLog);\    
+      cbs.push_back(download);\    
+      cbs.push_back(executeSql);\    
+    }while(0)    
+    
+#define EXEC_OTHER(cbs) do{\    
+      for(auto const& cb : cbs) cb();\    
+}while(0)    
+    
+    
+int main()    
+{    
+  std::vector<func_t> cbs;    
+  INIT(cbs);    
+    
+  setNoBlock(0);    
+  char buffer[1024] = {0};    
+  while(true)    
+  {    
+    printf(">>>>");    
+    fflush(stdout);    
+    ssize_t s = read(0, buffer, sizeof(buffer) - 1);    
+    if(s > 0)    
+    {    
+      buffer[s] = 0;    
+      std::cout<< "echo#" << buffer << std::endl;    
+    }    
+    else if(s == 0)    
+    {    
+      std::cout<< "read end" << std::endl;    
+      break;    
+    }    
+    else    
+    {    
+      // s==-1    
+      // 1.当我不输入的时候，底层没有数据，算错误吗？不算错误，只不过以错误的形式返回了    
+      // 2.那我如何区：是真的错了，还是底层没有数据？(单纯返回值不能够区分的，还需要根据错误码进行判断的)    
+      /*    
+       *std::cout<< "s:" << s << " erron:"<< errno <<std::endl;    
+       */    
+      /*    
+       *std::cout<< "s:" << s << " erron:"<< strerror(errno) <<std::endl;    
+       */    
+    
+      /*    
+       *std::cout<< "EAGAIN:" << EAGAIN << " EWOULDBLOCK:" << EWOULDBLOCK << std::endl;    
+       */    
+    
+       std::cout<< "s:" << s << " erron:"<< errno <<std::endl;    
+       if(errno == EAGAIN)    
+       {    
+         std::cout<< "我没有错，只是没有数据而已" << std::endl;                                                                                                                                                                                                
+         EXEC_OTHER(cbs);    
+       }    
+       //1.需要重新读取数据的    
+       else if(errno == EINTR)      
+       {    
+          continue;
+       }
+       else 
+       {
+        std::cout<< "s:" << s << " erron:"<< errno <<std::endl; // 真正的错误了
+        break;
+       }
+
+      sleep(5);
+    }
+  }
+  return 0;
+}
+
+```
+
+```c++
+#pragma once     
+    
+#include <iostream>    
+#include <unistd.h>    
+#include <fcntl.h>    
+#include <cstring>    
+#include <cerrno>    
+    
+void setNoBlock(int fd)    
+{    
+//1.先获取文件描述符的状态标志    
+  int f1 = fcntl(fd, F_GETFL);    
+  if(f1 < 0)    
+  {    
+    std::cerr << "fcntl:" << strerror(errno) << std::endl;    
+    return;    
+  }    
+    
+//2.通过按位或追加一个标志    
+  fcntl(fd, F_SETFL, f1 | O_NONBLOCK);    
+    
+//3.严谨一点的这里可以判断返回的信息    
+}    
+    
+void printLog()                                                                                                                                                                                                                                                
+{    
+  std::cout<< "this is a log" << std::endl;    
+}    
+    
+void download()    
+{    
+  std::cout<< "this is a download" << std::endl;    
+}    
+    
+void executeSql()    
+{    
+  std::cout<< "this is a executeSql" << std::endl;    
+} 
+```
 
 
 
+## Select
+
+**IO = 等 + 拷贝**
+
+**select只是负责等待，可以一次等待多个fd, select本身没有拷贝的能力，拷贝需要read, write来完成的。**
+
+```c++
+int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+// nfds:监视多个fd中，最大fd的值加一
+// 剩下的四个参数都是输入输出型参数
+// struct timeval* timeout
+    // 	nullptr:阻塞等待。
+	// 	struct timeval timeout = {0,0} 非阻塞
+	// 	struct timeval timeout = {5,0} 5s以内阻塞式(5s以内都可以返回的)，超过5s，非阻塞返回一次
+
+    //  struct timeval
+    // { 
+    //  time_t tv_sec;
+    //  suseconds_t tv_sec; 
+    //}
+
+// 返回值 > 0 有几个文件描述符准备就绪了
+// 返回值==0  超时返回
+// 返回值 < 0 调用失败
+
+// 只关心读，写，异常事件
+// fd_set位图结构，表示文件描述集合
+// fd_set:
+// 输入：表示用户告诉内核，你要帮我关系一下，我给你的集合中所有的fd的读事件. 哪些fd上的读事件内核需要你关系一下。
+// 0000 0000：比特位的位置 表示fd的数值，比特位的内容，表示是否关关心。
+// 0010 0010:只是关系1和5的读事件
+// 输出：内核告诉用户，你所关系的多个fd中，哪些已经就绪了 0000 0010.1号文件描述符已经好了的
+// 比特位的位置，表示fd的数值，比特位的内容，表示哪些fd上面对应的事件已经就绪了。
+// 让用户和内核之间相互沟通，互相知晓对方要的和关心的。
+
+// 读，写，异常事件类似的。
+
+// 
+void FD_CLR(int fd, fd_set *set);  // 清除
+int  FD_ISSET(int fd, fd_set *set); // 判断在不在
+void FD_SET(int fd, fd_set *set); // 设置进位图
+void FD_ZERO(fd_set *set);       // 清空位图结构的
+```
+
+**1.了解select基本概念和接口介绍**
+
+​	**select直接监视多个文件描述符，程序会在select等待，直到监视的文件描述符返回**
+
+​	**select未来只关心：读，写，异常事件。**
+
+​	
+
+
+
+**2.代码**
+
+​	**listen套接字首先交给select, listensock的连接就绪事件 == 读事件就绪的。**
+
+
+
+
+
+**3.总结**
 
 
 
