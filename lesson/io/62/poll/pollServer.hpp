@@ -1,45 +1,53 @@
 #pragma once 
 #include "sock.hpp"
+#include <poll.h>
 #include <string>
 #include <iostream>
 #include <functional>
 
 
-namespace select_ns
+namespace poll_ns
 {
 
 static const uint16_t defaultport = 8080; 
-static const int fdnum = sizeof(fd_set)*8;
 static const int defaultfd = -1;
+static const int num = 2048;
 using func_t = std::function<std::string (const std::string&)>;
 
-class select_server 
+class poll_server 
 {
 public:
-  select_server(func_t func, uint16_t port = defaultport)
+  poll_server(func_t func, uint16_t port = defaultport)
     :_port(port)
     ,_listensock(-1)
-    ,fdarray(nullptr)
+    ,_rfds(nullptr)
     ,_func(func)
   {}
  
   void print()
   {
-    for(int i = 0; i < fdnum; ++i)
+    for(int i = 0; i < num; ++i)
     {
-      if(fdarray[i] != defaultfd)
-        std::cout<< "fd list:" << fdarray[i] << std::endl;
+      if(_rfds[i].fd != defaultfd)
+        std::cout<< "_rfds list:" << _rfds[i].fd << std::endl;
     }
+  }
+
+  void ResetItem(int i)
+  {
+    _rfds[i].fd = defaultfd;
+    _rfds[i].events = 0;
+    _rfds[i].revents = 0;
   }
 
   void Accepter(int listensock)
   {
+
         // select告诉我，_listensock读事件准备就绪了的
         // 走到这里，accept不会阻塞的。
         std::string clientip;
         uint16_t clientport = 0;
-     
-// 这里一定不会阻塞的。
+      
         int sock = Sock::Accept(listensock, &clientip, &clientport); // Accept = 等 + 获取
         if(sock < 0)  
         {
@@ -53,41 +61,42 @@ public:
         
         // 将新的sock托管给select！, 本质就是 将sock添加到fdarray数组中即可。
         int i = 0;
-        for(i = 0; i < fdnum; ++i)
+        for(i = 0; i < num; ++i)
         {
-          if(fdarray[i] != defaultfd) continue;
+          if(_rfds[i].fd != defaultfd) continue;
           else break;
         }
 
-        if(i == fdnum)
+        if(i == num)
         {
           std::cout<< "服务器已经承受住了，已经满了" << std::endl;
           close(sock);
         }
         else 
         {
-          fdarray[i] = sock;
-          std::cout<< "新的文件描述符已经来了sock:" <<  sock <<std::endl;
+          _rfds[i].fd = sock;
+          _rfds[i].events = POLLIN;
+          _rfds[i].revents = 0;
         }
         print();
   }
 
 // 这个函数不仅仅是一个仅有一个fd准备就绪的，可能存在多个的。
-  void handlerEvent(fd_set& rfds) // 这里就是已经就绪的文件描述符
+  void handlerEvent() // 这里就是已经就绪的文件描述符
   {  
-   for(int i = 0; i < fdnum; ++i) 
+   for(int i = 0; i < num; ++i) 
    {
        // 过滤掉非法的fd.
-      if(fdarray[i] == defaultfd) continue; // 这个位置的文件描述符没有准备好的，继续下一个的
-
-// _listensock已经准备好了的。
-      if(FD_ISSET(fdarray[i], &rfds) && fdarray[i] == _listensock)
+      if(_rfds[i].fd == defaultfd) continue; // 这个位置的文件描述符没有准备好的，继续下一个的
+      if(!(_rfds[i].events & POLLIN)) continue; // 我们设置了读事件的关心
+// _listensock的读事件就绪了，所以需要进行处理，添加新的文件描述符
+      if(_rfds[i].fd == _listensock  && (_rfds[i].events & POLLIN))
       {
         Accepter(_listensock);
       }
-      else if(FD_ISSET(fdarray[i], &rfds)) 
+      else if(_rfds[i].events & POLLIN) 
       {
-        Revcer(fdarray[i], i);
+        Revcer(i);
       }
       else 
       {
@@ -96,13 +105,13 @@ public:
    }
   }
 
-  void Revcer(int sock, int pos)
+  void Revcer(int pos)
   {
     std::cout<< "in Revcer " << std::endl;
 
     // 这样子读取有问题的。 1.读完了？2.如何反序列化。
     char buffer[1024] = {0};
-    ssize_t s = recv(sock,buffer, sizeof(buffer) - 1, 0); // 这里在进行读取的时候会不会被阻塞的呢？
+    ssize_t s = recv(_rfds[pos].fd, buffer, sizeof(buffer) - 1, 0); // 这里在进行读取的时候会不会被阻塞的呢？
     if(s > 0)
     {
       buffer[s] = 0;
@@ -110,15 +119,15 @@ public:
     }
     else if(s == 0)
     {
-      close(sock);
-      fdarray[pos] = defaultfd;  // 把它清理出去的
+      close(_rfds[pos].fd);
+      ResetItem(pos);
       std::cout<< "clientip quit" << std::endl;
       return;
     }
     else 
     {
-      close(sock);
-      fdarray[pos] = defaultfd; 
+      close(pos);
+      ResetItem(pos);
       std::cout<< "clientip errno" << std::endl;
       return;
     }
@@ -127,7 +136,7 @@ public:
     std::string respose = _func(buffer);
 
     // write写事件，太麻烦了的
-    write(sock, respose.c_str(), respose.size());
+    write(_rfds[pos].fd, respose.c_str(), respose.size());
     std::cout<< "out Revcer " << std::endl;
   }
 
@@ -140,41 +149,24 @@ public:
     // fd_set是一种类型，必须有大小，而且是固定的
     // 所欲能够添加fd的个数是有上限的
     // fd_set:最大1024个
-    fdarray = new int[fdnum]; // 多大啊？
-    for(int i = 0; i < fdnum; ++i) 
+    _rfds = new struct pollfd[num];
+    for(int i = 0; i < num; ++i) 
     {
-      fdarray[i] = defaultfd;
+      ResetItem(i);
     }
     
     // 最开始只有一个文件描述符
-    fdarray[0] = _listensock; // 不变了的，固定的位置下标
+    _rfds[0].fd = _listensock; // 不变了的，固定的位置下标
+    _rfds[0].events = POLLIN;
     // 服务启动之前，只存在_listensock的。
   }
 
   void start()
   {
+    int timeout = 1000;
     for(;;)
     {
-      fd_set rfds;
-      FD_ZERO(&rfds);
-      int maxfd = fdarray[0];
-
-      for(int i = 0; i < fdnum; ++i)
-      {
-        if(fdarray[i] == defaultfd) continue; // 非法文件描述符的。continue;
-
-// 自己维护的文件描述符---设置进位图里面去的。
-        FD_SET(fdarray[i], &rfds); // 合法的fd ,添加到文件描述符集合里面去的  
-// 更新最大的maxfd      
-        if(maxfd < fdarray[i]) maxfd = fdarray[i]; // 更新所有fd中最大的fd.
-      }
-
-      std::cout << "最大的文件描述符: " << maxfd << std::endl;
-      // struct timeval timeout = {3,0}; // 几秒钟之内通知我一声。注意这里必须写到for循环里面，不然变量一直存在里面的数据减到零，就是非阻塞了。
-      //  一般而言，使用select，需要程序员自己维护一个保存所以合法的fd的数组
-
-// select开始监听我们给的文件描述符。
-      int n = select(maxfd + 1, &rfds, nullptr, nullptr, nullptr);
+      int n = poll(_rfds, num, timeout);
       switch(n)
       {
         case 0:
@@ -186,11 +178,8 @@ public:
         default:
           // 说明有事件就绪了，目前只有一个监听事件就绪了
           // 需要取走的
-         
-// 这里我们是通过_listensock监听，来更新文件描述符的。
-          handlerEvent(rfds); // 这里告诉我，哪些文件描述符已经就绪了的
-          std::cout<< "get a new link" << std::endl;    
-          sleep(1);
+          
+          handlerEvent(); // 这里告诉我，哪些文件描述符已经就绪了的
           break;
       }
       
@@ -198,15 +187,17 @@ public:
     }
   }
 
-  ~select_server() 
+  ~poll_server() 
   {
-    if(_listensock < 0) close(_listensock);
-    if(fdarray) delete[] fdarray;
+    if(_listensock >= 0) close(_listensock);
+
+    if(_rfds) delete[] _rfds;
   }
+
 private:
   uint16_t _port;
   int  _listensock;
-  int *fdarray;      //  自己维护一个数组，存放fd。
+  struct pollfd* _rfds;
   func_t _func;
 };
 }

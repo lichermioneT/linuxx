@@ -1,8 +1,8 @@
-#include "selectServer.hpp"
+#include "pollServer.hpp"
 #include <memory>
 
 using namespace std;
-using namespace select_ns;
+using namespace poll_ns;
 
 std::string transaction(const std::string& request)
 {
@@ -12,7 +12,7 @@ std::string transaction(const std::string& request)
 
 int main()
 {
-  unique_ptr<select_server> svr (new select_server(transaction));
+  unique_ptr<poll_server> svr (new poll_server(transaction));
   svr->init();
   svr->start();
 
