@@ -312,7 +312,7 @@ void FD_ZERO(fd_set *set);       // 清空位图结构的
 
 **3.总结**
 
-**1.select能够同时等待的文件fd是有上限的，除非重新修改内核，否则无法解决的**
+**1.select能够同时等待的文件fd是有上限的，除非重新修改内核，否则无法解决的。 fd_set是一个位图结构，有类型就是有大小的。**
 
 ​	**企业也是有上限的。 select上限1024的。**
 
@@ -330,22 +330,129 @@ void FD_ZERO(fd_set *set);       // 清空位图结构的
 
 
 
+
+
 ## poll
 
-**1.select的fd有上限的问题**
+**1.解决select的fd有上限的问题**
 
 **2.每次调用都需要重新设置关心的fd.**
 
 ```c++
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 // struct pollfd*
-// 动态数组， new/malloc
-// timeout 单位毫秒
+// 动态数组， new/malloc出来的
+
+// timeout 单位毫秒，纯输入型的
 // > 在timeout时间内返回，否则 非阻塞返回一次的。
 // = 非阻塞
 // < 阻塞等待
-// 返回值同sele
+// 返回值同select
+
+struct pollfd 
+{
+    int fd;
+    short events;
+    short revents;
+};
+
+// 输入看：fd + events。
+// 输出看：fd + revents. 你要关系的fd上面的events中哪些事件已经就绪啦
+// 1.输入输出参数分离了. poll不需要重新设置的
+	
+// 2.解决select等待文件有上限的。
 ```
+
+
+
+**event的事件。宏值，设置进内核的。**
+
+![image-20260401103845412](picture/image-20260401103845412.png)
+
+**poll的缺点：遍历问题的。**
+
+
+
+## epoll
+
+**extend poll。增强版本的poll。和poll没有半毛钱的关心的。**
+
+**1.直接快速认识poll的接口**
+
+````c++
+ int epoll_create(int size);
+// int size   >0 就行了
+// 
+````
+
+```c++
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+// epfd
+// op增，改，删除
+//   EPOLL_ADD
+//   EPOLL_MOD
+//   EPOLL_DEL
+// fd文件描述符的event事件
+```
+
+**事件**
+
+![image-20260401152424078](picture/image-20260401152424078.png)
+
+**事件**
+
+![image-20260401152505532](picture/image-20260401152505532.png)
+
+```c++
+int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+// 返回值，select/poll一模一样的
+// 2,3输出型参数,内核告诉用户，哪些文件描述符已经准备就绪了
+// ms,同poll
+```
+
+**2.epoll底层的原理**
+
+**OS怎么知道网络中有数据到来？ 输入设备网卡。  **
+
+​	**硬件中断设备。 中断向量表(函数指针)。 **
+
+![image-20260401154616251](picture/image-20260401154616251.png)
+
+
+
+![image-20260401161330493](picture/image-20260401161330493.png)
+
+![image-20260401160940339](picture/image-20260401160940339.png)
+
+![image-20260401160857052](picture/image-20260401160857052.png)
+
+![image-20260401160404714](picture/image-20260401160404714.png)
+
+![image-20260401160428902](picture/image-20260401160428902.png)
+
+**给每一个文件描述符注册一个回调方法，然后把红黑树的节点 到  对应的序列当中去。**
+
+
+
+**3.只关心读取的epoll的server**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
