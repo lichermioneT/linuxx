@@ -85,7 +85,8 @@ public:
       {
         Accepter(_listensock);
       }
-      else if(FD_ISSET(fdarray[i], &rfds)) 
+// 这里是处理其它的文件描述符的
+      else if(FD_ISSET(fdarray[i], &rfds))  // 这里是处理其他的文件描述符的
       {
         Revcer(fdarray[i], i);
       }
@@ -163,7 +164,7 @@ public:
       {
         if(fdarray[i] == defaultfd) continue; // 非法文件描述符的。continue;
 
-// 自己维护的文件描述符---设置进位图里面去的。
+// 自己维护的文件描述符---设置进位图里面去的。自己需要select监听的文件描述符。
         FD_SET(fdarray[i], &rfds); // 合法的fd ,添加到文件描述符集合里面去的  
 // 更新最大的maxfd      
         if(maxfd < fdarray[i]) maxfd = fdarray[i]; // 更新所有fd中最大的fd.

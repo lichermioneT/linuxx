@@ -21,7 +21,7 @@ public:
       std::cout<< "_listensock failed" <<std::endl;
       exit(-1);
     }
-    std::cout<< "1. sock succdess" <<std::endl;
+    std::cout<< "sock succdess" <<std::endl;
     
     int opt = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
@@ -43,7 +43,7 @@ public:
       std::cout<< "bind failed" << std::endl;
       exit(-1);
     }
-    std::cout<< "2. bind succdess" <<std::endl;
+    std::cout<< "bind succdess" <<std::endl;
   }
 
   static void Listen(int sock)
@@ -53,7 +53,7 @@ public:
       std::cout<< "listen failed" << std::endl;
       exit(-1);
     }
-    std::cout<< "3. listen succdess" <<std::endl;
+    std::cout<< "listen succdess" <<std::endl;
   }
 
   static int Accept(int listensock, std::string* clientip, uint16_t* clientport)
@@ -71,7 +71,7 @@ public:
     *clientip = inet_ntoa(peer.sin_addr);
     *clientport = ntohs(peer.sin_port);
     
-    std::cout<< "4. accept succdess" <<std::endl;
+    std::cout<< "accept succdess" <<std::endl;
     return sock;
   }
 };
