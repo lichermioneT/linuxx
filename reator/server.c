@@ -43,7 +43,7 @@ int initListenFd(unsigned short port)
     return -1;
   }
 
-  // 4.listen 
+  // 4.listen  全链接长度内核是128的。
   ret = listen(lfd, 128);
   if(ret == -1)
   {
@@ -68,7 +68,7 @@ int epollRun(int lfd)
   // 2.lfd上树
   struct epoll_event ev;
   ev.data.fd = lfd;
-  ev.events = EPOLLIN;
+  ev.events = EPOLLIN; // EPOLLIN关系它的读事件的。
   int ret = epoll_ctl(epfd,  EPOLL_CTL_ADD, lfd, &ev);
   if(ret == -1)
   {
@@ -90,11 +90,13 @@ int epollRun(int lfd)
       {
         // 监听文件描述符，建立新的链接accept(); 内核告诉我们客户端已经来建立链接了的
         // 通过listenfd，把新来的文件描述符添加到epoll树上去的。 epoll树的文件描述符越来越多的
+// 1.添加文件描述符
         acceptClient(lfd, epfd);              
       }
       else 
       {
         // 主要是读数据的。服务器的任务。
+// 2.已经在epoll树上文件，准备好了的，(lfd除外，它在上面的。)
         recvHttpRequest(fd, epfd);
       }
     }
@@ -134,15 +136,17 @@ int acceptClient(int lfd, int epfd)
 int recvHttpRequest(int cfd, int epfd)
 {
   printf("开始接收数据了...\n");
+
   int len = 0;
   int total = 0;
   char tmp[1024] = {0};
   char buffer[4096] = {0};
+
   while((len = recv(cfd, tmp, sizeof tmp, 0)) > 0)
   {
-    if((total + len < sizeof buffer))
+    if((total + len < (int)sizeof buffer))
     {
-       memcpy(tmp + total, buffer + total, len);
+       memcpy(buffer + total, tmp, len);
     }
 
     total += len;
@@ -224,7 +228,6 @@ int parseRequestLine(const char* line, int cfd)
 }
 
 
-
 int sendFile(const char* fileName, int cfd)
 {
   //TCP面向连接的流式字节。读一部分，发一部分。
@@ -253,11 +256,14 @@ int sendFile(const char* fileName, int cfd)
 #else 
   // 系统函数
   int size = lseek(fd, 0, SEEK_END); // 
+  lseek(fd, 0, SEEK_SET);
   sendfile(cfd, fd, NULL, size);
 
 #endif
+  close(fd);
   return 0;
 }
+
 
 
 int sendHeadMsg(int cfd, int status, const char* descr, const char* type, int length)
@@ -266,8 +272,17 @@ int sendHeadMsg(int cfd, int status, const char* descr, const char* type, int le
   // 状态行
   sprintf(buf, "http/1.1 %d %s\r\n", status, descr);
   // 响应头
+#if 0
   snprintf(buf, + strlen(buf), "content-type: %s\r\n", type);
   snprintf(buf, + strlen(buf), "content-length: %d\r\n\r\n", length);
+#else 
+  snprintf(buf + strlen(buf), sizeof(buf) - strlen(buf),
+         "Content-Type: %s\r\n", type);
+  snprintf(buf + strlen(buf), sizeof(buf) - strlen(buf),
+         "Content-Length: %d\r\n", length);
+  snprintf(buf + strlen(buf), sizeof(buf) - strlen(buf),
+         "Connection: close\r\n\r\n");
+#endif
 
   send(cfd, buf, strlen(buf), 0);
   return 0;
@@ -330,7 +345,7 @@ int sendDir(const char* dirName, int cfd)
     struct stat st;
     char subPath[1024] = {0};
     sprintf(subPath, "%s/%s", dirName, name);
-    stat(name, &st);
+    stat(subPath, &st);
     if(S_ISDIR(st.st_mode))
     {
       sprintf(buf + strlen(buf), "<td><a href=\"%s/\">>%s</a></td><td>%ld</td></tr>", name, name, st.st_size);

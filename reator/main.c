@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 int main(int argc, char* argv[])
 {
@@ -14,11 +15,14 @@ int main(int argc, char* argv[])
   unsigned short port = atoi(argv[1]);
   
   // 切换路径
-  chdir(argv[2]);
-
+  if(chdir(argv[2]) == -1)
+  {
+    perror("chdir");
+    return -1;
+  }
 
   // 初始化监听的套接字  
-  int lfd = initListenFd(10000); // 建议大于 50000 
+  int lfd = initListenFd(port); // 建议大于 50000 
 
   // 启动服务程序
 
