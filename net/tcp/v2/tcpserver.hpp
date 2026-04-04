@@ -11,21 +11,26 @@
 
 using namespace std;
 
-class udpserver
+class tcpserver
 {
 public:
-    udpserver(uint16_t port);
-    ~udpserver();
+    tcpserver(uint16_t port);
+    ~tcpserver();
 
     bool init();
     void start();
 
 private:
     bool createSocket();
+    bool setReuseAddr();
     bool bindSocket();
+    bool listenSocket(int backlog = 5);
+    bool recvLine(int sockfd, string* out);
+    bool sendAll(int sockfd, const string& data);
+    void service(int sockfd, const struct sockaddr_in& peer);
     void run();
 
 private:
     uint16_t _port;
-    int _sock;
+    int _listensock;
 };

@@ -15,12 +15,14 @@ class udpclient
 public:
   udpclient(const string& ip, uint16_t port);
   ~udpclient();
-  void init();
+
+  bool init();
   void start();
 
 private:
   bool createSocket();
-  void Send();
+  bool buildServerAddr(struct sockaddr_in* server);
+  void run();
 
 private:
   string _ip;

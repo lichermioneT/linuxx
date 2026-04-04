@@ -1,19 +1,22 @@
 #include "udpserver.hpp"
-
+#include <cstdlib>
 
 int main(int argc, char* argv[])
 {
-  if(argc != 2)
-  {
-    cout<< "usage: ./a.out port" <<endl;
-    return -1;
-  }
-  
-  uint16_t port = atoi(argv[1]);
+    if (argc != 2)
+    {
+        cerr << "Usage: " << argv[0] << " port" << endl;
+        return 1;
+    }
 
-  udpserver ser(port);
-  ser.init();
-  ser.start();
-  
-  return 0;
+    uint16_t port = static_cast<uint16_t>(atoi(argv[1]));
+
+    udpserver svr(port);
+    if (!svr.init())
+    {
+        return 2;
+    }
+
+    svr.start();
+    return 0;
 }

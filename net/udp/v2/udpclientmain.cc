@@ -13,11 +13,14 @@ int main(int argc, char* argv[])
 
   string ip = argv[1];
   uint16_t port = atoi(argv[2]);
-
+  
   udpclient cli(ip, port);
-  cli.init();
-  cli.start();
+  if(!cli.init())
+  {
+    return 1;
+  }
 
+  cli.start();
   return 0;
 }
 
