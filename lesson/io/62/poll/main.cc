@@ -9,7 +9,6 @@ std::string transaction(const std::string& request)
   return request;
 }
 
-
 int main()
 {
   unique_ptr<poll_server> svr (new poll_server(transaction));

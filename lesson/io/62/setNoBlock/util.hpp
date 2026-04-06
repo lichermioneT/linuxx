@@ -10,16 +10,21 @@ void setNoBlock(int fd)
 {
 //1.先获取文件描述符的状态标志
   int f1 = fcntl(fd, F_GETFL);
-  if(f1 < 0)
+  if(f1 == -1)
   {
     std::cerr << "fcntl:" << strerror(errno) << std::endl;
     return;
   }
 
 //2.通过按位或追加一个标志
-  fcntl(fd, F_SETFL, f1 | O_NONBLOCK);
+  int ret = fcntl(fd, F_SETFL, f1 | O_NONBLOCK);
 
 //3.严谨一点的这里可以判断返回的信息
+  if(ret == -1)
+  {
+    std::cerr << "fcntl:" << strerror(errno) << std::endl;
+    return;
+  }
 }
 
 void printLog()
