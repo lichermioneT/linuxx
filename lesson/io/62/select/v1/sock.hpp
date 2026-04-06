@@ -1,5 +1,4 @@
 #pragma once 
-
 #include <cstring>
 #include <iostream>
 #include <unistd.h>
@@ -9,7 +8,6 @@
 #include <arpa/inet.h>
 #include <string>
 
-
 class Sock 
 {
 public:
@@ -18,10 +16,10 @@ public:
     int  sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock < 0)
     {
-      std::cout<< "_listensock failed" <<std::endl;
+      std::cout<< "socket failed" <<std::endl;
       exit(-1);
     }
-    std::cout<< "1. sock succdess" <<std::endl;
+    std::cerr<< "1. sock succdess" <<std::endl;
     
     int opt = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
@@ -40,7 +38,7 @@ public:
 
     if(bind(sock, (struct sockaddr*)&local, sizeof(local)) < 0)
     {
-      std::cout<< "bind failed" << std::endl;
+      std::cerr<< "bind failed" << std::endl;
       exit(-1);
     }
     std::cout<< "2. bind succdess" <<std::endl;
@@ -50,7 +48,7 @@ public:
   {
     if(listen(sock, 128) < 0)
     {
-      std::cout<< "listen failed" << std::endl;
+      std::cerr<< "listen failed" << std::endl;
       exit(-1);
     }
     std::cout<< "3. listen succdess" <<std::endl;
@@ -64,7 +62,7 @@ public:
     int sock = accept(listensock, (struct sockaddr*)&peer, &len);
     if(sock < 0)
     {
-      std::cout << "accept failend" << std::endl;
+      std::cerr << "accept failend" << std::endl;
       exit(-1);
     }
     

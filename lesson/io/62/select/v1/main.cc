@@ -9,12 +9,10 @@ std::string transaction(const std::string& request)
   return request;
 }
 
-
 int main()
 {
   unique_ptr<select_server> svr (new select_server(transaction));
   svr->init();
   svr->start();
-
   return 0;
 }
