@@ -105,7 +105,8 @@ public:
        // 过滤掉非法的fd.
       if(_rfds[i].fd == defaultfd) 
         continue; // 这个位置的文件描述符没有准备好的，继续下一个的
-      if(!(_rfds[i].events & POLLIN)) 
+
+      if(!(_rfds[i].revents & POLLIN)) 
         continue; // 我们设置了读事件的关心
 
 // _listensock的读事件就绪了，所以需要进行处理，添加新的文件描述符
@@ -121,6 +122,7 @@ public:
       {
       }
     
+      _rfds[i].revents = 0;
    }
   }
 
@@ -187,7 +189,7 @@ public:
     }
     else 
     {
-      close(pos);
+      close(_rfds[pos].fd);
       ResetItem(pos);
       std::cout<< "clientip errno" << std::endl;
       return;

@@ -6,13 +6,12 @@ using namespace epoll_ns;
 
 std::string transaction(const std::string& request)
 {
-  return request;
+  return  "i a epoll_ns" + request;
 }
-
 
 int main()
 {
-  unique_ptr<epollServer> svr (new epollServer());
+  unique_ptr<epollServer> svr (new epollServer(transaction));
   svr->init();
   svr->start();
 
