@@ -84,12 +84,13 @@ public:
         // 更新文件描述符
         if(maxfd < _fdarray[i])
           maxfd = _fdarray[i];
+      }
 
-        cout<< "最大文件描述符maxfd:" << maxfd <<endl;
+      cout<< "最大文件描述符maxfd:" << maxfd <<endl;
 
-        int n = select(maxfd + 1, &rfds, nullptr, nullptr, &time);
-        switch(n)
-        {
+      int n = select(maxfd + 1, &rfds, nullptr, nullptr, &time);
+      switch(n)
+      {
           case  0:
               cout<< "timeout....,  在你规定的时间内没有事件就绪的" <<endl;
               break;
@@ -100,7 +101,6 @@ public:
               handerEvent(rfds);
               cout<< "已经有新的链接到来了" <<endl;
               break;
-        }
       }
     }
   }
@@ -127,8 +127,7 @@ void handerEvent(fd_set& rfds)
     }
     else 
     {
-      cout<< "出现错了" <<endl;
-      return;
+      continue; 
     }
   }
 }
@@ -150,8 +149,6 @@ void Accepter(int listensock)
   for(i = 0; i < fdnum; ++i)
   {
     if(_fdarray[i] == defaultfd)
-      continue;
-    else 
       break;
   }
 
@@ -191,6 +188,9 @@ void Revcer(int sock, int pos)
   else 
   {
     cout<< "出现问题了" <<endl;
+    close(sock);
+    _fdarray[pos] = defaultfd;
+    return;
   }
 
   string respose = _func(buf);
