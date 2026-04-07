@@ -83,7 +83,7 @@ public:
     if(sock < 0)
     {
       std::cout << "accept failend" << std::endl;
-      exit(-1);
+      return -1;
     }
     
     *clientip = inet_ntoa(peer.sin_addr);

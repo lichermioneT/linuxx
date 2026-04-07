@@ -14,7 +14,12 @@ public:
       perror("fcntl");
       return;
     }
-    fcntl(fd, F_SETFL, flag | O_NONBLOCK);
+    int ret = fcntl(fd, F_SETFL, flag | O_NONBLOCK);
+    if(ret == -1)
+    {
+      perror("fcntl");
+      return;
+    }
   }
 };
 

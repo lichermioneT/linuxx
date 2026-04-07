@@ -26,10 +26,12 @@ public:
   }
 
 public:
+
+// 创建epoll实例
  void Create()
  {
    _epfd = epoll_create(size);
-   if(_epfd  < 0)
+   if(_epfd  == -1)
    {
      perror("epoll_create");
      exit(-1);
@@ -37,6 +39,7 @@ public:
  }
 
 // user->kernel
+// 链接上树
  bool AddEvent(int sock, uint32_t events)
  {
     struct epoll_event ev;
@@ -49,10 +52,34 @@ public:
  }
 
 // kernel->user
+// 就绪队列里面，拿文件描述符
   int Wait(struct epoll_event revs[], int num, int timeout)
   {
     int n = epoll_wait(_epfd, revs, num, timeout);
     return n;
+  }
+  
+  bool Control(int sock, uint32_t event, int action)
+  {
+    int n = 0;
+    if(action == EPOLL_CTL_MOD)
+    {
+      struct epoll_event ev;
+      ev.events = event;
+      ev.data.fd = sock;
+
+      n = epoll_ctl(_epfd, action, sock, &ev);
+    }
+    else if(action == EPOLL_CTL_DEL)
+    {
+      n = epoll_ctl(_epfd, action, sock, nullptr);
+    }
+    else 
+    {
+      n = -1;
+    }
+
+    return n == 0;
   }
 
 };
