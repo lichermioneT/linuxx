@@ -72,12 +72,14 @@ public:
     std::cout<< "listen succdess" <<std::endl;
   }
 
-  int Accept(std::string* clientip, uint16_t* clientport)
+  int Accept(std::string* clientip, uint16_t* clientport, int* err)
   {
     struct sockaddr_in peer;
     socklen_t len = sizeof(peer);
 
     int sock = accept(_listensock, (struct sockaddr*)&peer, &len);
+    *err = errno;
+
     if(sock < 0)
     {
       std::cout << "accept failend" << std::endl;

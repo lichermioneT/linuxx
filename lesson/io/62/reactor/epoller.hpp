@@ -36,6 +36,7 @@ public:
    }
  }
 
+// user->kernel
  bool AddEvent(int sock, uint32_t events)
  {
     struct epoll_event ev;
@@ -46,5 +47,12 @@ public:
     
     return n == 0;
  }
+
+// kernel->user
+  int Wait(struct epoll_event revs[], int num, int timeout)
+  {
+    int n = epoll_wait(_epfd, revs, num, timeout);
+    return n;
+  }
 
 };
