@@ -525,13 +525,35 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 
 **基于ET模式下的Reactor, 处理所有的IO。**
 
+**半同步 半异步 LINUX网络中， 最常用， 最频繁的一种网络IO设计模式。**
 
 
 
+**以前代码的问题：本轮的数据如何读完了？ 读完了是一个完整的请求吗？ 每一个套接字对应一个缓冲区。然后根据上层协议判断是否是一个完整的报文信息的。**
+
+**“我不主动傻等某个 socket，而是把所有 socket 交给 epoll 统一监听；哪个 socket 就绪了，我就调用它对应的处理函数。”**
 
 
 
+**ET:就绪事件只会通知一次，文件描述符号设置非阻塞模式的。**
 
+**reactor模式**
+
+![image-20260407212339768](picture/image-20260407212339768.png)
+
+
+
+**Reactor模式：保证事件就绪了，**
+
+![image-20260407212535805](picture/image-20260407212535805.png)
+
+**前摄式，**
+
+**Preactor模式**
+
+
+
+**师傅您可太强了啊：**
 
 
 

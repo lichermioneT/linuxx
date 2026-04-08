@@ -2,9 +2,39 @@
 
 ## 1线程
 
-![image-20251202085959658](E:/gitee/lin/linuxx/md/Linux/picture/image-20251202085959658.png)
+**查页表发现错误了的**
+
+![image-20260408092924995](picture/image-20260408092924995.png)
 
 
+
+![image-20260408092754964](picture/image-20260408092754964.png)
+
+**进程地址空间和页表**
+
+![image-20260408093109718](picture/image-20260408093109718.png)
+
+**虚拟地址，页表， 物理内存。**
+
+**虚拟地址32位。 **  **10 10 12.**
+
+**页目录：1KB,  页表项 1KB,  物理地址刚好是4KB的地址。**
+
+
+
+**这两个就是伙伴系统的**
+
+**物理内存分成一块一块的页。4KB。页框**
+
+**代码也是按照4K为单位进行划分，页帧。**
+
+![image-20260408094427644](picture/image-20260408094427644.png)
+
+
+
+
+
+**重新认识进程的信息**
 
 **进程 = 内核数据结构 + 进程对应的代码和数据**
 
@@ -12,9 +42,11 @@
 
 **1.OS都太宏观了，太抽象了。**
 
-**2.具体化，Linux**
+**2.具体化，具体到Linux操作系统**
 
+![image-20260408095642645](picture/image-20260408095642645.png)
 
+**虚拟内存就是 PCB能够看到的窗口大小。**
 
 **如何看待虚拟内存？虚拟内存里面决定了进程能够看待的"资源" 主体资源，**
 
@@ -26,7 +58,7 @@
 
 **OS真的存在，那么应该如何管理起来呢？怎么管理？先描述，后组织。**
 
-**CPU只关注指令，不关注你是进程还是线程。**
+**CPU只关注指令，不关注你是进程还是线程。CPU很笨，但是CPU很快的。**
 
 
 
@@ -38,13 +70,17 @@
 
 **linux工程师，我们不想给Linux线程专门设计数据机构，直接复用线程PCB， 用PCB来标识Linux内部的线程**
 
+![image-20260408100458079](picture/image-20260408100458079.png)
+
+**TCP指向父进程的地址空间**
+
 
 
 **组织**
 
 **1.线程在进程内部运行，线程在进程地址空间内运行，有地址空间的一部分数据。**
 
-
+![image-20260408100708982](picture/image-20260408100708982.png)
 
 **进程的新概念：内核视角 ： 承担分配系统资源的基本实体。**
 
@@ -53,8 +89,6 @@
 **一个进程内部的执行流！----》线程。**
 
 **task_struct轻量级进程！**
-
-
 
 
 
@@ -68,7 +102,13 @@
 
 **进程用来申请资源，线程用来伸手向进程要资源。**
 
+![image-20260408100906297](picture/image-20260408100906297.png)
 
+![image-20260408101109084](picture/image-20260408101109084.png)
+
+
+
+![image-20251202092605407](picture/image-20251202092605407.png)
 
 **好处**
 
@@ -85,8 +125,6 @@
 **OS只认线程**
 
 **用户级别线程库--->原生线程库**
-
-
 
 
 
@@ -213,6 +251,173 @@ clean:
 
 
 
+### c_API
+
+```c++
+int pthread_join(pthread_t thread, void **retval);
+int pthread_create(pthread_t *thread, 
+                   const pthread_attr_t *attr,
+                   void *(*start_routine) (void *), 
+                   void *arg);
+
+```
+
+### CPP_API
+
+```c++
+std::thread t(func);
+t.join();
+
+void func(int x) {}
+std::thread t(func, n);
+
+void func(int& x)
+{
+    x++;
+}
+
+int n = 10;
+std::thread t(func, std::ref(n));
+
+class Test
+{
+public:
+    void run(int x) {}
+};
+
+Test t1;
+std::thread t(&Test::run, &t1, 10);
+
+
+```
+
+```c++
+#include <pthread.h>
+#include <thread>
+#include <string>
+#include <iostream>
+using namespace std;
+
+void* print(void* str)
+{
+  cout<< "新线程的----" <<endl;
+  cout<< *(static_cast<const string*>(str)) <<endl;
+  return str;
+}
+
+void print2(const string& str)
+{
+  cout<< "新线程的----" <<endl;
+  cout<< str << endl;
+}
+
+class test 
+{
+public:
+  int add (int x, int y)
+  {
+    cout<< "新线程的----" <<endl;
+    int ret = x + y;
+    return  ret;
+  }
+};
+
+int main()
+{
+#define VERSION 3
+  
+#if VERSION == 1
+// pthread_create操作的函数必须是 (void*)(*start_route)(void*)
+// 传入的参数可以，进行强制类型转换 (void*)
+  pthread_t tid = 0;    
+  string str = "lichermionex";
+  int n = pthread_create(&tid, NULL, print,(void*)&str);
+  if(n == -1)
+  {
+    perror("pthread_create");
+    return -1;
+  }
+
+  string* out;
+  pthread_join(tid, (void**)&out);
+  cout<< "主线程的----" <<endl;
+  cout<< *out << endl;
+
+#elif VERSION == 2
+  cout<< "2" <<endl;
+  /*
+   *string str = "lichermionex";
+   *thread t(print, &str);
+   *t.join();
+   *cout<< "主线程的----" <<endl;
+   */
+
+  string str = "lichermionex";
+  thread t(print2, std::ref(str));
+  cout<< "主线程的----" <<endl;
+  t.join();
+
+#else
+  cout<< "3" <<endl;
+  test te;
+  thread t(&test::add, &te, 1, 3);
+  cout<< "主线程的----" <<endl;
+  t.join();
+#endif
+
+  return 0;
+}
+```
+
+**Linux轻量级进程库。原生线程库的。**
+
+
+
+## 线程优缺点
+
+**健壮性和鲁棒性。**
+
+```c++
+#include <pthread.h>    
+#include <cstdlib>    
+#include <vector>    
+#include <unistd.h>    
+#include <string>    
+#include <iostream>    
+using namespace std;    
+    
+void* start_routine(void* args)    
+{    
+    string name = static_cast<const char*>(args);    
+    while(true)    
+    {    
+        cout<< "this is a new thread, name is : " << name <<endl;    
+        sleep(1);    
+        int* p = nullptr;    
+        *p = 100;    
+    }    
+}    
+    
+int main()    
+{    
+    pthread_t id = 0;    
+    pthread_create(&id, nullptr, start_routine, (void*)"thread new");    
+    
+    while(true)    
+    {    
+        cout<< "main stream " <<endl;    
+        sleep(1);    
+    }                                                                                                                                                                                                                                                          
+    return 0;    
+} 
+```
+
+**一个线程出现问题了，整个执行流就退出了的。**
+
+**信号是进程信号，信号是发送给  整个进程的。**
+
+
+
 ## 2线程控制
 
 **PCB模拟线程**
@@ -289,7 +494,7 @@ int main()
 
 **vfork() 轻量级进程的，一般不用了解的，一般是库在使用的。**
 
-
+![image-20260408145603768](picture/image-20260408145603768.png)
 
 **线程控制**
 
@@ -297,7 +502,9 @@ int main()
 
 
 
-**线程创建**
+### **线程创建**
+
+**如何一批线程**
 
 ```c++
 #include <pthread.h>
@@ -336,6 +543,7 @@ void* start_routine(void* args)
     // cout<< "&cnt " << &cnt <<endl;
     
     delete td;
+    td = nullptr;
   return nullptr;
 }
 
@@ -367,15 +575,74 @@ int main()
 }
 ```
 
+**传入指针，指针变量也是拷贝的**
 
 
-**线程终止**
+
+### **线程终止**
 
 **如果是exit,会让整个进程退出了，所以不能调用它。**
 
 **pthread_exit()**
 
 **线程函数里面放return **
+
+```c++
+void pthread_exit(void *retval);
+// 这里等价 return 滴。
+```
+
+
+
+### 线程等待
+
+```c++
+int pthread_join(pthread_t thread, void **retval);
+void pthread_exit(void *retval);
+// 这里等价 return 指针的。
+```
+
+
+
+**返回值 void*    和 pthread_exit(void* retval)**
+
+**返回值是 void*, 所以定义一个一级指针， 但是为了能够操作一级指针，需要传入二级指针的。**
+
+```c++
+#include <pthread.h>    
+#include <cstdlib>    
+#include <vector>    
+#include <unistd.h>    
+#include <string>    
+#include <iostream>    
+using namespace std;    
+    
+void* start_routine(void* args)    
+{    
+    cout<< "新线程" <<endl;    
+    const char* td = static_cast<const char*>(args);    
+    cout<< td <<endl;    
+    
+    pthread_exit((void*)td);    
+    /*    
+     *return (void*)td;    
+     */                                                                                                                                                                                                                                                
+}    
+    
+int main()    
+{    
+  pthread_t tid;    
+  pthread_create(&tid, nullptr, start_routine, (void*)"licherminonxe");    
+    
+  void* str;    
+  pthread_join(tid, &str);    
+  cout<< "主线程" <<endl;    
+  const char* str2 = static_cast<const char*>(str);
+  cout<< str2 << endl;  
+    
+  return 0;    
+} 
+```
 
 
 
@@ -398,6 +665,8 @@ int main()
 
 
 **线程的返回值问题**
+
+**线程跑起来是在栈上跑起来的。**
 
 
 
@@ -509,9 +778,18 @@ int main()
 
 
 
-**线程取消**
+### 线程取消
+
+
 
 **前提：线程已经跑起来才能取消的**
+
+```c++
+int pthread_cancel(pthread_t thread);
+# PTHREAD_CANCEL
+```
+
+
 
 **线程被取消，返回值就是 -1**
 
@@ -617,7 +895,9 @@ int main()
 
 
 
-**任何语言在linux使用 线程，都必须使用Linux的线程库的。**
+### 线程库
+
+**任何语言在linux 系统使用 线程，都必须使用Linux的线程库的。**
 
 ```c++
 #include <iostream>
@@ -648,6 +928,126 @@ int main()
 }
 
 ```
+
+**任何语言，在linux系统跑 线程，都必须使用，linux系统的线程库，**
+
+**c++11中的线程， 只不过是封装了，linux系统的原生线程库的。**
+
+**建议使用c++。或者看你要求的。**
+
+### 复习
+
+```c++
+#include <iostream>
+#include <vector>
+#include <pthread.h>
+#include <unistd.h>
+#include <cstdio>
+#include <cstring>
+
+using namespace std;
+
+class ThreadData
+{
+public:
+    pthread_t tid;
+    int id;
+    char buffer[64];
+};
+
+// 线程执行函数
+void* start_routine(void* arg)
+{
+    ThreadData* td = static_cast<ThreadData*>(arg);
+
+    cout << "线程开始执行: " << td->buffer << endl;
+
+    // sleep 是取消点
+    sleep(10);
+
+    cout << "线程正常结束: " << td->buffer << endl;
+
+    // 把自己的参数地址返回给主线程
+    return arg;
+}
+
+int main()
+{
+    vector<ThreadData*> v;
+
+    // 1. 创建 10 个线程
+    for(int i = 0; i < 10; ++i)
+    {
+        ThreadData* td = new ThreadData();
+        td->id = i + 1;
+        snprintf(td->buffer, sizeof(td->buffer), "thread-%d", i + 1);
+
+        int n = pthread_create(&td->tid, nullptr, start_routine, td);
+        if(n != 0)
+        {
+            cerr << "pthread_create error: " << strerror(n) << endl;
+            delete td;
+            return 1;
+        }
+
+        v.push_back(td);
+    }
+
+    // 主线程先等 3 秒
+    sleep(3);
+
+    // 2. 取消前 5 个线程
+    for(int i = 0; i < 5; ++i)
+    {
+        int n = pthread_cancel(v[i]->tid);
+        if(n != 0)
+        {
+            cerr << "pthread_cancel error: " << strerror(n) << endl;
+        }
+        else
+        {
+            cout << "已发送取消请求: " << v[i]->buffer << endl;
+        }
+    }
+
+    // 3. 等待所有线程，并拿到返回值
+    for(int i = 0; i < 10; ++i)
+    {
+        void* ret = nullptr;
+        int n = pthread_join(v[i]->tid, &ret);
+        if(n != 0)
+        {
+            cerr << "pthread_join error: " << strerror(n) << endl;
+            continue;
+        }
+
+        if(ret == PTHREAD_CANCELED)
+        {
+            cout << v[i]->buffer << " 被取消退出" << endl;
+        }
+        else
+        {
+            ThreadData* td = static_cast<ThreadData*>(ret);
+            cout << td->buffer << " 正常返回, id = " << td->id << endl;
+        }
+    }
+
+    // 4. 释放资源
+    for(auto e : v)
+    {
+        delete e;
+    }
+    v.clear();
+
+    return 0;
+}
+```
+
+**被取消的线程也是 可以join的，同时它的返回值是  在join带出是 -1的   宏值**
+
+**PTHREAD_CANCELED.**
+
+
 
 
 
@@ -2149,12 +2549,6 @@ void Save(const std::string& message)
 
 
 ![image-20251205165145672](picture/image-20251205165145672.png)
-
-
-
-
-
-
 
 
 
