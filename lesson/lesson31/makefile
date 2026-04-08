@@ -1,5 +1,5 @@
-mythread:mythread.cc
-	g++ -o $@ $^ -lpthread
+thread:thread.cc
+	g++ -o a.out $^ -lpthread
 
 .PHONY:clean
 clean:

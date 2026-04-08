@@ -23,6 +23,7 @@ class Revent
 public:
 };
 
+// 一个套接字一个对象。
 // 根据文件描述符进行封装一个对象，里面有文件描述符的
 // 读写缓冲区
 // 可以操作文件描述符的读写异常。
@@ -51,7 +52,6 @@ public:
     _sender = s;
     _excepter = e;
   }
-
 };
 
 class Tcpserver 
@@ -64,6 +64,7 @@ private:
   struct epoll_event* _revs;
   int _num;
   func_t _func;
+
 public:
   Tcpserver(func_t func, uint16_t port)
     :_port(port)
@@ -88,12 +89,13 @@ public:
     // 2.构建epoll模型的
     _epoller.Create(); 
     
+    // 3.Listensock套接字bind的是Accepter函数，他只是管新新链接的到来。
+    // 4.它的Connect对象注册的方法有Accepter, nullptr, nullptr。
     AddConnection(_sock.fd(), EPOLLIN | EPOLLET, std::bind(&Tcpserver::Accepter, this, std::placeholders::_1), nullptr , nullptr);
 
     _revs = new struct epoll_event[num];
     _num = num;
   }
-
 
 // 事件派发器
   void Dispatcher()
@@ -106,6 +108,32 @@ public:
   }
 
 private:
+  void AddConnection(int sock, uint32_t events, func_t recver, func_t sender, func_t excepter)
+  {
+    // 1.首先为sock创建对应的Connection,并初始化，并添加到connection
+    // Listen套接字上树之前，先将文件描述符设置成非阻塞模式的
+    if(events & EPOLLET)  
+    {
+      util::setNonBlock(sock);
+    }
+
+// 创建一个connet的对象
+    Connection* conn = new Connection(sock, this);
+
+// 设置回调方法,设置进一个connet对象里面去的。
+    conn->Register(recver, sender, excepter);
+
+    //2.其次将sock与它关系的事件写透式的注册到epoll里面，让epoll帮我们关系的
+    //上树
+    bool ret = _epoller.AddEvent(sock, events);
+    assert(ret); 
+    (void)ret;
+
+    //3.添加到Connetion里面
+    _connections.insert(std::pair<int, Connection*>(sock, conn));
+    std::cout<< "add a new sock : " << sock << std::endl;
+  }
+
   void loop(int timeout)
   {
     int n = _epoller.Wait(_revs, num, timeout); // 获取已经就绪的事件,返回值就是几个就绪的事件
@@ -131,8 +159,9 @@ private:
       if(events & EPOLLHUP) events |= (EPOLLIN | EPOLLOUT);
 
       // 读事件
+      // _connections[_sock.fd()]->Accepter(_connections[sock]== (Connection* conn))
       if((events & EPOLLIN) && IsConnectExists(sock) && _connections[sock]->_recver)
-        _connections[sock]->_recver(_connections[sock]);          // 根据Key找到对应的value, value是指针的嘛，指针直接，你懂得。
+        _connections[sock]->_recver(_connections[sock]);                            // 根据Key找到对应的value, value是指针的嘛，指针直接，你懂得。
 
       // 写事件
       if((events & EPOLLOUT) && IsConnectExists(sock) && _connections[sock]->_sender)
@@ -142,30 +171,33 @@ private:
     }
   }
 
-  void AddConnection(int sock, uint32_t events, func_t recver, func_t sender, func_t excepter)
+  void Accepter(Connection* conn)
   {
-    // 1.首先为sock创建对应的Connection,并初始化，并添加到connection
-    // Listen套接字上树之前，先将文件描述符设置成非阻塞模式的
-    if(events & EPOLLET)  
+    for(;;)
     {
-      util::setNonBlock(sock);
+      std::string clientip;
+      uint16_t clientport;
+      int err = 0;
+      int sock = _sock.Accept(&clientip, &clientport, &err);
+      if(sock >= 0) 
+      { 
+          AddConnection(sock, EPOLLIN | EPOLLET | EPOLLOUT, 
+              std::bind(&Tcpserver::Recver, this, std::placeholders::_1),
+              std::bind(&Tcpserver::Sender, this, std::placeholders::_1),
+              std::bind(&Tcpserver::Excepter, this, std::placeholders::_1));
+
+          std::cout<< "get a new link: " << clientip << ":" << clientport << std::endl;
+      }
+      else 
+      {
+        if(err == EAGAIN || err == EWOULDBLOCK)
+          break;
+        else if(err == EINTR)
+          continue;
+        else 
+          break; // 出错了，暂时不处理的。
+      }
     }
-
-// 创建一个connet的对象
-    Connection* conn = new Connection(sock, this);
-
-// 设置回调方法,设置进一个connet对象里面去的。
-    conn->Register(recver, sender, excepter);
-
-    //2.其次将sock与它关系的事件写透式的注册到epoll里面，让epoll帮我们关系的
-    //上树
-    bool ret = _epoller.AddEvent(sock, events);
-    assert(ret); 
-    (void)ret;
-
-    //3.添加到Connetion里面
-    _connections.insert(std::pair<int, Connection*>(sock, conn));
-    std::cout<< "add a new sock : " << sock << std::endl;
   }
 
   void Recver(Connection* conn)
@@ -265,8 +297,6 @@ private:
         }
       }
     }
-
-    // 
   }
 
   void Excepter(Connection* conn)
@@ -279,43 +309,12 @@ private:
     std::cout<< "DEBUG" << "Excepter end" <<  std::endl;
     delete conn;
   }
-
-  void Accepter(Connection* conn)
-  {
-    for(;;)
-    {
-      std::string clientip;
-      uint16_t clientport;
-      int err = 0;
-      int sock = _sock.Accept(&clientip, &clientport, &err);
-      if(sock >= 0) 
-      { 
-          AddConnection(sock, EPOLLIN | EPOLLET | EPOLLOUT, 
-              std::bind(&Tcpserver::Recver, this, std::placeholders::_1),
-              std::bind(&Tcpserver::Sender, this, std::placeholders::_1),
-              std::bind(&Tcpserver::Excepter, this, std::placeholders::_1));
-
-          std::cout<< "get a new link: " << clientip << ":" << clientport << std::endl;
-      }
-      else 
-      {
-        if(err == EAGAIN || err == EWOULDBLOCK)
-          break;
-        else if(err == EINTR)
-          continue;
-        else 
-          break; // 出错了，暂时不处理的。
-      }
-    }
-  }
-
   
   bool IsConnectExists(int sock)
   {
     auto iter = _connections.find(sock);
     return iter != _connections.end();
   }
-
 
   void EnableReaderWrite(Connection* conn, bool readable, bool writeable)
   {

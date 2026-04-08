@@ -4,96 +4,71 @@
 #include <pthread.h>
 using namespace std;
 
-#define MAX 10
-class ThreadData
+class threadData
 {
 public:
-  int number;
   pthread_t tid;
-  char namebuffer[63];
+  int id;
+  char buffer[64];
 };
 
-
-class ThreadReturn
+void* start_routine(void* arg)
 {
-public: 
-  int exit_code;
-  int exit_result;
-};
-
-void* start_routine(void* args)
-{
-  ThreadData* td = static_cast<ThreadData*> (args);
-  int n = 1;
-  while(n)
-  {
-    sleep(1);
-/*
-    cout<< "----------------------" <<endl;
-    cout<< "n : " << n << " : " << "&n : " << &n <<endl;
-    cout<< "namebuffer : " << td->namebuffer <<endl;
-    cout<< "number : " << td->number <<endl;
-    cout<< "tid : "<< td->tid <<endl;
-    cout<< "----------------------" <<endl;
-*/ 
-    cout << "n:" << n << " &n:" << &n << " namebuffer:" << td->namebuffer << " number:" << td->number << " tid:" << td->tid << endl;
-    n--;
-  }
-
-  ThreadReturn* tr = new ThreadReturn();
-  tr->exit_code = 1;
-  tr->exit_result = 1101;
-
-  return (void*)tr;
+  sleep(10);
+  threadData* td = static_cast<threadData*>(arg);
+  cout<< td->buffer << ":" << td->id <<endl;
+  
+  return  (void*)arg;
 }
-
 
 int main()
 {
+  vector<threadData*> v;
 
-  vector<ThreadData*> threads;
+  for(int i = 0; i < 10; ++i)
+  {
+    threadData* td = new threadData();    
+
+    td->id = i+1;
+    snprintf(td->buffer, sizeof(td->buffer), "%s:%d", "thread", i + 1);
+
+    int n = pthread_create(&td->tid, nullptr, start_routine, td);
+    if(n == -1)
+    {
+      perror("pthread_create");
+      return -1;
+    }
+    v.push_back(td);
+  }
+
+  sleep(3);
+  for(int i = 0; i < 5; ++i)
+  {
+    cout<< "线程被取消了" << i + 1 <<endl;
+    pthread_cancel(v[i]->tid);
+  }
   
-  for(int i = 0; i < MAX; i++)
+  for(auto& e : v)
   {
-    ThreadData* td = new ThreadData();
-    td->number = i + 1;
-    snprintf(td->namebuffer, sizeof(td->namebuffer), "%s:%d", "thread", i+1);
-    pthread_create(&td->tid, nullptr, start_routine, td);
-    threads.push_back(td);
+    void* ret = nullptr;
+    int n = pthread_join(e->tid, &ret);
+    if(n != 0)
+    {
+      cerr << "pthread_join" << endl;
+      continue;
+    }
+    
+    if(ret == PTHREAD_CANCELED)
+    {
+      cout << e->buffer << " 被取消退出" << endl;
+    }
+		else 
+		{
+				threadData* td = static_cast<threadData*>(ret);
+        cout << td->buffer << " 正常返回, id = " << td->id << endl;
+		}
+
   }
-
-  sleep(1);
-
-/*
-  for(auto& iter: threads)
-  {
-    ThreadReturn* ret = nullptr;
-    pthread_join(iter->tid, (void**)&ret);
-    cout<< "join success : " << "success exit_code : " << ret->exit_code << " success exit_result : " << ret->exit_result <<endl;
-    delete  iter;
-  }
-*/
-
-  for(size_t i = 0; i < threads.size()/2; i++)
-  {
-    pthread_cancel(threads[i]->tid);
-  }
-
-
-  for(auto& iter: threads)
-  {
-    void* ret_val = nullptr;  // 先定义一个void*指针
-    pthread_join(iter->tid, &ret_val);  // 传递这个指针的地址
-    ThreadReturn* ret = static_cast<ThreadReturn*>(ret_val);
-    cout << "join success : " << "success exit_code : " << ret->exit_code 
-       << " success exit_result : " << ret->exit_result << endl;
-    delete ret;     // 删除线程返回的对象
-    delete iter;    // 删除线程数据对象
-  }
-
-
-
-
 
 
   return 0;
