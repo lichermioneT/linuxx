@@ -65,7 +65,7 @@ public:
 
       for(int i = 0; i < fdnum; ++i)
       {
-        if(_fdarray[i] != defaultfd)
+        if(_fdarray[i] == defaultfd)
           continue;
       
         FD_SET(_fdarray[i], &rfds);
@@ -159,6 +159,10 @@ private:
     if(s > 0)
     {
       buffer[s] = 0;
+    }
+    else if(s == 0)
+    {
+
     }
     
     std::cout<< buffer << std::endl;

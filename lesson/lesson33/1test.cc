@@ -17,7 +17,6 @@ string changeId(const pthread_t& thread_id)
 void* start_routine(void* args)
 {
   string threadname = static_cast<const char*>(args);
-  pthread_detach(pthread_self()); // 设置自己为分离状态
   int cnt = 5;
   while(cnt)
   {
