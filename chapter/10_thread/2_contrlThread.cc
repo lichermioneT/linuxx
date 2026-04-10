@@ -1,10 +1,13 @@
 #include <pthread.h>
+#include <unistd.h>
 #include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
 using namespace std;
 
+// 创建一个线程需要tid,我们可以存放在结构体，然后再把结构体信息传递给
+// 线程的
 class threadData
 {
 public:
@@ -15,9 +18,9 @@ public:
 
 void* start_routine(void* arg)
 {
+    sleep(1);
     threadData* td = static_cast<threadData*>(arg);
     cout<< td->id << "---" << td->buffer << endl;
-
     return td;
 }
 
@@ -27,15 +30,17 @@ int main()
   for(int i = 0; i < 10; ++i)
   {
     threadData* td = new threadData();
+
     td->id = i + 1;
     snprintf(td->buffer, sizeof(td->buffer), "%s:%d", "thread", i + 1);
     
 // 注意 这里失败了返回的是错误码的
+// 成功返回的是 零
     int n = pthread_create(&td->tid, nullptr, start_routine, td);
     if(n != 0)
     {
-      cerr<< "pthread_create" << strerror(n) << endl;
-      return -1;
+      std::cerr<< "pthread_create" << strerror(n) << std::endl;
+      return 1;
     }
 
     v.push_back(td);
@@ -56,7 +61,6 @@ int main()
 
       threadData* td = static_cast<threadData*>(ret);
       cout<< td->buffer << "正常返回" <<endl;
-
   }
 
   for(auto e : v)
@@ -65,7 +69,5 @@ int main()
   }
 
   v.clear();
-
-
   return 0;
 }

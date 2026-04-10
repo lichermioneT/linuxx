@@ -13,11 +13,17 @@ using func_t = std::function<std::string (const std::string&)>;
 
 class select_server 
 {
+// 凭什么你是服务器
+// 1.知名端口
+// 2.Listen套接字
+// 3.select特色数组
+// 4.如何处理客户端的请求
 private: 
   uint16_t _port;
   int  _listensock;
   int *fdarray;      //  自己维护一个数组，存放fd。
   func_t _func;
+
 public:
   select_server(func_t func, uint16_t port = defaultport)
     :_port(port)
@@ -28,10 +34,16 @@ public:
  
   ~select_server() 
   {
-    if(_listensock >= 0) close(_listensock);
-    if(fdarray) delete[] fdarray;
+    if(_listensock >= 0)
+      close(_listensock);
+    if(fdarray) 
+      delete[] fdarray;
   }
 
+// 初始化服务器
+// 1.listen套接字拿到手
+// 2.select特色数组
+// 3.添加第一个文件描述符
   void init()
   {
     _listensock = Sock::Socket();
@@ -56,6 +68,19 @@ public:
     fdarray[0] = _listensock; // 不变了的，固定的位置下标
   }
 
+// 凭什么你是服务器？常驻内存进程
+// 循环分三步
+// 1.维护的数组的文件描述符添加到 fd_set里面
+// 2.select函数登场
+// 3.根据函数返回值进行处理
+//   n==0 规定时间没有事件就绪(struct timeval )
+//   n==num 已经有num个文件描述符就绪了
+//   n==-1  出现错误了
+// 4.当n==num的时候
+//   1.listensock套接字就绪了
+//      添加到select的特色数组里面的
+//   2.其它事件就绪了的
+//      注意，如果对方关闭了，需要让这个文件描述符从数组里面移除的
   void start()
   {
     for(;;)
@@ -137,10 +162,15 @@ public:
    }
   }
 
+// 注意client从长链接队列里面拿套接字，
+// 我们需要知道对方的信息的, 原生accept接口有，后两个参数都是指针的
+// Accepter只是两件事情
+// 1.从listen套接字拿新的链接时间
+// 2.添加到select的特色数组里面的
   void Accepter(int listensock)
   {
-        // select告诉我，_listensock读事件准备就绪了的
-        // 走到这里，accept不会阻塞的。
+// select告诉我，_listensock读事件准备就绪了的
+// 走到这里，accept不会阻塞的。
         std::string clientip;
         uint16_t clientport = 0;
      
@@ -153,10 +183,10 @@ public:
 
         std::cout<< "新链接获取成功：ip:" << clientip.c_str() << ":port" << clientport << std::endl;
 
-        // 这里能够直接recv/read吗？ 不能的。整个代码，只有select有资格检查事件是否就绪的。
-        // 底层可能没有数据的的。
-        
-        // 将新的sock托管给select！, 本质就是 将sock添加到fdarray数组中即可。
+  // 这里能够直接recv/read吗？ 不能的。整个代码，只有select有资格检查事件是否就绪的。
+  // 底层可能没有数据的的。
+  
+  // 将新的sock托管给select！, 本质就是 将sock添加到fdarray数组中即可。
         int i = 0;
         for(i = 0; i < fdnum; ++i)
         {
@@ -177,6 +207,12 @@ public:
         print();
   }
 
+// 这里读取会不会阻塞了？绝对不会的。select已经返回了的。
+// 注意这里读取需要进行判断对方还在不的。
+// recv返回值
+// 1.s > 0  对方还在的，不用担心的
+// 2.s== 0  对方已经断开链接了，需要从维护的数组里面进行删除
+// 3.s < 0  对方出现错误了，需要从维护的数组里面进行删除的。同上的
   void Revcer(int sock, int pos)
   {
     std::cout<< "in Revcer " << std::endl;

@@ -5,10 +5,8 @@
 #include <iostream>
 #include <functional>
 
-
 namespace poll_ns
 {
-
 static const uint16_t defaultport = 8080; 
 static const int defaultfd = -1;
 static const int num = 2048;
@@ -16,6 +14,11 @@ using func_t = std::function<std::string (const std::string&)>;
 
 class poll_server 
 {
+// 凭什么你是服务器？
+// 1.知名端口
+// 2.监听套接字
+// 3.poll结构体数组
+// 4.回调方法，对客户端的数据。
 private: 
   uint16_t _port;
   int  _listensock;
@@ -37,6 +40,10 @@ public:
     if(_rfds) delete[] _rfds;
   }
  
+// 服务器的初始化
+// 1.listensock套接字拿到
+// 2.维护的数组清零
+// 3.添加listensock
   void init()
   {
     _listensock = Sock::Socket();
@@ -49,28 +56,19 @@ public:
       ResetItem(i);
     }
     
+// POLLIN 我们只是关系它的读事件信息的
     // 最开始只有一个文件描述符
     _rfds[0].fd = _listensock; // 不变了的，固定的位置下标
     _rfds[0].events = POLLIN;
     // 服务启动之前，只存在_listensock的。
   }
 
-  void ResetItem(int i)
-  {
-    _rfds[i].fd = defaultfd;
-    _rfds[i].events = 0;
-    _rfds[i].revents = 0;
-  }
-
-  void print()
-  {
-    for(int i = 0; i < num; ++i)
-    {
-      if(_rfds[i].fd != defaultfd)
-        std::cout<< "_rfds list:" << _rfds[i].fd << std::endl;
-    }
-  }
-
+// 凭什么你是服务器？常驻内存进程的，死循环的。
+// poll函数接口：参数1数组地址，数值大小，阻塞时间的
+// 返回值
+// n == 0:规定时间没有事情返回的
+// n <  0:出现错误了的
+// n >  0:有事件就绪了的
   void start()
   {
     int timeout = 1000;
@@ -86,13 +84,12 @@ public:
           std::cout<< "poll error:" << errno << strerror(errno) << std::endl;
           break;
         default:
-
+// 事件就绪了，在我们维护的数组里面的
           // 说明有事件就绪了，目前只有一个监听事件就绪了
           // 需要取走的
           handlerEvent(); // 这里告诉我，哪些文件描述符已经就绪了的
           break;
       }
-      
       // 业务处理的
     }
   }
@@ -203,5 +200,20 @@ public:
     std::cout<< "out Revcer " << std::endl;
   }
 
+  void ResetItem(int i)
+  {
+    _rfds[i].fd = defaultfd;
+    _rfds[i].events = 0;
+    _rfds[i].revents = 0;
+  }
+
+  void print()
+  {
+    for(int i = 0; i < num; ++i)
+    {
+      if(_rfds[i].fd != defaultfd)
+        std::cout<< "_rfds list:" << _rfds[i].fd << std::endl;
+    }
+  }
 };
 }

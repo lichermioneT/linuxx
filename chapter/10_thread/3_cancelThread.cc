@@ -31,9 +31,9 @@ void* start_routine(void* arg)
     return arg;
 } 
 
-// 1.线程创建返回的是erron
-// 2.线程取消返回的是erron
-// 3.线程等待返回的是erron
+// 1.线程创建错误返回的是erron
+// 2.线程取消错误返回的是erron
+// 3.线程等待错误返回的是erron
 
 int main()    
 {    
@@ -42,19 +42,19 @@ int main()
     // 1. 创建 10 个线程    
     for(int i = 0; i < 10; ++i)    
     {    
-        ThreadData* td = new ThreadData();    
-       td->id = i + 1;                                                                                                                                                                         
-        snprintf(td->buffer, sizeof(td->buffer), "thread-%d", i + 1);    
-    
-        int n = pthread_create(&td->tid, nullptr, start_routine, td);    
-        if(n != 0)    
-        {    
-            cerr << "pthread_create error: " << strerror(n) << endl;
-            delete td;
-            return 1;
-        }
+      ThreadData* td = new ThreadData();    
+      td->id = i + 1;                                                                                                                                                                         
+      snprintf(td->buffer, sizeof(td->buffer), "thread-%d", i + 1);    
+  
+      int n = pthread_create(&td->tid, nullptr, start_routine, td);    
+      if(n != 0)    
+      {    
+          cerr << "pthread_create error: " << strerror(n) << endl;
+          delete td;
+          return 1;
+      }
 
-        v.push_back(td);
+      v.push_back(td);
     }
 
     // 主线程先等 3 秒

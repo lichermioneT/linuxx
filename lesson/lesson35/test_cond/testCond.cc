@@ -5,27 +5,37 @@
 
 int tickets = 1000;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;  // 初始化锁
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;     // 初始化条件变量
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;     // 初始化条件变量, 
 
 void* start_routine(void* args)
 {
   std::string name = static_cast<const char*>(args);
   while(true)
   {
-    pthread_mutex_lock(&mutex);
-    pthread_cond_wait(&cond,&mutex);                  // 为什么要有mutex？ 带锁等待？这里在等待，拿到条件变量，等待被唤醒的。
-    // 判断暂时省略
-    std::cout<< name << " - " << tickets << std::endl;
-    tickets--;
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&mutex);         // 加锁，
+// 把自己放到阻塞队列里面去掉
+    pthread_cond_wait(&cond, &mutex);                  // 为什么要有mutex？ 带锁等待？这里在等待，拿到条件变量，等待被唤醒的。
+    if(tickets > 0)
+    {
+      std::cout<< name << " - " << tickets << std::endl;
+      tickets--;
+      pthread_mutex_unlock(&mutex);
+    }
+    else 
+    {
+      pthread_mutex_unlock(&mutex);
+      break;
+    }
   }
+
+  return nullptr;
 }
 
 int main()
 {
-  // 通过条件变量控制线程的执行
+// 通过条件变量控制线程的执行
   pthread_t t[5];
-  for(int i = 0; i < 5; i++)
+  for(int i = 0; i < 5; ++i)
   {
     char* name = new char[64];
     snprintf(name, 64, "thread %d", i+1);              // 线程名称
@@ -35,8 +45,11 @@ int main()
   while(true)
   {
     sleep(1);
-    // pthread_cond_signal(&cond); // 唤醒一个线程 _broadcast唤醒一批线程， 这里在唤醒数据
+#if 0
+    pthread_cond_signal(&cond); // 唤醒一个线程 _broadcast唤醒一批线程， 这里在唤醒数据
+#else
     pthread_cond_broadcast(&cond); // 唤醒一批线程
+#endif
     std::cout<< "main thread wake up ..." <<std::endl;
   }
 

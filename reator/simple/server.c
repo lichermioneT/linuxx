@@ -217,7 +217,7 @@ int parseRequestLine(const char* line, int cfd)
   
   decodeMsg(path, path);
   // 处理客户端请求的静态资源(目录或者文件)
-  char* file = NULL;
+  const char* file = NULL;
   if(strcmp(path, "/") == 0)
   {
     file = "./";
@@ -294,12 +294,12 @@ int sendFile(const char* fileName, int cfd)
 
   while(offset < size)
   {
-    ssize_t ret = sendfile(cfd, fd, &offset, size - offset);
+    ssize_t ret = sendfile(cfd, fd, &offset, size);
     printf("ret = %zd, offset = %ld\n", ret, (long)offset);
     
     if(ret == -1 && errno == EAGAIN)
     {
-      printf("没有数据了\n");
+      printf("没有数据了....\n");
     }
   }
 
@@ -332,7 +332,6 @@ int sendHeadMsg(int cfd, int status, const char* descr, const char* type, int le
   send(cfd, buf, strlen(buf), 0);
   return 0;
 }
-
 
 const char* getFileType(const char* name)
 {
@@ -567,7 +566,6 @@ int sendDir(const char* dirName, int cfd)
     return 0;
 }
 
-
 void formatSize(off_t size, char* out, int len)
 {
     if(size < 1024)
@@ -587,7 +585,6 @@ void formatSize(off_t size, char* out, int len)
         snprintf(out, len, "%.2f GB", size / (1024.0 * 1024 * 1024));
     }
 }
-
 
 // 将字符转换为整形数
 // 16-10 进制的转换的
@@ -630,4 +627,3 @@ void decodeMsg(char* to, char* from)
     }
     *to = '\0';
 }
-

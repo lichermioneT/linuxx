@@ -8,6 +8,12 @@ static const int gmaxcap = 5;
 template<class T>
 class blockqueue
 {
+private:
+  std::queue<T> _q;          // 队列
+  int _maxcap;               // 队列的上线
+  pthread_mutex_t _mutex;    // 锁
+  pthread_cond_t _pcond;    // 生产者对应的条件变量
+  pthread_cond_t _ccond;    // 消费者对于的条件变量
 public:
 // 构造函数
   blockqueue(const int& maxcap = gmaxcap):_maxcap(maxcap)
@@ -17,23 +23,35 @@ public:
     pthread_cond_init(&_ccond, nullptr);
   }
 
+// 析构函数
+  ~blockqueue()
+  {
+    pthread_mutex_destroy(&_mutex);
+    pthread_cond_destroy(&_pcond);
+    pthread_cond_destroy(&_ccond);
+  }
+
 //放数据
 // 判断是否满的
   void push(const T& in) // 输入型参数 const &
   {
+// 加锁
     pthread_mutex_lock(&_mutex);
     //细节2
     //充当条件判断必须是while
     //if要换成whlie----》
     while(is_full())
     {
+// 唤醒生成者
       pthread_cond_wait(&_pcond, &_mutex); // 条件不足，无法生产，继续等待
                                            // 细节1
                                            // 该函数调用的时候，会以原子性的方式，将锁释放，并且将自己挂起。 
                                            // 该函数返回的时候，会自动重新获取你传入的锁
     }
     _q.push(in);                           // 里面绝对有数据了
-    pthread_cond_signal(&_ccond);          // 唤醒消费者，可以放在解锁之后的
+// 唤醒消费者
+    pthread_cond_signal(&_ccond);          // 唤醒消费者，可以放在解锁之后
+// 释放锁
     pthread_mutex_unlock(&_mutex);         // 释放锁了
   }
 
@@ -41,6 +59,7 @@ public:
 // 判断是否空的
   void pop(T* out) // 输出型参数*， 输入输出型参数&
   {
+// 加锁
     pthread_mutex_lock(&_mutex);
     //1.先判断
     while(is_empty())
@@ -53,16 +72,10 @@ public:
     
     //3这里保证至少空一个位置
     pthread_cond_signal(&_pcond);    // 唤醒消费者,可以再解锁之后。
+// 解锁
     pthread_mutex_unlock(&_mutex);
   }
 
-// 析构函数
-  ~blockqueue()
-  {
-    pthread_mutex_destroy(&_mutex);
-    pthread_cond_destroy(&_pcond);
-    pthread_cond_destroy(&_ccond);
-  }
 
 private:
   bool is_empty()
@@ -73,11 +86,4 @@ private:
   {
     return  _q.size() == _maxcap;
   }
-
-private:
-  std::queue<T> _q;          // 队列
-  int _maxcap;               // 队列的上线
-  pthread_mutex_t _mutex;    // 锁
-  pthread_cond_t _pcond;    // 生产者对应的条件变量
-  pthread_cond_t _ccond;    // 消费者对于的条件变量
 };

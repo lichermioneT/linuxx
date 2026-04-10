@@ -16,7 +16,6 @@ void* start_routine(void* arg)
     return nullptr;
 } 
 
-
 int main()    
 {    
   pthread_t tid;
@@ -32,10 +31,11 @@ int main()
   if(n != 0)
   {
     cerr<< "pthread_detach" << strerror(errno) << endl;
+    return 1;
   }
 
   cout<< "ddd" << endl;
-    return 0;
+  return 0;
 }
 
 

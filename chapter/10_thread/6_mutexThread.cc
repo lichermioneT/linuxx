@@ -9,7 +9,6 @@
 #include <cstdio>    
 #include <cstring>    
 #include "lock.hpp"
-
     
 class Thread;
 class context
@@ -82,9 +81,7 @@ void* getTicket(void* arg)
   {
     LockGuard lck(&lock);
 
-    /*
-     *sleep(1);
-     */
+    sleep(1);
     if(tickets > 0)
     {
       std::cout<< user_name << "正在抢票" << tickets << std::endl;
@@ -94,7 +91,6 @@ void* getTicket(void* arg)
     {
       break;
     }
-
   }
   return nullptr;
 }
@@ -113,5 +109,3 @@ int main()
 
     return 0;
 }
-
-

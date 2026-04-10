@@ -15,8 +15,17 @@ static const int size = 128;
 static  const int defaulvalue = -1;
 static  const int defaultnum = 64;
 using func_t = function<std::string (const string&)>;
+
+
 class epollServer
 {
+// 凭什么你是服务器？
+// 1.服务器知名端口号
+// 2.监听套接字
+// 3.epoll句柄
+// 4.epoll数组
+// 5.epoll数组大小
+// 6.回调函数
 private:
   uint16_t _port;
   int _listensock;
@@ -41,6 +50,11 @@ public:
     if(_revs) delete[] _revs;
   }
 
+// 服务器初始化
+// 1._listensock套接字
+// 2.epoll模型
+// 3.套接字上树
+// 4.创建第三方维护数组的
   void init()
   {
 //1.创建socket
@@ -63,6 +77,7 @@ public:
 
     epoll_ctl(_epfd, EPOLL_CTL_ADD, _listensock, &ev);
 
+//4.第三方维护的数组
     _revs = new struct epoll_event[_num];
 
     std::cout<< "init server success" << std::endl;
@@ -78,16 +93,18 @@ public:
       int n = epoll_wait(_epfd, _revs, _num, timeout);  // timeout时间内阻塞的
       switch(n)
       {
+// n == 0 规定的时间没有返回的
         case 0:
           std::cout<< "timeout..." << std::endl; // 期望时间没有返回的
           break;
-
+// n == -1 出现了问题的
         case -1:
           std::cout<< "epoll_wait failed..." << std::endl; // 出错了的
           break;
-
+// n == number 有几个返回了的
         default:
           std::cout<< "have event ready" << std::endl; // 有事件就绪了的, 放到你的数组里面了的
+// n个就行时间传递给事件的处理接口的
           handerEvent(n);
           break;
       }
@@ -97,11 +114,13 @@ public:
   void handerEvent(int readyNum)
   {
     std::cout<< "handerEvent in" <<std::endl;
+// epoll_wait是有序的n个的。只需要进行n个遍历即可的
     for(int i = 0; i < readyNum; ++i)
     {
       uint32_t events = _revs[i].events; 
       int sock = _revs[i].data.fd;
 
+// 监听套接字就上树
       if(sock == _listensock && (events & EPOLLIN))
       {
         // Listen套接字的读事件就绪，获取新链接的
@@ -121,6 +140,7 @@ public:
 
         epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev);
       }
+// 普通套接字就处理业务的
       else if(events & EPOLLIN)
       {
         // 普通的套接字就绪
@@ -156,10 +176,5 @@ public:
     }
     std::cout<< "handerEvent in" <<std::endl;
   }
-
-
 };
-
-
-
 }

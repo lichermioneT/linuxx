@@ -198,11 +198,6 @@ void* acceptClient(void* arg)
     printf("recvMsg threadid: %ld", info->tid);
     free(info);
     return NULL;
-
-
-
-
-  return NULL;
 }
 
 int parseRequestLine(const char* line, int cfd)

@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
 {
   if(argc != 3)
   {
-    printf("usage: ./a.out port dir");
+    printf("usage: ./a.out port dir\n");
     return -1;
   }
   

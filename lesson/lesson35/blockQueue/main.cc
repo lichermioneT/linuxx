@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <cstdlib>
 
-
 int myadd(int x, int y)
 {
   return x + y;
@@ -14,9 +13,10 @@ int myadd(int x, int y)
 // 消费者函数
 void* consumer(void* bq_)
 {
-  blockqueue<task>* bp = static_cast<blockqueue<task> *>(bq_);
+  blockqueue<task>* bp = static_cast<blockqueue<task>*>(bq_);
   while(true)
   {
+    sleep(1);
     task t;
     bp->pop(&t);
     std::cout<<"消费数据："<< t() <<std::endl;
@@ -31,8 +31,9 @@ void* productor(void* bq_)
   blockqueue<task>* bp = static_cast<blockqueue<task>*>(bq_);
   while(true)
   {
+    sleep(1);
     int x = rand() % 10 + 1; // 随机数构建一个数据[1,10]
-    int y = rand() % 5  + 1;
+    int y = rand() % 5  + 1; // [1-5]
     
     std::cout<< "生产数据"<< x << " : " << y <<std::endl;
     task t(x, y, myadd);
