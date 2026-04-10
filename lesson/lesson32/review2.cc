@@ -39,7 +39,7 @@ int main()
     for(int i = 0; i < 10; ++i)
     {
         ThreadData* td = new ThreadData();
-        td->id = i + 1;
+       td->id = i + 1;
         snprintf(td->buffer, sizeof(td->buffer), "thread-%d", i + 1);
 
         int n = pthread_create(&td->tid, nullptr, start_routine, td);

@@ -14,15 +14,26 @@ public:
   Thread* this_;
   void* args_;
 public:
-  context():this_(nullptr), args_(nullptr){}
-  ~context(){}
+  context()
+    :this_(nullptr)
+    , args_(nullptr)
+  {}
+
+  ~context()
+  {}
 };
 
 class Thread
 {
-public:
+private:
   typedef std::function<void*(void*)> func_t;  // function pointer
   const int num = 1024;
+
+private:
+  std::string name_;  // thread name
+  func_t func_;       // thread function
+  void* args_;        // thread args
+  pthread_t tid_;     // thread tid
 public: 
   Thread(func_t func, void* args = nullptr, int number = 0):func_(func), args_(args)
   {
@@ -39,7 +50,9 @@ public:
     (void)n;
   }
 
-  // 类内创建线程，执行对应的方法，方法static this pointer
+// 类里面创建线程，让线程执行对应的方法
+// 静态函数，里面没有this指针的。
+// 类内创建线程，执行对应的方法，方法static this pointer
   static void* start_routine(void* agrs)   // 缺省参数
   {
     context* ctx = static_cast<context*>(agrs);
@@ -50,6 +63,11 @@ public:
     // 静态不能调用成员方法，成员变量。
   }
 
+  void* run(void* args) 
+  {
+    return func_(args);
+  }
+
   void join()
   {
     int n = pthread_join(tid_, nullptr);
@@ -57,19 +75,10 @@ public:
     (void)n;
   }
 
-  void* run(void* args)
-  {
-    return func_(args);
-  }
 
   ~Thread()
   {
     // do nothing
   }
 
-private:
-  std::string name_;  // thread name
-  func_t func_;       // thread function
-  void* args_;        // thread args
-  pthread_t tid_;     // thread tid
 };
