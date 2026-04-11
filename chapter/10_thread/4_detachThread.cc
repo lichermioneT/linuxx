@@ -4,8 +4,14 @@
 #include <unistd.h>    
 #include <cstdio>    
 #include <cstring>    
-    
 using namespace std;    
+
+// pthread_join默认是阻塞等待，有时候我们不需要进行等待，
+// 需要进行线程的分离，
+// pthread_detach(tid) 传入线程的tid就可以进行分类的
+// 记住
+// 1.建议在主线程里面取消
+// 2.分离了就不需要join了的
 
 // 线程执行函数    
 void* start_routine(void* arg)    

@@ -8,6 +8,9 @@
 #include <unistd.h>    
 #include <cstdio>    
 #include <cstring>    
+
+// 封装线程具体看你需要怎么做
+// 静态成员不能够调用成员函数的。
     
 class Thread;
 class context

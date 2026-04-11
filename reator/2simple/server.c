@@ -3,19 +3,19 @@
 #include <stdio.h>    
 #include <arpa/inet.h>  
 #include <sys/epoll.h>
- #include <ctype.h>    
-  #include <dirent.h>    
-  #include <sys/sendfile.h>    
-  #include <assert.h>    
-  #include <sys/stat.h>    
-  #include <strings.h>    
-  #include <unistd.h>    
-  #include <sys/epoll.h>    
-  #include <stdio.h>    
-  #include <fcntl.h>    
-  #include <errno.h>    
-  #include <stdlib.h>    
-  #include <pthread.h>   
+#include <ctype.h>    
+#include <dirent.h>    
+#include <sys/sendfile.h>    
+#include <assert.h>    
+#include <sys/stat.h>    
+#include <strings.h>    
+#include <unistd.h>    
+#include <sys/epoll.h>    
+#include <stdio.h>    
+#include <fcntl.h>    
+#include <errno.h>    
+#include <stdlib.h>    
+#include <pthread.h>   
 
 struct FdInfo
 {
@@ -258,10 +258,6 @@ int parseRequestLine(const char* line, int cfd)
       sendFile(file, cfd);
       close(cfd);
     }
-  
-
- 
-
   return 0;
 }
 

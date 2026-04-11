@@ -4,6 +4,11 @@
 #include <string>
 using namespace std;
 
+// 总结
+// 线程创建的本质就是在共享区里面建立一个函数栈帧。
+// 执行的函数是 void*(*start_routine)(void*); 记住两个void* 。一般需要static_cast同类型的数据进行强制类型的转换。
+// 线程回收需要创建一个 void*的通用指针进行接收返回值，为了能够操作void*的指针，所以 pthread_join(tid, **), join是二级指针的。
+
 void* start_routine(void* arg)
 {
   const char* str = static_cast<const char*>(arg);
@@ -34,7 +39,6 @@ int main()
 {
 #if 1
   const char* p = "我是一个常量字符串";
-
 // 1.创建一个线程需要一个线程的句柄，就是线程id号。
 // 2.线程创建的本质就是，让线程去建立一个新的栈帧结构，执行对应的代码
 //   函数建立栈帧，所以需要传递一个函数
@@ -83,7 +87,6 @@ int main()
   struct Info* info = static_cast<struct Info*>(ret);
   std::cout<< "回收子线程tid " << tid 
            << " name " << info->name <<endl;
-
 #endif
   return 0;
 }

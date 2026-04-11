@@ -16,7 +16,7 @@ public:
   {
     int result = _callbacl(_x, _y, _op);
     char buffer[1024];
-    snprintf(buffer, sizeof(buffer),"%d %c %d = %d", _x, _op, _y, result);
+    snprintf(buffer, sizeof(buffer),"%d %c %d = %d", _x, _op, _y, result); // 字符串拼接
     return buffer;
   }
 
@@ -52,9 +52,47 @@ void Save(const std::string& message)
   if(!fp)
   {
     std::cerr<< "fopen error" <<std::endl;
+    return;
   }
   
   fputs(message.c_str(), fp);
   fputs("\n", fp);
+
   fclose(fp);
+}
+
+int myadd(int x, int y, char op)
+{
+  int result = 0;
+  switch(op)
+  {
+    case '+': result = x + y; break;
+    case '-': result = x - y; break;
+    case '*': result = x * y; break;
+    case '/': 
+    {
+      if(0 == y)
+      {
+        std::cerr<< "div zero error" <<std::endl;
+        result = -1;
+      }
+      else 
+        result = x / y;
+    }
+    break;
+    case '%':
+    {
+      if(0 == y)
+      {
+        std::cerr<< "mod zero error" <<std::endl;
+        result = -1;
+      }
+      else 
+        result = x % y;
+    }
+    break;
+    default: break;
+  }
+
+  return result;
 }

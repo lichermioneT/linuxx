@@ -4,9 +4,11 @@
 #include <unistd.h>    
 #include <cstdio>    
 #include <cstring>    
-    
 using namespace std;    
     
+// 线程执行到一定的时候我们想让他取消了
+// pthread_cancel(tid), 传入线程的tid就行了。取消的线程的返回值是
+// PTHREAD_CANCELED 是 -1, 取消了同样需要进行回收的。同样进行回收的。
 class ThreadData    
 {    
 public:    
@@ -31,9 +33,9 @@ void* start_routine(void* arg)
     return arg;
 } 
 
-// 1.线程创建错误返回的是erron
-// 2.线程取消错误返回的是erron
-// 3.线程等待错误返回的是erron
+// 1.线程创建错误返回的是erron 成功返回0
+// 2.线程取消错误返回的是erron 成功返回0
+// 3.线程等待错误返回的是erron 成功返回0
 
 int main()    
 {    

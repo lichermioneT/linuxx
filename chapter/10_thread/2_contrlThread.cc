@@ -6,8 +6,11 @@
 #include <vector>
 using namespace std;
 
+// 总结：
+// 创建线程需要传递参数，我们封装一个对象 threadData, 给线程传入参数信息的
+
 // 创建一个线程需要tid,我们可以存放在结构体，然后再把结构体信息传递给
-// 线程的
+// 线程是需要回收的，就和进程一样的。 也许我们需要知道线程的返回值信息。
 class threadData
 {
 public:
@@ -18,9 +21,9 @@ public:
 
 void* start_routine(void* arg)
 {
-    sleep(1);
     threadData* td = static_cast<threadData*>(arg);
-    cout<< td->id << "---" << td->buffer << endl;
+    cout<< td->id << "::" << td->buffer << endl;
+    sleep(2);
     return td;
 }
 

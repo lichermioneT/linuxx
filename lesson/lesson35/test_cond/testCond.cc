@@ -27,7 +27,6 @@ void* start_routine(void* args)
       break;
     }
   }
-
   return nullptr;
 }
 
@@ -44,7 +43,6 @@ int main()
 
   while(true)
   {
-    sleep(1);
 #if 0
     pthread_cond_signal(&cond); // 唤醒一个线程 _broadcast唤醒一批线程， 这里在唤醒数据
 #else

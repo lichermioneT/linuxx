@@ -15,43 +15,22 @@ public:
   blockqueue<S>* s_bp;
 };
 
-int myadd(int x, int y, char op)
+// 保存函数
+void* saver(void* bqs_)
 {
-  int result = 0;
-  switch(op)
+  blockqueue<savetask>* save_bq = static_cast<blockqueues<task, savetask>*>(bqs_)->s_bp;
+  while(true)
   {
-    case '+': result = x+y; break;
-    case '-': result = x-y; break;
-    case '*': result = x*y; break;
-    case '/': 
-    {
-      if(0 == y)
-      {
-        std::cerr<< "div zero error" <<std::endl;
-        result = -1;
-      }
-      else 
-        result = x / y;
-    }
-    break;
-    case '%':
-    {
-      if(0 == y)
-      {
-        std::cerr<< "mod zero error" <<std::endl;
-        result = -1;
-      }
-      else 
-        result = x % y;
-    }
-    break;
-    default: break;
+    savetask t;
+    save_bq->pop(&t);
+    t();
+    std::cout<< "保存任务完成....."<<std::endl;
   }
-  return result;
+  return nullptr;
 }
 
 // 消费者函数
-void* consumer(void*bqs_)
+void* consumer(void* bqs_)
 {
   blockqueue<task>* bp = static_cast<blockqueues<task, savetask>*>(bqs_)->c_bp;
   blockqueue<savetask>* save_bq = static_cast<blockqueues<task, savetask>*>(bqs_)->s_bp;
@@ -72,37 +51,24 @@ void* consumer(void*bqs_)
 }
 
 // 生产者函数
-void* productor(void*bqs_)
+void* productor(void* bqs_)
 {
   blockqueue<task>* bp = static_cast<blockqueues<task, savetask>*>(bqs_)->c_bp;
   while(true)
   {
     // 
     int x = rand() % 10 + 1; // 随机数构建一个数据[1,10]
-    int y = rand() % 5;
+    int y = rand() % 5;      // [0, 4]
     int opreCode = rand() % oper.size();  // 生产数据
 
-    std::cout<< "生产数据"<< x << " : " << y <<std::endl;
-    task t(x, y,oper[opreCode], myadd);
+    std::cout<< "生产数据"<< x << " : " << y << " : "<< oper[opreCode] <<std::endl;
+    task t(x, y,oper[opreCode], myadd);   // 放的数据对象
     bp->push(t);                          // 放数据,任务
-    //std::cout<< "生产数据：" << data <<std::endl;
     sleep(2);
   }
   return nullptr;
 }
 
-void* saver(void* bqs_)
-{
-  blockqueue<savetask>* save_bq = static_cast<blockqueues<task, savetask>*>(bqs_)->s_bp;
-  while(true)
-  {
-    savetask t;
-    save_bq->pop(&t);
-    t();
-    std::cout<< "保存任务完成....."<<std::endl;
-  }
-  return nullptr;
-}
 
 int main()
 {
@@ -112,19 +78,23 @@ int main()
   bqs.c_bp = new blockqueue<task>();            // 生产者
   bqs.s_bp = new blockqueue<savetask>();        // 消费者
   
-/*
-  blockqueue<task>* tast_bq = new blockqueue<task>(); // bq就是同一份资源 task可以是任务或者数据
-  blockqueue<task>* save_bq = new blockqueue<task>(); // bq就是同一份资源 task可以是任务或者数据
-*/ 
-
   pthread_t c, p, s;
-  pthread_create(&c,nullptr,consumer, &bqs);    // 生产者
-  pthread_create(&p,nullptr,productor, &bqs);   // 消费者
-  pthread_create(&s, nullptr,saver, &bqs);      // 保存着
+  pthread_create(&c, nullptr, consumer, &bqs);    // 生产者
+  pthread_create(&p, nullptr, productor, &bqs);   // 消费者
+  pthread_create(&s, nullptr, saver, &bqs);      // 保存着
+
+  pthread_t c1, p1, s1;
+  pthread_create(&c1, nullptr, consumer, &bqs);    // 生产者
+  pthread_create(&p1, nullptr, productor, &bqs);   // 消费者
+  pthread_create(&s1, nullptr, saver, &bqs);      // 保存着
 
   pthread_join(c, nullptr);
   pthread_join(p, nullptr);
   pthread_join(s, nullptr);
+
+  pthread_join(c1, nullptr);
+  pthread_join(p1, nullptr);
+  pthread_join(s1, nullptr);
 
   delete bqs.c_bp;
   delete bqs.s_bp;

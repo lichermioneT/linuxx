@@ -16,6 +16,7 @@ public:
     pthread_cond_init(&_ccond, nullptr);
   }
 
+// 生产者
   void push(const T& in) // 输入型参数 const &
   {
     pthread_mutex_lock(&_mutex);
@@ -34,6 +35,7 @@ public:
     pthread_mutex_unlock(&_mutex); // 同时开解锁
   }
 
+// 消费者
   void pop(T* out) // 输出型参数*， 输入输出型参数&
   {
     pthread_mutex_lock(&_mutex);

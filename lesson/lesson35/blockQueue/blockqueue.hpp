@@ -76,7 +76,6 @@ public:
     pthread_mutex_unlock(&_mutex);
   }
 
-
 private:
   bool is_empty()
   {
