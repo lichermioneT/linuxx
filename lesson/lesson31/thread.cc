@@ -58,6 +58,7 @@ public:
 };
 
 #define PALTFORM 2
+
 int main()
 {
 #if PALTFORM == 0
@@ -101,7 +102,6 @@ int main()
   t2.join();
 
 #else 
-
 
 #endif 
   return 0;

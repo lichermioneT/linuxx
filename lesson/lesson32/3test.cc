@@ -60,6 +60,7 @@ int main()
     ThreadData* td = new ThreadData();                                         // 创建一个存放线程信息的对象
     td->number = i + 1;                                                        // 线程id
     snprintf(td->namebuffer, sizeof(td->namebuffer), "%s : %d", "thread", i+1); // 线程name
+
     pthread_create(&td->tid, nullptr, start_routine, td);                      // 创建线程，并且把线程的信息给执行的函数 td拷贝给线程
     threads.push_back(td);                                                     // 指针放到数组里面去
   } 

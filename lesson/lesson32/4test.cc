@@ -70,7 +70,6 @@ int main()
       pthread_cancel(threads[i]->tid);
     }
 
-
   for(auto& iter : threads)
   {
 
@@ -86,8 +85,6 @@ int main()
     cout<< "return result : " << (long long)ret <<endl;
     delete iter;  // 外面释放
   }
-
-
 
     while(true)
     {

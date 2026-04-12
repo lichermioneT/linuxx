@@ -13,17 +13,16 @@ void* run(void* args)
 
 int main()
 {
-
   ThreadNs::Thread t1(run, (void*)"thread 1  run");
   ThreadNs::Thread t2(run, (void*)"thread 2  run");
 
   t1.start();
   t2.start();
 
-
   t1.join();
   t2.join();
 
+  return 0;
 }
 
 

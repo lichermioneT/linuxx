@@ -6,8 +6,6 @@
 #include <cassert>
 #include <cstring>
 
-
-
 namespace ThreadNs
 {
 typedef std::function<void*(void*)> func_t;
@@ -15,6 +13,13 @@ const int num = 1024;
 
 class Thread
 {
+private:
+  std::string name_;
+  func_t func_;
+  void* args_;
+  pthread_t tid_;
+  static int threadnum;
+
 private:
   // 类内创建线程，执行对应的方法，方法static
   static void* start_routine(void* agrs) // 缺省参数
@@ -46,7 +51,10 @@ public:
     (void)n;
   }
 
-  void* callback() { return func_(args_); }
+  void* callback() 
+  { 
+    return func_(args_); 
+  }
 
   std::string threadname()
   {
@@ -58,12 +66,6 @@ public:
     // do nothing
   }
 
-private:
-  std::string name_;
-  func_t func_;
-  void* args_;
-  pthread_t tid_;
-  static int threadnum;
 };
   int Thread::threadnum = 1;
 }

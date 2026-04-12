@@ -6,7 +6,6 @@
 #include <unistd.h>
 using namespace std;
 
-
 string changeId(const pthread_t& thread_id)
 {
   char tid[128];
@@ -32,7 +31,6 @@ void* start_routine(void* args)
 
 int main()
 {
-
   pthread_t tid;
   pthread_create(&tid, nullptr, start_routine, (void*)"thread 1");
   string main_id = changeId(pthread_self());

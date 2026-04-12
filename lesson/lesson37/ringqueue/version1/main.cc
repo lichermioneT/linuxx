@@ -15,7 +15,7 @@ void* productorRontine(void* rq)
     ringqueue->push(data);    // 生产数据
 
     std::cout<<"生产数据完成， 生产的数据是 ："<< data <<std::endl;
-    // sleep(1);
+   // sleep(1);
 
   }
 }
@@ -26,11 +26,11 @@ void* consumerRoutine(void* rq)
   RingQueue<int>* ringqueue = static_cast<RingQueue<int>*>(rq); 
   while(true)
   {
+    sleep(1);
     int data;
     ringqueue->pop(&data); // 消费数据
 
     std::cout<<"消费数据完成， 消费的数据是 ："<< data <<std::endl;
-    sleep(1);
   }
 }
 

@@ -30,6 +30,7 @@ public:
   {
     int n = sem_init(&_spaceSem, 0, _cap);
     assert(0 == n);
+
     n = sem_init(&_dataSem, 0, 0);
     assert(0 == n);
 
@@ -45,9 +46,10 @@ public:
     pthread_mutex_lock(&_pmutex); // 加锁
     // 判断能够生产, 判断空间信号量
     p(_spaceSem);
-    _queue[_productorStep++] = in; 
 
+    _queue[_productorStep++] = in; 
     _productorStep %= _cap; 
+
     v(_dataSem);
     pthread_mutex_unlock(&_pmutex); // 解锁
   }
@@ -56,9 +58,10 @@ public:
   {
     pthread_mutex_lock(&_cmutex);  // 加锁
     p(_dataSem);
-    *out = _queue[_consumerStep++];
 
+    *out = _queue[_consumerStep++];
     _consumerStep %= _cap;
+
     v(_spaceSem);
     pthread_mutex_unlock(&_cmutex); // 解锁
   }
