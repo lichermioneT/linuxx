@@ -2280,7 +2280,19 @@ int main()
 
 ![image-20251205110947907](picture/image-20251205110947907.png)
 
+**producter_sem: 10   1.申请成功 继续，失败继续等待  2.成功放数据，V(consumer)**
 
+
+
+**consumer_sem: 0 **
+
+![image-20260412102321217](picture/image-20260412102321217.png)
+
+![image-20260412102559766](picture/image-20260412102559766.png)
+
+![image-20260412103253227](picture/image-20260412103253227.png)
+
+![image-20260412102958155](picture/image-20260412102958155.png)
 
 
 
@@ -2706,6 +2718,8 @@ void Save(const std::string& message)
 
 
 ![image-20251205165145672](picture/image-20251205165145672.png)
+
+**预先创建线程，需要唤醒，不需要就休眠。**
 
 
 
