@@ -20,21 +20,19 @@ private:
   pthread_t tid_;
   static int threadnum;
 
-private:
-  // 类内创建线程，执行对应的方法，方法static
-  static void* start_routine(void* agrs) // 缺省参数
-  {
-    Thread* _this = static_cast<Thread*>(agrs);
-    return _this->callback();
-    // 静态不能调用成员方法，成员变量。
-  }
-
 public: 
-  Thread(func_t func, void* args = nullptr):func_(func), args_(args)
+  Thread(func_t func, void* args = nullptr)
+    :func_(func)
+    ,args_(args)
   {
     char namebuffer[num];
     snprintf(namebuffer,sizeof(namebuffer), "thread-%d", threadnum++);
     name_ = namebuffer;
+  }
+
+  ~Thread()
+  {
+    // do nothing
   }
 
   void start()
@@ -51,6 +49,15 @@ public:
     (void)n;
   }
 
+private:
+  // 类内创建线程，执行对应的方法，方法static
+  static void* start_routine(void* agrs) // 缺省参数
+  {
+    Thread* _this = static_cast<Thread*>(agrs);
+    return _this->callback();
+    // 静态不能调用成员方法，成员变量。
+  }
+
   void* callback() 
   { 
     return func_(args_); 
@@ -60,12 +67,6 @@ public:
   {
     return name_;
   }
-
-  ~Thread()
-  {
-    // do nothing
-  }
-
 };
   int Thread::threadnum = 1;
 }

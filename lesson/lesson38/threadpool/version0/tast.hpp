@@ -4,14 +4,17 @@
 #include <functional>
 #include <cstring>
 
-
 const std::string oper = "+-*/%";
 class task
 {
   using func_t = std::function<int(int, int, char)>;
 public:
   task(){}
-  task(int x, int y, char op, func_t func):_x(x), _y(y), _op(op), _callbacl(func)
+  task(int x, int y, char op, func_t func)
+    :_x(x)
+    ,_y(y)
+    ,_op(op)
+    ,_callbacl(func)
   {}
   
   std::string operator()()

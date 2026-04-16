@@ -14,10 +14,13 @@ template<class T>
 class ThreadData
 {
 public:
-  threadpool<T> *threadpooL;
+  threadpool<T>* threadpooL;
   std::string name;
 public:
-  ThreadData(threadpool<T>* tp, const std::string& n):threadpooL(tp),name(n){}
+  ThreadData(threadpool<T>* tp, const std::string& name_)
+    :threadpooL(tp)
+    ,name(name_)
+  {}
 };
 
 using namespace ThreadNs;
@@ -32,14 +35,15 @@ private:
   pthread_cond_t _cond;
 
 public:
-  threadpool(const int& num = gnum):_num(num)
+  threadpool(const int& num = gnum)
+    :_num(num)
   {
       pthread_mutex_init(&_mutex, nullptr);
       pthread_cond_init(&_cond, nullptr);
   
       for(int i = 0; i < _num; i++)
       {
-        _threads.push_back(new Thread(handerTask));
+        _threads.push_back(new Thread(handerTask, this));
       }
   }
 
@@ -56,33 +60,34 @@ public:
 private:
   static void* handerTask(void* args)
   {
-    ThreadData<T>* td = (ThreadData<T>*)args;
-    // threadpool<T>* threadpooL = static_cast<threadpool<T>*>(args);
+#if 1
+    threadpool<T>* Threadpool = static_cast<threadpool<T>*>(args);
+
     while(true)
     {
-      T t;
+      Threadpool->lockQueue();
+      while(Threadpool->isQueueEmpty())
       {
-        // td->threadpooL->lockQueue();
-        LockGuard lockguard(td->threadpooL->mutex());
-        while(td->threadpooL->isQueueEmpty())
-        {
-          td->threadpooL->threadWait();
-        }
-      
-        t = td->threadpooL->pop();
-        //td->threadpooL->unlockQueue();
+        Threadpool->threadWait();
       }
-      std::cout<< td->name << " 获取任务 "  << t.totaskstring()<< " 处理完成 结果是" << t() <<std::endl;
+
+      T t = Threadpool->pop(); // pop将公共队列中，拿到当前线程自己独立的栈里面。注意锁的力度必须小
+      Threadpool->unlockQueue();
+
+      t();
     }
-    delete td;
+#else 
+
+#endif
     return nullptr;
   }
 
-public:
+private:
   void lockQueue()  { pthread_mutex_lock(&_mutex);}
   void unlockQueue() { pthread_mutex_unlock(&_mutex);}
   bool isQueueEmpty() { return _task_queue.empty();}
   void threadWait() { pthread_cond_wait(&_cond, &_mutex);}
+
   T pop()
   {
       T t = _task_queue.front();
@@ -107,13 +112,17 @@ public:
 
   void push(const T& in)
   {
-      //pthread_mutex_lock(&_mutex);
-      LockGuard lockguard(&_mutex);
-      _task_queue.push(in);
-      pthread_cond_signal(&_cond);
-      // pthread_mutex_unlock(&_mutex);
+#if 1
+    pthread_mutex_lock(&_mutex);
+    _task_queue.push(in);
+    pthread_cond_signal(&_cond);
+    pthread_mutex_unlock(&_mutex);
+#else 
+    LockGuard lockguard(&_mutex);
+    _task_queue.push(in);
+    pthread_cond_signal(&_cond);
+#endif
   }
-
 };
 
 

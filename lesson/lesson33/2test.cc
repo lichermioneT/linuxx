@@ -27,7 +27,7 @@ void* start_routine(void* args)
   {
     char tid[28];
     snprintf(tid, sizeof(tid), "0x%zx", pthread_self());
-    cout<< threadname << "running..." << changeId(pthread_self()) <<endl;
+    cout<< threadname << " running... " << changeId(pthread_self()) <<endl;
     cout<< cnt <<endl;
     cout<< "g_val: " << g_val <<endl; 
     g_val++;
