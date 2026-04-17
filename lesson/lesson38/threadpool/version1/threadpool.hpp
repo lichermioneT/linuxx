@@ -6,7 +6,6 @@
 #include "thread.hpp"
 #include "lockGuard.hpp"
 
-
 const int gnum = 3;
 template<class T> class threadpool;
 

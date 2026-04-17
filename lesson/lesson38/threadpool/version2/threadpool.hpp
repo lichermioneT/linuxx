@@ -1,5 +1,4 @@
 #pragma once 
-
 #include <mutex>
 #include <unistd.h>
 #include <vector>
@@ -7,7 +6,6 @@
 #include <pthread.h>
 #include "thread.hpp"
 #include "lockGuard.hpp"
-
 
 const int gnum = 3;
 template<class T> class threadpool;
@@ -144,5 +142,3 @@ threadpool<T>* threadpool<T>::tp = nullptr;
 
 template<class T>
 std::mutex threadpool<T>::_singl_lock;
-
-

@@ -5,17 +5,20 @@
 #include <pthread.h>
 #include "thread.hpp"
 #include "lockGuard.hpp"
+#include "tast.hpp"
 
 
-const int gnum = 5;
-template<class T> class threadpool;
+const int gnum = 10;
+// 模板对象的声明
+template<class T> 
+class threadpool;
 
 template<class T>
 class ThreadData
 {
 public:
-  threadpool<T>* threadpooL;
-  std::string name;
+  threadpool<T>* threadpooL; // 线程池指针
+  std::string name;          // 名称
 public:
   ThreadData(threadpool<T>* tp, const std::string& name_)
     :threadpooL(tp)
@@ -43,7 +46,7 @@ public:
   
       for(int i = 0; i < _num; i++)
       {
-        _threads.push_back(new Thread(handerTask, this));
+        _threads.push_back(new Thread());
       }
   }
 
@@ -57,25 +60,38 @@ public:
     }
   }
 
+  void run()
+  {
+    for(const auto& t: _threads)
+    {
+      ThreadData<T>* td = new ThreadData<T>(this, t->threadname());
+      t->start(handerTask, td);
+      std::cout<< t->threadname() << "start...." <<std::endl;
+    }
+  }
+
 private:
   static void* handerTask(void* args)
   {
 #if 1
-    threadpool<T>* Threadpool = static_cast<threadpool<T>*>(args);
+    ThreadData<T>* td = static_cast<ThreadData<T>>(args);
 
     while(true)
     {
-      Threadpool->lockQueue();
-      while(Threadpool->isQueueEmpty())
+      td->threadpooL->unlockQueue(); 
+
+      while(td->threadpooL->isQueueEmpty())
       {
-        Threadpool->threadWait();
+        td->threadpooL->threadWait();
       }
 
-      T t = Threadpool->pop(); // pop将公共队列中，拿到当前线程自己独立的栈里面。注意锁的力度必须小
-      Threadpool->unlockQueue();
+      T t = td->threadpooL->pop();
+      td->threadpooL->unlockQueue();
+      std::cout<< td->name << "获取一个任务：" << t.toTaskString() << "处理结果" << t() << std::endl;
 
-      t();
     }
+
+    delete td;
 #else 
 
 #endif
@@ -100,16 +116,6 @@ private:
     return &_mutex;
   }
  
-  void run()
-  {
-    for(const auto& t: _threads)
-    {
-      ThreadData<T>* td = new ThreadData<T>(this, t->threadname());
-      t->start(handerTask, td);
-      std::cout<< t->threadname() << "start...." <<std::endl;
-    }
-  }
-
   void push(const T& in)
   {
 #if 1
