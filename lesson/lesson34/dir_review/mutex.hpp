@@ -5,16 +5,13 @@
 class Mutex
 {
 public:
-  Mutex(pthread_mutex_t* lock_p = nullptr)
-    :lock_p_(lock_p)
-  {}
+  Mutex(pthread_mutex_t* lock_p = nullptr):lock_p_(lock_p){}
   ~Mutex(){}
   
   void lock()
   {
     if(lock_p_ != nullptr) pthread_mutex_lock(lock_p_);
   }
-
   void unlock()
   {
     if(lock_p_ != nullptr) pthread_mutex_unlock(lock_p_);
@@ -26,8 +23,7 @@ private:
 class LockGuard
 {
 public:
-  LockGuard(pthread_mutex_t* mutex)
-    :mutex_(mutex)
+  LockGuard(pthread_mutex_t* mutex):mutex_(mutex)
   {
     mutex_.lock(); // 加锁
   }
@@ -36,7 +32,6 @@ public:
   {
     mutex_.unlock();  // 解锁
   }
-
 private:
   Mutex mutex_;  // 锁的对象
 };

@@ -31,7 +31,7 @@ int main()
   int n = pthread_create(&tid, nullptr, start_routine, &lic);
   if(n != 0)
   {
-    cerr<< "pthread_create erron : " << strerror(errno) <<endl;
+    cerr<< "pthread_create erron : " << strerror(n) <<endl;
     return 1;
   }
   
@@ -39,7 +39,7 @@ int main()
   n = pthread_join(tid, &ret);
   if(n != 0)
   {
-    cerr<< "pthread_join errno : " << strerror(errno) <<endl;
+    cerr<< "pthread_join errno : " << strerror(n) <<endl;
     return 1;
   }
 

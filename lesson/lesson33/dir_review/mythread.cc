@@ -17,17 +17,17 @@ using namespace std;
 // 线程是在什么时候检查上面的问题呢？内核态--》用户态。线程对调度状态进行检查，如果可以，就直接发生线程切换。
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // 初始化全局的锁
-int tickets = 10000;
+int tickets = 100000;
 
 void* getTickets(void* args)
 {
   std::string user_name =  static_cast<const char*>(args);
-  
+#if 0 
   while(true)
   {
     if(tickets >  0)
     {
-      std::cout << "user_name:" << tickets << std::endl;
+      std::cout << user_name << tickets << std::endl;
       tickets--;
     }
     else 
@@ -35,10 +35,27 @@ void* getTickets(void* args)
       break;
     }
   }
-
   return nullptr;
+#else 
+    
+  while(true)
+  {
+    pthread_mutex_lock(&mutex);
+    if(tickets > 0)
+    {
+      std::cout << user_name << ":" << tickets << std::endl;
+      tickets--;
+      pthread_mutex_unlock(&mutex);
+    }
+    else 
+    {
+      pthread_mutex_unlock(&mutex);
+      break;
+    }
+  }
+  return nullptr;
+#endif 
 }
-
 
 int main()
 {

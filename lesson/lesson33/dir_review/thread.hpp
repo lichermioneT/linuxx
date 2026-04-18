@@ -11,8 +11,8 @@ class Thread;
 class context
 {
 public:
-  Thread* _this;
-  void* _arg;
+  Thread* _this; // 线程对象
+  void* _arg;   // 线程执行函数的参数信息
 public:
   context()
     :_this(nullptr)
@@ -24,7 +24,7 @@ class Thread
 {
 private:
   using func_t = std::function<void*(void*)>; // 类型别名的
-  const int num = 1024;
+  const int num = 1024;   // 线程名称信息的
 
 private:
   std::string _name;
@@ -41,6 +41,7 @@ public:
     snprintf(buffer, sizeof(buffer), "Thread%d\n", number);
     _name = buffer;
 
+    _ctx = new context();
     _ctx->_this = this;
     _ctx->_arg = _arg;
   } 
@@ -52,7 +53,7 @@ public:
 public:
   void start()
   {
-    int n = pthread_create(&_tid, nullptr, start_routine, _arg);
+    int n = pthread_create(&_tid, nullptr, start_routine, _ctx);
     if(n != 0)
     {
       std::cerr << "pthread_create error : " << strerror(n) << std::endl;
@@ -75,6 +76,7 @@ private:
   {
     context* ctx = static_cast<context*>(arg);
     void* ret = ctx->_this->run(ctx->_arg);
+    delete ctx;
     return ret;
   }
 
