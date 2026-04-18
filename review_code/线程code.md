@@ -35,7 +35,7 @@ int main()
   int n = pthread_create(&tid, nullptr, start_routine, &lic);
   if(n != 0)
   {
-    cerr<< "pthread_create erron : " << strerror(errno) <<endl;
+    cerr<< "pthread_create erron : " << strerror(n) <<endl;
     return 1;
   }
   
@@ -43,7 +43,7 @@ int main()
   n = pthread_join(tid, &ret);
   if(n != 0)
   {
-    cerr<< "pthread_join errno : " << strerror(errno) <<endl;
+    cerr<< "pthread_join errno : " << strerror(n) <<endl;
     return 1;
   }
 
@@ -97,7 +97,7 @@ int main()
     int n = pthread_create(&td->tid, nullptr, start_routine, td);
     if(n != 0)
     {
-      cerr << "pthread_create error  : " << strerror(errno) << endl;
+      cerr << "pthread_create error  : " << strerror(n) << endl;
       return 1;
     }
 
@@ -110,7 +110,7 @@ int main()
     int n = pthread_join(v[i]->tid, &ret);
     if(n != 0)
     {
-      cerr << "pthread_join error  : " << strerror(errno) << endl;
+      cerr << "pthread_join error  : " << strerror(n) << endl;
       return 1;
     }
 
@@ -206,7 +206,14 @@ int main()
     }
 
     threadReturn* retNew = static_cast<threadReturn*>(ret);
-    cout<< iter->namebuffer << "  success  " << "exit_code:"<< retNew->exit_code << "exit_result:" << retNew->exit_result <<endl;
+    cout<< iter->namebuffer 
+            << "  success  " 
+            << "exit_code:"
+            << retNew->exit_code 
+            << "exit_result:" 
+            << retNew->exit_result 
+            <<endl;
+      
     delete retNew;
   }
 
@@ -224,6 +231,8 @@ int main()
 
 
 ## 4见过c++版本线程
+
+**c++是对linux的线程进行封装了的， 封装成一个线程对象的。**
 
 ```c++
 #include <iostream>
@@ -333,10 +342,524 @@ int main()
       sleep(1);
   }
 
+  return 0;
+}
+```
+
+**lesson 32**
+
+## **7.线程取消**
+
+```c++
+#include <iostream>
+#include <vector>
+#include <pthread.h>
+#include <unistd.h>
+#include <cstdio>
+#include <cstring>
+
+using namespace std;
+class threadData
+{
+public:
+  int id;
+  pthread_t tid;
+  char namebuffer[64];
+};
+
+void* start_routine(void* arg)
+{
+  sleep(10);
+  threadData* td = static_cast<threadData*>(arg);
+  cout<< td->namebuffer << ":" << td->id <<endl;
+
+  return td;
+}
+
+int main()
+{
+
+  vector<threadData*> v;
+// 1.创建10个线程，线程信息放到v里面去的。
+  for(int i = 0; i < 10; ++i)
+  {
+    threadData* td = new threadData();
+    td->id = i + 1;
+    snprintf(td->namebuffer, sizeof(td->namebuffer), "thread%d", i + 1);
+
+    int n = pthread_create(&td->tid, nullptr, start_routine, td);
+    if(n != 0)
+    {
+      cerr<< "pthread_create error " << strerror(n) <<endl;
+      return 1;
+    }
+
+    v.push_back(td);
+  }
+
+// 2.取消5个线程的
+  sleep(3);
+  for(int i = 0; i < 5; ++i)
+  {
+    int n = pthread_cancel(v[i]->tid); 
+    if(n != 0)
+    {
+      cerr<< "pthread_cancel errno : " << strerror(n) << endl;
+      return 1;
+    }
+    
+    cout<< "线程被取消了" << i + 1<< endl;
+  }
+
+// 3.回收线程
+  for(auto& e : v)
+  {
+    void* ret = nullptr;
+    int n  = pthread_join(e->tid, &ret);
+    if(n != 0)
+    {
+      cerr << "pthread_join errno:" << strerror(n) << endl;
+      continue;
+    }
+
+    if(ret == PTHREAD_CANCELED)
+    {
+      cout<< e->namebuffer << "被取消" <<endl;
+    }
+    else 
+    {
+      threadData* td = static_cast<threadData*>(ret);
+      cout<< td->namebuffer << "正常结束id = " << td->id <<endl; 
+    }
+  }
 
   return 0;
 }
 ```
+
+**线程可以进行退出的，线程退出的返回值是一个宏 PTHREAD_CANELED.**
+
+**创建线程，取消 线程，等待线程都是返回值 成功0 失败返回 错误码的。**
+
+
+
+##  8线程分离
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
+
+string changeId(const pthread_t& pthread_id)
+{
+  char tid[128];
+  snprintf(tid, sizeof(tid), "0x%zx", pthread_id);
+
+  return tid;
+}
+
+void* start_routine(void* arg)
+{
+  string threadName = static_cast<const char*>(arg);
+  int cnt = 5;
+  while(cnt)
+  {
+    char tid[128];
+    snprintf(tid, sizeof tid, "0x%zx", pthread_self());
+    cout<< threadName << "running.." << changeId(pthread_self());
+    cout<< cnt <<endl;
+    --cnt;
+  }
+
+  return nullptr;
+}
+
+
+int main()
+{
+   pthread_t tid;
+   pthread_create(&tid, nullptr, start_routine, (void*)"thread 1");
+   string main_id = changeId(pthread_self());
+   pthread_detach(tid);
+ 
+   cout<< " main thread run ...." << "new thread id : "  << changeId(tid) << " main_id : " << main_id <<endl;
+ 
+   while(true)
+  {
+     //todo main
+  }
+
+  return 0;
+}
+
+```
+
+**有时候我们不需要等待线程的返回结果，就可以进行线程的分离，分离的方法，在主线程里面进行分离，因为子线程 进行执行需要建立栈帧的。**
+
+**分离了就不需要进行等待了，否则程序可能阻塞主了的。**
+
+
+
+## 9线程互斥
+
+**共享资源：全局变量，静态变量，堆区的对象，同一个socket， 同一个容器，同一块内存区。**
+
+**一条语句在汇编层面不是原子的，可能造成数据的歧义**
+
+**ticket == 1**
+
+![image-20260416093650316](picture/image-20260416093650316.png)
+
+**一般的逻辑信息**
+
+**整段“读 + 判断 + 修改”的逻辑。**
+
+**lesson 33**
+
+```c++
+#include <iostream>
+#include <memory>
+#include <memory>
+#include "thread.hpp"
+#include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
+
+// 间接猪跑
+// pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // 定义锁
+// 需要多个线程交叉执行，
+// 交叉执行的本质，调度器尽可能频繁发生线程调度与切换
+// 线程切换：时间片到了，来了优先级跟高的线程。线程等待的时候。
+// 线程是在什么时候检查上面的问题呢？内核态--》用户态。线程对调度状态进行检查，如果可以，就直接发生线程切换。
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // 初始化全局的锁
+int tickets = 100000;
+
+void* getTickets(void* args)
+{
+  std::string user_name =  static_cast<const char*>(args);
+#if 0 
+  while(true)
+  {
+    if(tickets >  0)
+    {
+      std::cout << user_name << tickets << std::endl;
+      tickets--;
+    }
+    else 
+    {
+      break;
+    }
+  }
+  return nullptr;
+#else 
+    
+  while(true)
+  {
+    pthread_mutex_lock(&mutex);
+    if(tickets > 0)
+    {
+      std::cout << user_name << ":" << tickets << std::endl;
+      tickets--;
+      pthread_mutex_unlock(&mutex);
+    }
+    else 
+    {
+      pthread_mutex_unlock(&mutex);
+      break;
+    }
+  }
+  return nullptr;
+#endif 
+}
+
+int main()
+{
+  std::unique_ptr<Thread>  thread1(new Thread(getTickets, (void*)"lic 1", 1));
+  std::unique_ptr<Thread>  thread2(new Thread(getTickets, (void*)"lic 2", 2));
+  std::unique_ptr<Thread>  thread3(new Thread(getTickets, (void*)"lic 3", 3));
+  std::unique_ptr<Thread>  thread4(new Thread(getTickets, (void*)"lic 4", 4));
+
+  thread1->start();
+  thread2->start();
+  thread3->start();
+  thread4->start();
+
+  thread1->join();
+  thread2->join();
+  thread3->join();
+  thread4->join();
+
+  return 0;
+}
+
+```
+
+```c++
+#pragma once 
+#include <string>
+#include <iostream>
+#include <pthread.h>
+#include <functional>
+#include <cassert>
+#include <cstring>
+
+class Thread;
+
+class context
+{
+public:
+  Thread* _this; // 线程对象
+  void* _arg;   // 线程执行函数的参数信息
+public:
+  context()
+    :_this(nullptr)
+    ,_arg(nullptr)
+  {}
+};
+
+class Thread
+{
+private:
+  using func_t = std::function<void*(void*)>; // 类型别名的
+  const int num = 1024;   // 线程名称信息的
+
+private:
+  std::string _name;
+  func_t _func;
+  void* _arg;
+  pthread_t _tid;
+  context* _ctx;
+public:
+  Thread(func_t func, void* arg = nullptr, int number = 0)
+    :_func(func)
+    ,_arg(arg)
+  {
+    char buffer[num];
+    snprintf(buffer, sizeof(buffer), "Thread%d\n", number);
+    _name = buffer;
+
+    _ctx = new context();
+    _ctx->_this = this;
+    _ctx->_arg = _arg;
+  } 
+
+  ~Thread()
+  {
+  }
+
+public:
+  void start()
+  {
+    int n = pthread_create(&_tid, nullptr, start_routine, _ctx);
+    if(n != 0)
+    {
+      std::cerr << "pthread_create error : " << strerror(n) << std::endl;
+      return;
+    }
+  }
+
+  void join()
+  {
+    int n = pthread_join(_tid,  nullptr);
+    if(n != 0)
+    {
+      std::cerr << "pthread_join error : " << strerror(n) << std::endl;
+      return;
+    }
+  }
+
+private:
+  static void* start_routine(void* arg)
+  {
+    context* ctx = static_cast<context*>(arg);
+    void* ret = ctx->_this->run(ctx->_arg);
+    delete ctx;
+    return ret;
+  }
+
+  void* run(void* arg)
+  {
+    return _func(arg);
+  }
+};
+
+```
+
+
+
+## 10互斥
+
+**lesson 34**
+
+```c++
+#pragma once 
+#include <string>
+#include <iostream>
+#include <pthread.h>
+#include <functional>
+#include <cassert>
+#include <cstring>
+
+class Thread;
+
+class context
+{
+public:
+  Thread* this_;
+  void* args_;
+public:
+  context():this_(nullptr), args_(nullptr){}
+  ~context(){}
+};
+
+class Thread
+{
+public:
+  typedef std::function<void*(void*)> func_t;
+public: 
+  Thread(func_t func, void* args = nullptr, int number = 0):func_(func), args_(args),_ctx(nullptr)
+  {
+    char buffer[number];
+    snprintf(buffer,sizeof(buffer), "thread-%d", number);
+    name_ = buffer;
+
+    _ctx = new context(); 
+    _ctx->this_ = this;
+    _ctx->args_ = args_;
+
+  }
+
+  void start()
+  {
+    int n = pthread_create(&tid_, nullptr, start_routine, _ctx); // 
+    if(n != 0)
+    {
+      std::cerr<< "pthread_create erron : " << strerror(errno) << std::endl;
+      return;
+    }
+  }
+
+  void join()
+  {
+    int n = pthread_join(tid_, nullptr);
+    assert(n == 0);
+    (void)n;
+  }
+
+private:
+  // 类内创建线程，执行对应的方法，方法static
+  static void* start_routine(void* agrs) // 缺省参数
+  {
+    context* ctx = static_cast<context*>(agrs);
+    void* ret = ctx->this_->run(ctx->args_);
+
+    delete ctx;
+    return ret;
+    // 静态不能调用成员方法，成员变量。
+  }
+
+  void* run(void* args)
+  {
+    return func_(args);
+  }
+
+  ~Thread()
+  {
+    // do nothing
+  }
+
+private:
+  std::string name_;
+  func_t func_;
+  void* args_;
+  pthread_t tid_;
+  context* _ctx;
+};
+
+```
+
+```c++
+#pragma once 
+#include <iostream>
+#include <pthread.h>
+
+class Mutex
+{
+public:
+  Mutex(pthread_mutex_t* lock_p = nullptr):lock_p_(lock_p){}
+  ~Mutex(){}
+  
+  void lock()
+  {
+    if(lock_p_ != nullptr) pthread_mutex_lock(lock_p_);
+  }
+  void unlock()
+  {
+    if(lock_p_ != nullptr) pthread_mutex_unlock(lock_p_);
+  }
+private:
+  pthread_mutex_t* lock_p_; // 锁
+};
+
+class LockGuard
+{
+public:
+  LockGuard(pthread_mutex_t* mutex):mutex_(mutex)
+  {
+    mutex_.lock(); // 加锁
+  }
+
+  ~LockGuard()
+  {
+    mutex_.unlock();  // 解锁
+  }
+private:
+  Mutex mutex_;  // 锁的对象
+};
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
