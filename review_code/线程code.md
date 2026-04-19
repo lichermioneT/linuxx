@@ -700,89 +700,105 @@ private:
 **lesson 34**
 
 ```c++
-#pragma once 
-#include <string>
 #include <iostream>
-#include <pthread.h>
-#include <functional>
-#include <cassert>
+#include "mutex.hpp"
+#include <vector>
+#include <memory>
+#include "thread.hpp"
 #include <cstring>
+#include <string>
+#include <pthread.h>
+#include <cstdio>
+#include <unistd.h>
+using namespace std;
 
-class Thread;
+// 间接猪跑
+// pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // 定义锁 全局锁
+// 需要多个线程交叉执行，
+// 交叉执行的本质，调度器尽可能频繁发生线程调度与切换
+// 线程切换：时间片到了，来了优先级跟高的线程。线程等待的时候。
+// 线程是在什么时候检查上面的问题呢？内核态--》用户态。线程对调度状态进行检查，如果可以，就直接发生线程切换。
 
-class context
+// 全局锁，只需要加锁和解释，不需要初始化和销毁
+
+class threadData
 {
 public:
-  Thread* this_;
-  void* args_;
+  string _threadName;
+  pthread_mutex_t*  _mutex_t;
+
 public:
-  context():this_(nullptr), args_(nullptr){}
-  ~context(){}
+  threadData(const string& threadName, pthread_mutex_t* mutex_t)
+    :_threadName(threadName)
+    ,_mutex_t(mutex_t)
+  {}
 };
 
-class Thread
+int tickets = 100000;
+
+void* getTickets(void* args)
 {
-public:
-  typedef std::function<void*(void*)> func_t;
-public: 
-  Thread(func_t func, void* args = nullptr, int number = 0):func_(func), args_(args),_ctx(nullptr)
+  threadData* td = static_cast<threadData*>(args);
+  while(true)
   {
-    char buffer[number];
-    snprintf(buffer,sizeof(buffer), "thread-%d", number);
-    name_ = buffer;
-
-    _ctx = new context(); 
-    _ctx->this_ = this;
-    _ctx->args_ = args_;
-
+#if 0
+    pthread_mutex_lock(td->_mutex_t);
+    if(tickets > 0)
+    {
+      cout<< td->_threadName << ":" << tickets << endl;
+      --tickets;
+      pthread_mutex_unlock(td->_mutex_t);
+    }
+    else 
+    {
+      pthread_mutex_unlock(td->_mutex_t);
+      break;
+    }
+#else 
+      LockGuard lockguard(td->_mutex_t);
+      if(tickets > 0)
+      {
+        cout<< td->_threadName << ":" << tickets << endl;
+        --tickets;
+      }
+      else 
+      {
+        break;
+      }
+#endif
   }
+  return nullptr;
+}
 
-  void start()
+
+int main()
+{
+  pthread_mutex_t lock;
+  pthread_mutex_init(&lock, nullptr);
+  vector<pthread_t>  tids(4);
+  for(int i = 0; i < 4; ++i)
   {
-    int n = pthread_create(&tid_, nullptr, start_routine, _ctx); // 
+    char buffer[64] = {0};
+    snprintf(buffer, sizeof buffer, "thread->%d", i + 1);
+    
+    threadData* td = new  threadData(buffer, &lock);
+
+    int n = pthread_create(&tids[i], nullptr, getTickets, td);
     if(n != 0)
     {
-      std::cerr<< "pthread_create erron : " << strerror(errno) << std::endl;
-      return;
+      cerr<< "pthread_create error" << strerror(n) << endl;
+      return 1;
     }
   }
 
-  void join()
+  for(auto tid :  tids)
   {
-    int n = pthread_join(tid_, nullptr);
-    assert(n == 0);
-    (void)n;
+    pthread_join(tid, nullptr);
+    cout<< tid << "：线程等待成功" << endl;
   }
+  return 0;
+}
 
-private:
-  // 类内创建线程，执行对应的方法，方法static
-  static void* start_routine(void* agrs) // 缺省参数
-  {
-    context* ctx = static_cast<context*>(agrs);
-    void* ret = ctx->this_->run(ctx->args_);
-
-    delete ctx;
-    return ret;
-    // 静态不能调用成员方法，成员变量。
-  }
-
-  void* run(void* args)
-  {
-    return func_(args);
-  }
-
-  ~Thread()
-  {
-    // do nothing
-  }
-
-private:
-  std::string name_;
-  func_t func_;
-  void* args_;
-  pthread_t tid_;
-  context* _ctx;
-};
 
 ```
 
@@ -826,6 +842,78 @@ private:
 };
 
 ```
+
+
+
+## 11同步
+
+**lesson 35**
+
+````c++
+#include <iostream>
+#include <unistd.h>
+#include <string>
+#include <pthread.h>
+#include <vector>
+using namespace std;
+
+int tickets = 10000;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  cond = PTHREAD_COND_INITIALIZER;
+
+void* getTicket(void* arg)
+{
+  string name = static_cast<const char*>(arg);
+
+  while(true)
+  {
+    pthread_mutex_lock(&mutex);
+    pthread_cond_wait(&cond, &mutex);
+// 1.条件变量的等待队列
+// 2.原子释放mutex：解锁 + 进入等待
+// 3.唤醒后，重新竞争mutex，然后返回。
+    if(tickets > 0)
+    {
+      cout<< name << " 抢票" << tickets << endl;
+      --tickets;
+      pthread_mutex_unlock(&mutex);
+    }
+    else 
+    {
+      pthread_mutex_unlock(&mutex);
+      break;
+    }
+  }
+  return nullptr;
+}
+
+int main()
+{
+  pthread_t tid[5];
+  for(int i = 0; i < 5; ++i)
+  {
+    char* buffer = new char[64];
+    snprintf(buffer, 64, "thread->%d ", i + 1);
+    
+    int n = pthread_create(&tid[i], nullptr, getTicket, buffer);
+    if(n != 0)
+    {
+      perror("pthread_create");
+      return 1;
+    }
+  }
+
+  while(true)
+  {
+#if 0
+    pthread_cond_signal(&cond); 
+#else 
+   pthread_cond_broadcast(&cond);
+#endif
+  }
+  return 0;
+}
+````
 
 
 
