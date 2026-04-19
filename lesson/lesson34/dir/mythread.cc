@@ -54,7 +54,7 @@ public:
   pthread_mutex_t* mutex_t_;  // 放一个锁，
 };
 
-int tickets = 10000;
+int tickets = 100000;
 
 void* getTickets(void* args)
 {
@@ -65,26 +65,38 @@ void* getTickets(void* args)
 // 加锁和解锁是多个线程，串行执行的，所以程序变慢了。212321312322------
 // 锁只规定互斥访问，没有规定必须让谁，优先执行
 // 锁就是真是的让多个执行流进行竞争的结果
-    {
+#if 0
       LockGuard lockguard(&lock); // 直接用对象加锁,局部对象加锁 RAII风格的加锁，局部变量{大括号里面的}， 利用class的构造函数和析构函数 加锁和解锁。
       //pthread_mutex_lock(td->mutex_t_); // 加锁
       if(tickets > 0)
       {
-        usleep(1000); // 1=1000=1000 000
         std::cout<< td->threadName_ << "真正抢票 " << tickets <<std::endl;
-        // std::cout<< username << "真正抢票 " << tickets<<std::endl;
         tickets--; // 修改数据
-      // pthread_mutex_unlock(td->mutex_t_);
       }
       else 
       {
         //pthread_mutex_unlock(td->mutex_t_);
         break;
       }
+#else 
+      pthread_mutex_lock(td->mutex_t_); // 加锁
+      if(tickets > 0)
+      {
+        std::cout<< td->threadName_ << "真正抢票 " << tickets <<std::endl;
+        tickets--; // 修改数据
+        pthread_mutex_unlock(td->mutex_t_);
+      }
+      else 
+      {
+        pthread_mutex_unlock(td->mutex_t_);
+        break;
+      }
+
+
+#endif
     }
     // 抢完了票，就完了吗？
     usleep(1000); // 形成一个订单
-  }
   return nullptr;
 }
 
@@ -106,6 +118,7 @@ int main()
   for(const auto &tid : tids)
   {
     pthread_join(tid, nullptr); // 等待线程，第二个参数是输出型参数，二级指针
+    cout<< "线程:" << tid << "被回收了" <<endl;
   }
 
 /*

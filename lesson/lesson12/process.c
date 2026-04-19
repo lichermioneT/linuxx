@@ -1,10 +1,10 @@
 #include<stdio.h>
+#include <stdlib.h>
 #include<unistd.h>
 #include<sys/types.h>
 
 int main()
 {
-
   pid_t id = fork();
   
   // unistd posix操作系统访问的API
@@ -24,15 +24,20 @@ int main()
   }
   else if (id == 0)
   {
-    printf("我是子进程 , 我的pid：%d, 我的id:%d \n", getppid(), getpid());
-    printf("\n");
-    sleep(5);
+    while(1)
+    {
+     printf("我是子进程 , 我的ppid：%d, 我的pid:%d \n", getppid(), getpid());
+     sleep(2);
+     exit(1);
+    }
   }
   else 
   {
-    printf("我是父进程 , 我的pid：%d, 我的id:%d\n", getppid(), getpid());
-    printf("\n");
-    sleep(5);
+    while(1)
+    {
+      printf("我是父进程 , 我的ppid：%d, 我的pid:%d\n", getppid(), getpid());
+      sleep(2);
+    }
   }
   return 0;
 }
