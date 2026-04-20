@@ -9,7 +9,7 @@
 extern char** environ;
 int g_val = 100;
 
-int main()
+int main(int argc, char* argv[], char* env[])
 {
 
   pid_t id = fork();
@@ -41,26 +41,13 @@ int main()
 
 
 
-/*
-  for(int i = 0; environ[i]; i++)
-  {
-    printf("%d : %s \n", i, environ[i]);
-  }
 
-*/  
-
-
-
-
-
-/*
   for(int i = 0; env[i]; i++)
   {
     printf("%d : %s\n", i, env[i]);
   }
 
   return 0;
-*/ 
 /*
  * 
   if(agrc != 2)

@@ -5,8 +5,6 @@
 
 int main()
 {
-
-
   int a = 10;
   
   pid_t id = fork();
@@ -14,6 +12,7 @@ int main()
   if(id < 0)
   {
     printf("子进程创建失败\n");
+    exit(1);
   }
   else if (id == 0)
   {
