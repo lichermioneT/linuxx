@@ -934,7 +934,27 @@ int main()
 
 
 
+**复习**
+
+**僵尸进程是一个进程的状态**
+
+**孤儿进程，1号进程领养的。**
+
+**进程优先级，进程调度的先后顺序。基础顺序80 ，调整顺序 -20,19。综合60-99.**
+
+**进程切换，上下文保存，上下文恢复。寄存器：给 CPU 提供最快速的数据暂存和操作位置。 CPU 芯片内部用于保存二进制数据的高速存储单元。**
+
+​	**寄存器是 CPU 内部的高速临时存储单元，专门用来保存当前指令执行时最直接、最关键的数据、地址和状态。**
+
+**上行文保存在：PCB里面的。**
+
+
+
 ## 6环境变量
+
+### 初始环境变量
+
+**不同的环境变量解决不同的问题的。**
 
 **env**
 
@@ -1035,6 +1055,78 @@ int main()
 
 ```
 
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define USER "USER"
+
+int main()
+{
+  char* user = getenv(USER);
+  if(strcmp(user, "root") == 0)
+  {
+   printf("user:%s\n", user);
+  }
+  else 
+  {
+    printf("权限不足\n");
+  }
+  return 0;
+}
+
+```
+
+```c++
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define USER "USER"
+#define MY_VAL "myval"
+
+int main()
+{
+  
+  char* myenv = getenv(MY_VAL);
+  if(NULL == myenv)
+  {
+    printf("%s, not found\n", MY_VAL);
+    return 1;
+  }
+
+  printf("%s:%s\n", MY_VAL, myenv);
+
+  return 0;
+}
+```
+
+![image-20260420095030835](picture/image-20260420095030835.png)
+
+**环境变量具有全局属性，会被子进程继承下去，也方便子进程满足不同的场景。**
+
+**unset, export。**
+
+**ls指令，子进程继承，知道PWD, 然后就知道了。**
+
+```c++
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define USER "USER"
+#define MY_VAL "myval"
+#define MYPWD "PWD"
+int main()
+{
+  
+  printf("%s\n", getenv(MYPWD));
+
+  return 0;
+}
+```
+
 
 
 
@@ -1064,6 +1156,8 @@ int main()
 **ls 继承了PWD，所以不断切换目录，ls知道你当前在那个目录下面。**
 
 
+
+### 环境变量组织形式
 
 **环境变量是如何被子进程继承？？**
 
@@ -1171,7 +1265,7 @@ int main(int agrc, char* argv[], char* env[])
 
 
 
-**extern char  environ**
+**extern char星星  environ**
 
 ```c
 #include <stdio.h>
@@ -1179,7 +1273,7 @@ int main(int agrc, char* argv[], char* env[])
 #include <unistd.h>
 
 extern char** environ;
-int main(int agrc, char* argv[], char* env[])
+int main()
 {
   
   for(int i = 0; environ[i]; i++)
@@ -1194,7 +1288,7 @@ int main(int agrc, char* argv[], char* env[])
 
 
 
-**getenv()<u>**</u>
+**getenv()**
 
 ```c
 #include <stdio.h>
@@ -1209,7 +1303,7 @@ int main()
 }
 ```
 
-
+![image-20260420103552555](picture/image-20260420103552555.png)
 
 **putenv()**
 
@@ -1226,6 +1320,26 @@ int putenv(char *string);**
 
 **int stat(const char *pathname, struct stat *statbuf);**
 
+### 内建指令
+
+![image-20260420104914627](picture/image-20260420104914627.png)
+
+
+
+### 复习
+
+**环境变量**
+
+**命令行参数**
+
+**命令行参数表，环境变量表。**
+
+​	**main函数的两张表**
+
+**内建指令**
+
+**虚拟地址空间。见见猪跑的**
+
 
 
 ## 7程序地址空间
@@ -1234,7 +1348,9 @@ int putenv(char *string);**
 
 ![image-20251112231621135](./picture/image-20251112231621135.png)
 
+![image-20260420105315880](picture/image-20260420105315880.png)
 
+![image-20260420105137316](picture/image-20260420105137316.png)
 
 **见见猪跑**
 
@@ -1261,7 +1377,7 @@ int main()
     g_val = 1;
     while(1)
     {
-      printf("我是子进程、 g_val：%d , &g_val : %p \n",  g_val, &g_val);
+      printf("我是子进程、 g_val：%d, &g_val : %p \n",  g_val, &g_val);
       sleep(1);
     }
   }
@@ -1319,7 +1435,13 @@ int main()
 
 **复习**
 
+### 区域划分
 
+**区域划分就是进程地址空间。**
+
+![image-20260420143619596](picture/image-20260420143619596.png)
+
+![image-20260420145714975](picture/image-20260420145714975.png)
 
 **mm_struct{} 成员有哪些呢？**
 
@@ -1338,23 +1460,23 @@ int main()
 
 **struct mm_struct
  {
- uint32_t code_start;
- uint32_t code_end;
- uint32_t data_start;
- uint32_t data_end;
- uint32_t heap_start;
- uint32_t heap_end;
- uint32_t stack_start;
- uint32_t stack_end;
+ 	uint32_t code_start;
+ 	uint32_t code_end;
+	 uint32_t data_start;
+	 uint32_t data_end;
+ 	uint32_t heap_start;
+ 	uint32_t heap_end;
+	 uint32_t stack_start;
+	 uint32_t stack_end;
  };**
 
 **[start, end]---[起始地址，区域结束地址]**
 
+
+
 **举个栗子**
 
 ![image-20251113113923267](./picture/image-20251113113923267.png)
-
-
 
 
 
@@ -1366,7 +1488,7 @@ int main()
 
 **66 -----堆栈可以调整------(本质就是修改end或者start)
  67 定义局部变量，malloc ,new---->扩大堆栈区域
- 68 函数调用完毕，freee, delete-->缩小堆栈区域**
+ 68 函数调用完毕，freee,   delete-->缩小堆栈区域**
 
 
 
@@ -1374,7 +1496,7 @@ int main()
 
 
 
-**页表**
+### 页表
 
 ![image-20251113125731626](./picture/image-20251113125731626.png)
 
@@ -1398,17 +1520,23 @@ int main()
 
 **1.如果让进程直接访问物理内存，万一进程越界非法操作呢？非常不安全呢！(页表不仅仅只做映射，还会检查映射是否安全呢) 安全！所以进程都必须要遵守的。  安全的**
 
-**2.地址空间的存在可以更方便，进程和进程的数据代码的解耦，保证了进程的独立性的特征。**
+**2.地址空间的存在可以更方便，进程和进程的数据代码的解耦，保证了进程的独立性的特征。 写时拷贝。**
 
 **3.让进程以同一的视角，来看待进程对应的代码和数据等各个区域，方便
-编译器也以统一的视角进行编译代码。
-规则一样的，编译完即可直接使用的。**
+	编译器也以统一的视角进行编译代码。
+	规则一样的，编译完即可直接使用的。**
 
 
 
 **编译代码的时候，使用不用的地址形式。**
 
 ![image-20251113160630115](./picture/image-20251113160630115.png)
+
+![image-20260420152006044](picture/image-20260420152006044.png)
+
+
+
+
 
 
 
@@ -1424,7 +1552,90 @@ int main()
 
 
 
+## code
 
+### mian_table
+
+```c
+#include <stdio.h>
+
+int main(int argc, char* argv[], char* env[])
+{
+  for(int i = 0; i < argc; ++i)
+  {
+    printf("%d:%s\n", i, argv[i]);
+  }
+
+  printf("-----------------\n");
+
+  for(int i = 0; env[i]; ++i)
+  {
+    printf("%d:%s\n", i, env[i]);
+  }
+
+  return 0;;
+}
+```
+
+
+
+### fork
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    while(1)
+    {
+      printf("子进程: %d,%d\n", getppid(), getpid());
+      sleep(2);
+    }
+  }
+  else 
+  {
+    while(1)
+    {
+      printf("父进程: %d, %d\n", getppid(), getpid());
+      sleep(2);
+    }
+  }
+
+  return 0;
+}
+```
+
+
+
+### 常见环境变量
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+int main()
+{
+  printf("%s\n", getenv("USER"));
+  printf("%s\n", getenv("HOME"));
+  printf("%s\n", getenv("PATH"));
+  printf("%s\n", getenv("LOGNAME"));
+  printf("%s\n", getenv("PWD"));
+
+  return 0;
+}
+
+```
 
 
 
