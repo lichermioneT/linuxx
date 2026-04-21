@@ -2,6 +2,8 @@
 
 ##  1进程创建
 
+### 初始fork函数
+
 **认识fork函数**
 
 **分配新的内存块和内核数据结构给子进程 **
@@ -12,7 +14,11 @@
 
 **fork返回，开始调度器调度**
 
+![image-20260421095026226](picture/image-20260421095026226.png)
 
+
+
+### fork返回值
 
 **fork的返回值  已经进行了写时拷贝了，这也是用来分流的关键用法。**
 
@@ -22,9 +28,11 @@
 
 **return之前 已经有两个执行流了**
 
-![image-20251117152630548](./picture/image-20251117152630548.png)
+![image-20260421095402471](picture/image-20260421095402471.png)
 
 **2如何理解fork返回之后， 给父进程返回子进程的pid，给子进程返回 0？  父亲 ： 孩子 == 1 ： n。 唯一性**
+
+**fork返回的时候已经开始分流的。返回的时候，写时拷贝的。**
 
 
 
@@ -34,7 +42,7 @@
 
 ![image-20251117152651484](./picture/image-20251117152651484.png)
 
-**复习**
+### **复习**
 
 **系统级别的环境变量，适用不同的场景 。 全局环境变量具有全局属性的。 子进程可以继承下去的。**
 
@@ -54,7 +62,7 @@
 
 ![image-20251117153949294](./picture/image-20251117153949294.png)
 
-
+**虚拟地址空间也是需要管理起来的。mm_struct进行管理的。**
 
 **页表映射数据**
 
@@ -92,13 +100,23 @@
 
 
 
-**写时拷贝**
+### **写时拷贝**
 
 ![image-20251117155238076](./picture/image-20251117155238076.png)
+
+**创建子进程：继承父业，实现新的梦想。**
 
 
 
 ## 2进程终止
+
+### return, exit, _exit
+
+![image-20260421105922758](picture/image-20260421105922758.png)
+
+![image-20260421141614980](picture/image-20260421141614980.png)
+
+**0表示成功，!0表示失败。不同的零，需要标识不同的错误信息，不同的错误描述码。**
 
 **return 0**
 
@@ -107,7 +125,7 @@
 #include <string.h>
 int main()
 {
-	for(int i = 0; i < 200; i++)
+	for(int i = 0; i < 200; ++i)
     {
         printf("%d : %s \n", i, strerror(i));
     }
@@ -117,8 +135,6 @@ int main()
 }
 ```
 
-
-
 **?是shell的一个变量，永远记录最近一个进程的退出码，main--->return**
 
 **echo $?**
@@ -127,21 +143,9 @@ int main()
 
 **一般而言退出码，都需要对应的描述信息。**
 
-
-
 **进程退出一般三种情况**
 
 ![image-20251117162018098](./picture/image-20251117162018098.png)
-
-
-
-**return  0**
-
-**return  ！0**
-
-**退出码无意义**
-
-
 
 **进程如何退出的问题**
 
@@ -199,9 +203,13 @@ int main()
 
 **exit函数是用户层函数**
 
-**缓冲区在哪里呢： 用户层的 不会早OS里面的。**
+**缓冲区在哪里呢： 用户层的 不会在OS里面的。**
 
 ![image-20251117163449838](./picture/image-20251117163449838.png)
+
+**缓冲区用户层的一块内存里面。**
+
+![image-20260421143145638](picture/image-20260421143145638.png)
 
 
 
@@ -214,6 +222,40 @@ int main()
 ![image-20251117164720405](./picture/image-20251117164720405.png)
 
 **wait函数**
+
+```c++
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork(); 
+  if(id == 0)
+  {
+    int cnt = 10;
+    while(cnt)
+    {
+      printf("子进程ppid:%d,pid:%d, cnt=%d\n", getppid(), getpid(), cnt--);
+      sleep(1);
+    }
+    
+    exit(0);
+  }
+  
+  sleep(15);
+  pid_t ret = wait(NULL);
+  if(ret > 0)
+  {
+    printf("wait success child id : %d\n", ret);
+  }
+  return 0;
+}
+
+```
+
+
 
 ```c
 #include <unistd.h>
@@ -330,7 +372,7 @@ int main()
 
 ![image-20251117192522846](./picture/image-20251117192522846.png)
 
-
+![image-20260421145622959](picture/image-20260421145622959.png)
 
 ```c
 #include <unistd.h>    
@@ -1037,6 +1079,88 @@ int main()
 ```
 
 
+
+## code
+
+**见见猪跑**
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+
+  if(id == 0)
+  {
+    int cnt = 5;
+    while(cnt)
+    {
+      printf("子进程，ppid:%d, pid:%d, cnt:%d\n", getppid(), getpid(), cnt--);
+      sleep(1);
+    }
+  
+    exit(0);
+  }
+
+  sleep(7);
+  int status = 0;
+  pid_t ret = wait(&status);
+  printf("wait success, pid : %d\n", ret);
+  return 0;
+}
+```
+
+**进程退出码和退出信号的**
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+
+  if(id == 0)
+  {
+    int cnt = 20;
+    while(cnt)
+    {
+      printf("子进程，ppid:%d, pid:%d, cnt:%d\n", getppid(), getpid(), cnt--);
+      sleep(1);
+
+      /*
+       *int* p = NULL;
+       **p = 100;
+       */
+    }
+  
+    //exit(12);
+    return 13;
+  }
+
+  sleep(7);
+  int status = 0;
+  pid_t ret = wait(&status);
+  printf("wait success, pid : %d, exit_code:%d sig_number %d\n", ret,(status>>8)&0xFF, (status&0X7F));
+  return 0;
+}
+```
 
 
 
