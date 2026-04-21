@@ -2,7 +2,6 @@
 #include <iostream>
 #include <queue>
 #include <pthread.h>
-
 static const int gmaxcap = 10;
 
 template<class T>

@@ -3,7 +3,6 @@
 #include<string.h>
 #include<stdlib.h>
 
-
 int addto(int from, int to)
 {
   int sum = 0;
@@ -19,8 +18,10 @@ int addto(int from, int to)
 int main()
 {
  
-  printf("hello lichermionex ");
-  addto(1, 100);
+  /*
+   *printf("hello lichermionex ");
+   *addto(1, 100);
+   */
   // 先写入stdout的缓冲区里面
   // 数据满了
   // \n
@@ -41,7 +42,7 @@ int main()
 
   for(int i = 0; i < 200 ; i++)
   {
-    printf("%s \n", strerror(i));
+    printf("%d:%s \n", i, strerror(i));
   }
 
 
@@ -60,8 +61,6 @@ int main()
   
   // 推测码的意义0是成功，非零表示失败 !0表示不同的错误。
   // 退出码，都必须有对应的文字描述
-  //
-
   // 进程退出的时候，对应的退出码
   // 标定我们进程执行的结果是否正确
   return 0;
