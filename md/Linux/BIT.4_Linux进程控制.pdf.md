@@ -333,6 +333,67 @@ int main()
 | **WIFSIGNALED(status)** | 子进程是否被信号杀死        |
 | **WTERMSIG(status)**    | 导致退出的信号号            |
 
+### 四个宏
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+
+  if(id == 0)
+  {
+    int cnt = 10;
+    while(cnt)
+    {
+      printf("子进程，ppid:%d, pid:%d, cnt:%d\n", getppid(), getpid(), cnt);
+      --cnt;
+      sleep(1);
+    }
+
+    return 12;
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret < 0)
+  {
+    perror("waitpid");
+    return 1;
+  }
+  
+  if(WIFEXITED(status))
+  {
+    printf("%d正常退出，退出码:%d\n", ret, WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("%d信号退出，退出信号:%d\n", ret,WTERMSIG(status));
+  }
+  else if (WIFSTOPPED(status))
+  {
+    printf("%d暂停，暂停信号:%d\n", ret,WSTOPSIG(status));
+  }
+
+  return 0;
+}
+
+```
+
+
+
+
+
 **wait的返回值信息**
 
 ```c
@@ -440,6 +501,16 @@ int main()
 
 
 
+### 等待wait waitpid
+
+![image-20260422082156127](picture/image-20260422082156127.png)
+
+**等等主要是两件事情**
+
+**1.让OS释放子进程的僵尸状态**
+
+**2.获取子进程的退出状态信息。**
+
 ```c
 #include <stdio.h>    
 #include <unistd.h>    
@@ -464,7 +535,6 @@ int main()
     }    
     exit(10);                                                                                            
   }    
-    
     
   int status = 0;    
   int ret = waitpid(id, &status, 0);    
@@ -495,6 +565,8 @@ int main()
 
 
 
+### 阻塞和非阻塞
+
 **阻塞和非阻塞等待的状态**
 
 **阻塞等待**
@@ -506,6 +578,12 @@ int main()
 
 
 **轮询等 WNOHONG**
+
+**waitpid: 返回值==零，子进程的状态没有发生任何变化。指定宏WNOHONG.**
+
+**waitpid:返回值== -1，发生错误了的。**
+
+**waitpid:返回值 > 0, 子进程的pid。**
 
 ```c
 #include <stdio.h>
@@ -521,6 +599,7 @@ int main()
   pid_t id = fork();    
   assert(id != -1);    
     
+  // 子进程
   if(id == 0)    
   {    
     int cnt = 10;    
@@ -532,10 +611,11 @@ int main()
     exit(10);    
   }    
     
+  // 父进程
   int status = 0;    
   while(1)    
   {    
-  int ret = waitpid(id, &status, WNOHANG); // 非阻塞等待，                                                                                                                                                          
+ 	 int ret = waitpid(id, &status, WNOHANG); // 非阻塞等待，只会检查一次的哦。                                                                                                                                                          
       if(ret == 0)    
       {    
         // waitpid调用成功，子进程没有退出    
@@ -549,7 +629,7 @@ int main()
         printf("wait sucess \n");    
         break;    
       }    
-      else    
+      else  // waitpid调用失败了的。
       {    
         printf("等待失败了、\n");    
         break;    
@@ -610,7 +690,7 @@ int main()
   if(id == 0)    
   {    
     int cnt = 10;    
-    while(cnt)                                                                                                                                                                                                      
+    while(cnt)                                                                                                                                                                                      
     {    
       printf("child runing, pid : %d, ppid : %d, cnt : %d \n", getpid(), getppid(), cnt--);    
       sleep(1);    
@@ -655,6 +735,8 @@ int main()
 
 ## 4进程程序替换
 
+### 原理
+
 **进程替换**
 **1.创建子进程的目的**
 **让子进程执行父进程的一部分。执行父进程对应磁盘代码中的一部分。**
@@ -662,7 +744,9 @@ int main()
 
 ![image-20251118132010858](./picture/image-20251118132010858.png)
 
-**将指定程序加载到内存里面，如何找到，然后就是选项参数。**
+**程序替换的本质，就是将指定的程序和代码+数据 加载到指定的位置， 覆盖自己的代码和数据。**
+
+![image-20251118133139579](./picture/image-20251118133139579.png)
 
 ```c
 #include <stdio.h>    
@@ -690,13 +774,11 @@ int main()
 } 
 ```
 
-![image-20251118133139579](./picture/image-20251118133139579.png)
+**exec*为什么没成功返回呢？ 因为成功了，和接下来的代码无关了，判断毫无意义了。**
 
-
+**exec*只有返回 就是一定的错误的。 错误返回-1的。**
 
 ![image-20251118135219911](./picture/image-20251118135219911.png)
-
-
 
 
 
@@ -724,116 +806,284 @@ int main()
 
 **程序替换系列**
 
-```c
- #include <stdio.h>
-  #include <string.h>
-  #include <unistd.h>
-  #include <stdlib.h>
-  #include <sys/wait.h>
-  #include <sys/types.h>
-  #include <assert.h>
-  
-  
-  
-  
-  int main(int argc, char* agrv[])
-  {    
-    printf("process is runing ...\n");    
-        
-    pid_t id = fork();    
-    assert(id != -1);    
-      
-    if(id == 0)    
-    {    
-      /*    
-       *execl("/usr/bin/ls", "ls", "-a", "-l", "-h", NULL); // 写时拷贝，新数据和代码执行。新的进程加载新的数据和代码。写时拷贝了。    
-       */    
-      
-      /*    
-       *execlp("ls", "ls", "-a", "-l", "-h", NULL);    
-       */    
-      
-  /*    
-   *    char* const argv[] = {    
-   *      "ls",    
-   *      "-a",    
-   *      "-l",    
-   *      "-h",    
-   *      NULL    
-   *    };    
-   *    
-   *    execv("/usr/bin/ls", argv);    
-   */    
-      
-  /*    
-   *     char* const argv[] = {    
-   *       "ls",    
-   *       "-a",    
-   *       "-l",    
-   *       "-h",    
-   *       NULL    
-   *     };                                                                                                                                                                                                         
-   *    
-   *    execvp("ls", argv);    
-   */    
-  /*
-     *execl("./mybin", "./mybin", NULL);
-     */
-  
-    // 自己的环境变量
-  /*
-   *    char* const envp_[]={
-   *      (char*)"MYENV=1222111111111",
-   *      NULL
-   *    };
-   *
-   *  execle("./mybin", "mybin", NULL, envp_); 
-   */
-    
-  
-  
-  /*
-   *     extern char** environ;
-   *     execle("./mybin", "mybin", NULL, environ);
-   */
-  
-      /*
-       *extern char** environ;
-       *putenv((char*)"MYENV=1111111111111"); // 添加到环境变量里面
-       *execle("./mybin", "mybin", NULL, environ);
-       */
-  
-  
-    sleep(1);
-    execvp(agrv[1], &agrv[1]);
+### execl
 
-    exit(1);
-    }
-  
-    int status = 0;
-    int ret = waitpid(id, &status, 0);
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  printf("process is running ...\n");
+  /*
+   *execl("/usr/bin/ls","ls", "-a", "-l","-h", "/usr/bin/", NULL);
+   */
+  execl("/usr/bin/top","top", NULL);
+  // 第一个参数，可执行文件的位置
+  // 第二个参数，终端是如何执行的
+  // 第三个参数，NULL结尾
     
-    if(WIFEXITED(status))
-    {
-      printf("exit code : %d \n", WEXITSTATUS(status));
-    }
-    
-    if(WIFSIGNALED(status))
-    {
-      printf("signal code : %d \n", WTERMSIG(status));
-    }
+ printf("process is ending ...\n");
+  return 0;
+}
+
   
-    printf("process is runing ...\n");
-  
-  
-  
-  
-    return 0;
+```
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
   }
+  
+  if(id == 0)
+  {
+    execl("/usr/bin/lsaaa", "ls", "-a", "-l", "-h", NULL);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+```
+
+**一般的写法**
+
+### 子进程替换原理
+
+![image-20260422143455119](picture/image-20260422143455119.png)
+
+### execl
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    execl("/usr/bin/lsaaa", "ls", "-a", "-l", "-h", NULL);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+```
+
+### execlp
+
+**l:list列出如何执行的，**
+
+**p:path 如何找到程序，带 p会从环境变量查找的。**
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    // 1.一个参数告诉系统我要执行谁
+    // 2.一个参数告诉系统我要如何执行的。
+    // execlp("ls", "ls", "-a", "-l", "-h", NULL);
+    // execlp("pwd","pwd", NULL);
+     execlp("top","top", NULL);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+```
+
+### execv
+
+**v:vector。所有的执行参数放到vector里面，不使用可变参数的。**
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* const argv_[] = {"ls" , "-a", "-l", "-h", NULL};
+    execv("/usr/bin/ls", argv_);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
+
+### execvp
+
+**v:数组里面如何执行，p:环境变量里面找**
+
+```c++
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* const argv_[] = {"ls", "-a", "-l", "-h", NULL};
+    execvp("ls", argv_);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
 
 ```
 
 
+
+
+
+![image-20260422212728513](picture/image-20260422212728513.png)
 
 ## 5自定义shell
 
