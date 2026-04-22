@@ -35,7 +35,6 @@ void loadTask()
 }
 
 
-
 int main()
 {
   
@@ -82,10 +81,6 @@ int main()
     break;
   }
   }
-
-
-
-
 
   return 0;
 }

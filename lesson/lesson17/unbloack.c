@@ -12,15 +12,18 @@ int main()
   assert(id != -1);
   
   int cnt = 10;
-  while(cnt)
-  {
-
   if(id == 0)
-  {
-    printf("I AM CHILD, PID IS %d, PPID IS %d \n", getpid(), getppid());
+  { 
+    while(cnt)
+    {
+        printf("I AM CHILD, PID IS %d, PPID IS %d \n", getpid(), getppid());
+      sleep(1);
+      cnt--;
+    }
+
+    return 12;
   }
-  cnt--;
-  }
+
   int status = 0;
 
   while(1)

@@ -6,7 +6,6 @@
 #include <assert.h>
 #include <string.h>
 
-
 #define NUM 10
 
 typedef void(*func_t)(); // 函数指针
@@ -36,7 +35,6 @@ void load()
   hander_task[2] = task3;
 }
 
-
 int main()
 {
 
@@ -55,6 +53,8 @@ int main()
       sleep(1);
       cnt--;
     }
+    
+    return 19;
   }
 
   load();
@@ -71,6 +71,7 @@ int main()
       {
         hander_task[i]();
       }
+      sleep(1);
     }
     else if(ret > 0)
     {
@@ -84,15 +85,5 @@ int main()
       break;
     }
   }
-
-
-
-
-
-
-
-
-
-
 
 }
