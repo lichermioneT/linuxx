@@ -16,14 +16,8 @@ int main()
   
   if(id == 0)
   {
-    char* const argv1_[] = {"ls" , "-a", "-l", "-h", NULL};
-    char* const argv2_[] = {"top", NULL};
-    char* const argv3_[] = {"pwd", NULL};
-    char* const argv4_[] = {"env", NULL};
-    execv("/usr/bin/env", argv4_);
-    execv("/usr/bin/pwd", argv3_);
-    execv("/usr/bin/top", argv2_);
-    execv("/usr/bin/ls", argv1_);
+    char* const envp[] = {"NAME=lic", "AGE=20", NULL};
+    execle("/usr/bin/env", "env", NULL, envp);
     exit(1);
   }
 

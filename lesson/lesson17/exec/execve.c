@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+extern char** environ;
+
 int main()
 {
   pid_t id = fork();
@@ -16,14 +18,10 @@ int main()
   
   if(id == 0)
   {
-    char* const argv1_[] = {"ls" , "-a", "-l", "-h", NULL};
-    char* const argv2_[] = {"top", NULL};
-    char* const argv3_[] = {"pwd", NULL};
-    char* const argv4_[] = {"env", NULL};
-    execv("/usr/bin/env", argv4_);
-    execv("/usr/bin/pwd", argv3_);
-    execv("/usr/bin/top", argv2_);
-    execv("/usr/bin/ls", argv1_);
+    char* const argv_[] = {"env", NULL};
+    char* info = "NAME=lic------------------------------------";
+    putenv(info);
+    execve("/usr/bin/env", argv_, environ);
     exit(1);
   }
 

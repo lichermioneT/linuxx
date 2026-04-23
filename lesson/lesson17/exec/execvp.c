@@ -16,8 +16,12 @@ int main()
   
   if(id == 0)
   {
-    char* const argv_[] = {"ls", "-a", "-l", "-h", NULL};
-    execvp("ls", argv_);
+    char* const argv1_[] = {"ls", "-a", "-l", "-h", NULL};
+    char* const argv2_[] = {"pwd", NULL};
+    char* const argv3_[] = {"top", NULL};
+    execvp("top", argv3_);
+    execvp("pwd", argv2_);
+    execvp("ls", argv1_);
     exit(1);
   }
 

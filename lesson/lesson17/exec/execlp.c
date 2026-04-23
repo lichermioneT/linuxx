@@ -16,9 +16,11 @@ int main()
   
   if(id == 0)
   {
-    // execlp("ls", "ls", "-a", "-l", "-h", NULL);
-    // execlp("pwd","pwd", NULL);
-     execlp("top","top", NULL);
+    // execlp: 存在list,执行的程序，需要在终端如何list.p path:环境变量里面去找额
+    execlp("touch", "touch", "lic.txt", NULL);
+    execlp("pwd", "pwd", NULL);
+    execlp("ls", "ls", "-a", "-l", "-h", NULL);
+    execlp("top","top", NULL);
     exit(1);
   }
 

@@ -16,7 +16,11 @@ int main()
   
   if(id == 0)
   {
-    execl("/usr/bin/lsaaa", "ls", "-a", "-l", "-h", NULL);
+    // execl:list,需要list可以执行程序的位置，可以执行程序终端的list
+    //execl("/usr/bin/ls", "ls", "-a", "-l", "-h", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    //execl("/usr/bin/pwd", "pwd", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    //execl("/usr/bin/touch", "touch", "list.txt", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    execl("/usr/bin/top", "top", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
     exit(1);
   }
 
