@@ -1079,11 +1079,131 @@ int main()
 
 ```
 
+### execle
+
+**code1**
+
+**用自己的环境变量**
+
+```c++
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* const envp[] = {"NAME=lic", "AGE=20", NULL};
+    execle("/usr/bin/env", "env", NULL, envp);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+```
+
+**code2**
+
+**添加到系统的环境变量中去的**
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+extern char** environ;
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* info = "NAME=lic";
+    putenv(info);
+    execle("/usr/bin/env", "env", NULL, environ);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
 
 
 
+### exec*加载器
+
+![image-20260423095233943](picture/image-20260423095233943.png)
+
+**进程地址空间拿到环境变量的信息，子进程的。这就是为什么子进程可以 继承环境变量的。**
+
+**execve只有一个的。其它都是c语言的封装信息的。**
 
 ![image-20260422212728513](picture/image-20260422212728513.png)
+
+```
+execl   // 参数列表
+execv   // 参数数组
+execle  // 参数列表 + 环境变量
+execve  // 参数数组 + 环境变量
+execlp  // 参数列表 + 自动搜索PATH
+execvp  // 参数数组 + 自动搜索PATH
+execve  系统调用的
+```
+
+
 
 ## 5自定义shell
 
@@ -1157,7 +1277,7 @@ int main(int argc, char* agrv[])
 
 ```
 
-**复习**
+## **复习**
 
 **子进程的退出码和退休信号**
 
@@ -1175,15 +1295,17 @@ int main(int argc, char* agrv[])
 
 **复习**
 
+## shell
 
-
-**6当前路径**
+### **当前路径**
 
 **进程当前在那个工作目录下面的**
 
 ![image-20251118193618192](./picture/image-20251118193618192.png)
 
 ![image-20251118193924486](./picture/image-20251118193924486.png)
+
+![image-20260423103850777](picture/image-20260423103850777.png)
 
 
 
@@ -1211,16 +1333,10 @@ int main()
   }    
     
   wait(NULL);    
-    
-    
-    
-    
   return 0;    
 }    
 
 ```
-
-
 
 
 
@@ -1275,7 +1391,7 @@ int main()
       myargv[i++] =(char*) "--color=auto";    
     }    
 
-        >  while(myargv[i++] = strtok(NULL, " "));
+      while(myargv[i++] = strtok(NULL, " "));
   
   // cd命令，不需要创建子进程让shell自己执行对应的cd指令                                                                                                                     
   // 像这种不需要让我们子进程来执行，而是让shell自己执行的命令，内建内置命令
@@ -1418,13 +1534,424 @@ int main()
 
 
 
+### execl
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    // execl:list,需要list可以执行程序的位置，可以执行程序终端的list
+    //execl("/usr/bin/ls", "ls", "-a", "-l", "-h", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    //execl("/usr/bin/pwd", "pwd", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    //execl("/usr/bin/touch", "touch", "list.txt", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    execl("/usr/bin/top", "top", NULL); // execl：l就是list,就和你终端是如何list一样的执行方法。注意需要NULL结尾的。
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+```
 
 
 
+### execlp
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    // execlp: 存在list,执行的程序，需要在终端如何list.p path:环境变量里面去找额
+    execlp("touch", "touch", "lic.txt", NULL);
+    execlp("pwd", "pwd", NULL);
+    execlp("ls", "ls", "-a", "-l", "-h", NULL);
+    execlp("top","top", NULL);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
 
 
 
+### execle
 
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+extern char** environ;
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+#if 0
+    char* info = "NAME=lic";
+// 添加新的环境变量的
+    putenv(info);
+    execle("/usr/bin/env", "env", NULL, environ);
+#else 
+    char* const envp_[] = {"NAME=lic","AGE=20","LOVE=lic", NULL};
+    execle("/usr/bin/env", "env", NULL, envp_);
+#endif
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
+
+
+
+### execv
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* const argv1_[] = {"ls" , "-a", "-l", "-h", NULL};
+    char* const argv2_[] = {"top", NULL};
+    char* const argv3_[] = {"pwd", NULL};
+    char* const argv4_[] = {"env", NULL};
+    execv("/usr/bin/env", argv4_);
+    execv("/usr/bin/pwd", argv3_);
+    execv("/usr/bin/top", argv2_);
+    execv("/usr/bin/ls", argv1_);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
+
+
+
+### execvp
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* const argv1_[] = {"ls", "-a", "-l", "-h", NULL};
+    char* const argv2_[] = {"pwd", NULL};
+    char* const argv3_[] = {"top", NULL};
+    execvp("top", argv3_);
+    execvp("pwd", argv2_);
+    execvp("ls", argv1_);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
+
+
+
+### execve
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+extern char** environ;
+
+int main()
+{
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+  
+  if(id == 0)
+  {
+    char* const argv_[] = {"env", NULL};
+    char* info = "NAME=lic------------------------------------";
+    putenv(info);
+    execve("/usr/bin/env", argv_, environ);
+    exit(1);
+  }
+
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret == -1)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("wait success exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("wait success sig_num:%d\n", WTERMSIG(status));
+  }
+  return 0;
+}
+
+```
+
+
+
+## 自定义shell
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define LINE_SIZE 1024
+#define ARGVS 64
+
+int main()
+{
+while(1)
+{
+  printf("[root@lic exec]#:::");
+  fflush(stdout);
+  char line[LINE_SIZE];
+  char* s = fgets(line, sizeof(line) - 1, stdin);
+  assert(s != NULL);
+  (void)s;
+
+  /*
+   *printf("line:%s\n", line);
+   */
+  line[strlen(line)-1] = 0; 
+
+  char* arg[ARGVS] = {NULL};
+  arg[0] = strtok(line, " ");
+  
+  int i = 1;
+  while( arg[i++] = strtok(NULL, " "))
+  {
+    ;
+  }
+
+#if 0
+  for(int i = 0; arg[i]; ++i)
+  {
+    printf("%d:%s\n", i, arg[i]);
+  }
+#endif
+
+  if(strcmp(arg[0], "cd") == 0)
+  {
+    if(arg[1])
+    {
+      chdir(arg[1]);
+    }
+    continue;
+  }
+
+  if(strcmp(arg[0], "echo") == 0)
+  {
+    printf("%s\n", arg[1]);
+    continue;
+  }
+
+  pid_t id = fork();
+  if(id == -1)
+  {
+    perror("fork");
+    return 1;
+  }
+
+  if(id == 0)
+  {
+    execvp(arg[0], arg);
+    exit(1);
+  }
+  
+  int status = 0;
+  int ret = waitpid(id, &status, 0);
+  if(ret < 0)
+  {
+    perror("waitpid");
+    return 1;
+  }
+
+  if(WIFEXITED(status))
+  {
+    printf("exit_code:%d\n", WEXITSTATUS(status));
+  }
+  else if (WIFSIGNALED(status))
+  {
+    printf("sig_num:%d\n", WTERMSIG(status));
+  }
+
+  }
+  return 0;
+}
+
+```
 
 
 
