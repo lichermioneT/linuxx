@@ -38,9 +38,9 @@ int main()
 
   if(id == 0)
   {
-    g_val = 1;
-    *p = 2;
-    x = 3;
+    g_val = 10;
+    *p = 20;
+    x = 30;
     
     int cnt =3;
     while(cnt)
@@ -54,6 +54,9 @@ int main()
   }
   else if (id > 0)
   {
+    g_val = 1;
+    *p = 2;
+    x = 3;
     while(1)
     {
       int status = 0;
@@ -84,7 +87,5 @@ int main()
       }
     }
   }
-
-
   return 0;
 }

@@ -22,7 +22,6 @@ int main()
   // r
   int fd = open(FILE_NAME, O_RDONLY);
 
-
   if(fd < 0)
   {
     perror("open");
