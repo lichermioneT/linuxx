@@ -4,10 +4,12 @@
 
 ## 1重新谈论文件
 
+**文件操作的本质：进程和被打开文件的操作。**
+
 **1  空文件也要在磁盘占空间**
 **2  文件== 内容 + 属性**
 **3  文件操作 == 属性操作 + 内容操作 + (文件内容 + 文件属性 )**
-**4  标定一个问题  必须使用 文件路径  + 文件名 唯一性**
+**4  标定一个文件  必须使用 文件路径  + 文件名 唯一性**
 **5  如果没有默认指定文件路径，默认是在当前路径访问文件  进程当前路径**
 **6   fopen fclose fread fwrite 等接口写完之后，代码编译之后，形成二进制文件之后，但是没有运行 文件对应的操作没有被执行！**
  	**对文件的操作本质是进程对文件的操作**
@@ -20,13 +22,26 @@
 
 **结论：文件操作的本质：进程和被打开文件的关系。**
 
+![image-20260424095737096](picture/image-20260424095737096.png)
+
+**进程和被打开文件的操作。**
+
+
+
+## 回顾C文件接口
+
 **1.c语言，c++，java, python, php, go , shell? 操作接口都不一样的。**
- **文件在哪里呢--->>磁盘--》硬件---》os---》所有人想访问磁盘，都不能绕过os--->>使用os提供的接口-->>可以，操作系统只有一个**
- **---》上层语言无论如何变化**
 
-**a库函数必须 调用 系统调用接口**
+ 	**文件在哪里呢--->>磁盘--》硬件---》os---》所有人想访问磁盘，都不能绕过os--->>使用os提供的接口-->>可以，操作系统只有一个**
+ 	**---》上层语言无论如何变化**
 
-**b库函数可以千变万化，但是底层不变--- 如何降低学习成本呢?         学习不变的**
+​	**a库函数必须 调用 系统调用接口**
+
+​	**b库函数可以千变万化，但是底层不变--- 如何降低学习成本呢?         学习不变的**
+
+![image-20260424100404488](picture/image-20260424100404488.png)
+
+
 
 **2操作C语言**
 
@@ -138,7 +153,9 @@ int main()
 
 
 
-**标记位**
+## 系统接口
+
+### **标记位**
 
 **c语言传标记为，int--》一个标记位一个标记位                                                                                                                               
  32个比特位。通过比特位传递选项。**
@@ -176,14 +193,18 @@ return 0;
 
 
 
- **sszie_t write(int fd,** const void * buf, size_t count)  文本类，二进制类。是c语言提供给你的。**
-                        操作系统看来都是二进制位。**
+ **sszie_t write(int fd, const void * buf, size_t count)  文本类，二进制类。是c语言提供给你的。**
+                        **操作系统看来都是二进制位。**
 
 ![image-20251119142757461](./picture/image-20251119142757461.png)
 
   
 
+## open 系统接口
+
 **系统往文件里面写入数据**
+
+**open函数，**
 
 ```c
 #include <stdio.h>    
@@ -199,7 +220,7 @@ return 0;
 int main()    
 {    
       
-  umask(0);    
+  umask(0);    // 自定义掩码
   // c-- W > O_WRONLY | O_CREAT | O_TRUNC, 0666    
   /*    
    *int fd = open(FILE_NAME, O_WRONLY | O_CREAT | O_TRUNC, 0666);    
@@ -246,11 +267,7 @@ O_CLOEXEC    exec 时自动关闭 fd（安全）
 5. 安全读取（不泄漏 FD）      O_RDONLY | O_CLOEXEC
 ```
 
-
-
-
-
-**read**
+## **read**
 
 ```c
 #include <stdio.h>    
@@ -287,6 +304,14 @@ int main()
 ```
 
 
+
+## 文件管理系统
+
+**struct  file{}内核数据结构，先描述。**
+
+**struct file* fdarry[], 后组织的。**
+
+![image-20260424145646438](picture/image-20260424145646438.png)
 
 **语言层面封装了系统层面的接口**
 
@@ -358,9 +383,15 @@ int main()
 
 
 
-
-
 ![image-20251119152316825](./picture/image-20251119152316825.png)
+
+**进程控制块里面 有打开文件的信息。**
+
+**PCB里面的 strcut file_struct* files**
+
+**struct file_struct 结构体里面**
+
+**struct file* fd_array[]  数组。**
 
 
 
@@ -1716,4 +1747,257 @@ struct inode
 | **Inode Bitmap**<br>（inode位图）            | 记录本块组中哪些**inode是否被占用                            | 同上，1=已分配，0=空闲                                       |
 | **Inode Table**<br>（inode表）               | 存放本块组所有 inode 节点（不管用没用，都预分配好了）        | 一个文件 = 一个inode<br>这里是真正的“文件元数据仓库”         |
 | **Data Blocks**<br>（数据块）                | 真正存放文件内容、目录内容的地方                             | 普通文件内容就在这里<br>目录的内容也是在这里（目录也是文件） |
+
+
+
+## code
+
+### 字符级文件操作
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define FINE_NAME  "log.txt"
+
+int main()
+{ 
+  // r:read读方式打开文件必须存在的，w:write,a:append，写和追加文件可以不存在的。 w:write文件存在会清空文件的内容的
+  // r+:read读写追加，文件必须存在的。w+:write,文件不存在则创建，会覆盖文件的内容。a+:append,文件不存在则创建，文件的内容是追加到文件的后面的。
+  // rb:二进制读，wb:二进制写，ab:二进制追加的
+
+  //FILE* fp = fopen(FINE_NAME, "r"); 
+  FILE* fp = fopen(FINE_NAME, "w+"); 
+
+  if(fp == NULL)
+  {
+    perror("fopen");
+    return 1;
+  }
+
+  int cnt = 10;
+  while(cnt)
+  {
+    int ret = fputc('a', fp);
+    printf("%d\n", ret);
+    --cnt;
+  }
+
+// 文件指针，执行开头的位置
+  rewind(fp); 
+  cnt = 10;
+
+  while(cnt)
+  {
+    int ch = fgetc(fp);
+    int ret = putchar(ch);
+    printf("%d\n", ret);
+    --cnt;
+  }
+  printf("\n");
+
+  fclose(fp);
+  return 0;
+}
+
+```
+
+**r:打开文件，文件必须存在的**
+
+**w:打开文件，文件可以不存在的，每次都是重新写入的。（数据会清零的）(这就是为什么会存在a模式的)**
+
+**a:打开文件，文件可以不存在的，每次都是追加到文件的末尾方式的。**
+
+**r+:读写追加，文件必须存在的**
+
+**w+:读写追加， 文件可以不存在的， 每次都是重新写入**
+
+**a+:读写追加，文件可以不存在的，每次都是新的添加**
+
+**rb,wb,ab 二进制再说嘛的**
+
+
+
+### 字符串级文件操作
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define FINE_NAME  "log.txt"
+
+int main()
+{ 
+  // r:read读方式打开文件必须存在的，w:write,a:append，写和追加文件可以不存在的。 w:write文件存在会清空文件的内容的
+  // r+:read读写追加，文件必须存在的。w+:write,文件不存在则创建，会覆盖文件的内容。a+:append,文件不存在则创建，文件的内容是追加到文件的后面的。
+  // rb:二进制读，wb:二进制写，ab:二进制追加的
+
+  FILE* fp = fopen(FINE_NAME, "r+"); 
+
+  if(fp == NULL)
+  {
+    perror("fopen");
+    return 1;
+  }
+
+  int cnt = 10;
+  while(cnt)
+  {
+    fputs("hello:lic\n", fp);
+    --cnt;
+  }
+  
+  char buffer[1024] = {0};
+  rewind(fp);
+
+  // fgets:1.会读取换行的，并且在末尾放\0的。
+  while(fgets(buffer, sizeof buffer, fp) != NULL)
+  {
+    printf("%s", buffer);
+    printf("%zd\n", strlen(buffer));
+  }
+
+
+
+  fclose(fp);
+  return 0;
+}
+
+```
+
+
+
+### 格式化文件操作
+
+**fprintf函数，好用的。**
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define FINE_NAME  "log.txt"
+
+int main()
+{ 
+  // r:read读方式打开文件必须存在的，w:write,a:append，写和追加文件可以不存在的。 w:write文件存在会清空文件的内容的
+  // r+:read读写追加，文件必须存在的。w+:write,文件不存在则创建，会覆盖文件的内容。a+:append,文件不存在则创建，文件的内容是追加到文件的后面的。
+  // rb:二进制读，wb:二进制写，ab:二进制追加的
+
+  FILE* fp = fopen(FINE_NAME, "r+"); 
+
+  if(fp == NULL)
+  {
+    perror("fopen");
+    return 1;
+  }
+
+  int cnt = 10;
+  while(cnt)
+  {
+    fprintf(fp, "hello lic : %d\n", cnt--);
+  }
+  
+  char buffer[1024] = {0};
+  rewind(fp);
+
+  // fgets:1.会读取换行的，并且在末尾放\0的。
+  while(fgets(buffer, sizeof buffer, fp) != NULL)
+  {
+    printf("%s", buffer);
+    printf("%zd\n", strlen(buffer));
+  }
+
+  fclose(fp);
+  return 0;
+}
+
+```
+
+
+
+### 二进制读取 写入
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define FINE_NAME  "log.txt"
+
+int main()
+{ 
+  // r:read读方式打开文件必须存在的，w:write,a:append，写和追加文件可以不存在的。 w:write文件存在会清空文件的内容的
+  // r+:read读写追加，文件必须存在的。w+:write,文件不存在则创建，会覆盖文件的内容。a+:append,文件不存在则创建，文件的内容是追加到文件的后面的。
+  // rb:二进制读，wb:二进制写，ab:二进制追加的
+
+  FILE* fp = fopen(FINE_NAME, "rb"); 
+
+  if(fp == NULL)
+  {
+    perror("fopen");
+    return 1;
+  }
+
+#if 0
+  int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  int cnt = 10;
+  while(cnt)
+  {
+    fwrite(arr, sizeof(int), sizeof(arr) / sizeof(int), fp);
+    --cnt;
+  }
+  
+#else 
+ int arr[10] = {0};
+ 
+ size_t ret = fread(arr, sizeof(int), sizeof(arr) / sizeof(int), fp);
+ if(ret < 0)
+ {
+  perror("fread");
+  return 1;
+ }
+
+ for(int i = 0; i < 10; ++i)
+ {
+   printf("%d\n", *(arr + i));
+ }
+
+#endif
+
+  fclose(fp);
+  return 0;
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
