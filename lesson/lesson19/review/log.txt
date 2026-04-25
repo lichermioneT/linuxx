@@ -1,0 +1,5 @@
+1maro.c
+2dup2.c
+a.out
+log.txt
+myshell.c

@@ -21,15 +21,16 @@ int main()
   }
 
   // 现在1的位置是 fd了。现在输出数据是往fd里面了，而不是stdout(显示器了)
+  // 1.先关闭1
+  // 2.让fd=1
+  // 重定向了直接fd
   dup2(fd, 1);  // fd--->1
-
-
   
   printf("open fd %d \n", fd); // 往stdout里面输出数据
   fprintf(stdout, "open fd : %d \n", fd);
 
   const char*msg = "hello world";
-  write(1,msg, strlen(msg));
+  write(1, msg, strlen(msg));
   fflush(stdout);
 
   

@@ -1,7 +1,7 @@
-hello elifc 
-hello printf 
-hello fprintf 
-hello fputs 
-hello printf 
-hello fprintf 
-hello fputs 
+hello linuxxxxxxxxxxx
+hello printf cccccccccccccccccc
+hello fprintf ccccccccccccc
+hello fputs cccccccccccccccccc
+hello printf cccccccccccccccccc
+hello fprintf ccccccccccccc
+hello fputs cccccccccccccccccc
