@@ -395,11 +395,15 @@ int main()
 
 
 
-**内建指令**
+**内建指令：自己进程执行的指令**
 
-**当前指令**
+**当前路径**
 
-**文件的操作**
+**shell原理的**
+
+**文件的操作：c/c++接口，linux接口。 进程和被打开文件的关系。**
+
+**进程访问文件 必须经过OS，进程需要管理 文件的。**
 
 **文件描述符**
 
@@ -412,6 +416,10 @@ int main()
 **文件描述符**
 
 **文件描述符是从 stdin stdout stderr file1 file2 ...**
+
+**其它语言本质是对系统接口的封装。**
+
+**struct file_struct.  struct file* fd_array[] **
 
 **复习**
 
@@ -469,9 +477,83 @@ int main()
 
 
 
+## 分配规则
+
+![image-20260425084720821](picture/image-20260425084720821.png)
+
+**struct files_struct**
+
+**struct file* fd_array[]**
+
+**struct file**
+
+**fd的分配规则：从小到大找到最小且没有被占用的fd。默认012打开，所以一般是默认是3.**
+
+
+
+![image-20260425085916103](picture/image-20260425085916103.png)
+
+```c
+#include <stdio.h>    
+#include <sys/types.h>    
+#include <sys/stat.h>    
+#include <fcntl.h>    
+#include <unistd.h>    
+    
+int main()    
+{    
+    
+   /*    
+    *close(0);    
+    */    
+    
+    close(1); //,标准输出的，显示器     
+    
+   /*    
+    *close(2);    
+    */    
+    
+  umask(0);    
+  int fd = open("log.txt",O_WRONLY | O_CREAT | O_TRUNC, 0666);    
+  if(fd < 0)    
+  {    
+    perror("open failed");    
+    return 1;    
+  }    
+    
+  printf("open fd %d \n", fd);    
+  fprintf(stdout, "open fd %d \n", fd);    
+  fflush(stdout);    // 这里必须刷新数据才能看到，因为缓冲区
+                                                                                                                                                                             
+  close(fd);    
+  return 0;     
+}
+```
+
+**这就是重定向：本来是输出到显示器的，现在输出到文件里面去了的。**
+
+
+
+## 重定向
+
+![image-20260425090448302](picture/image-20260425090448302.png)
+
 **系统重定向函数**
 
 **dup2函数**
+
+```c
+    int dup2(int oldfd, int newfd);
+
+    dup2() makes newfd be the copy of oldfd, closing newfd first if necessary, but note the following:
+
+```
+
+**先关闭后面的fd，然后在把它复制给前面的**
+
+
+
+### 输出重定向
 
 **输出重定向**
 
@@ -486,8 +568,6 @@ int main()
 int main()    
 {    
     
-    
-    
   umask(0);    
   int fd = open("log.txt",O_WRONLY | O_CREAT | O_TRUNC, 0666);    
   /*    
@@ -500,8 +580,10 @@ int main()
   }    
     
   // 现在1的位置是 fd了。现在输出数据是往fd里面了，而不是stdout(显示器了)    
-  dup2(fd, 1);  // fd--->1    
-    
+  // 1.先关闭1
+  // 2.让fd=1
+  // 重定向了直接fd
+  dup2(fd, 1);  // fd--->1    也可以理解fd-->1，fd直接重定向到1了。
     
     
   printf("open fd %d \n", fd); // 往stdout里面输出数据    
@@ -520,6 +602,8 @@ int main()
 ```
 
 
+
+### 追加重定向 
 
 **追加重定向 **
 
@@ -565,6 +649,8 @@ int main()
 
 
 
+### 输入重定向
+
 **输入重定向**
 
 ```c
@@ -586,7 +672,7 @@ int main()
     return 1;    
   }    
     
-  dup2(fd, 0); // 输入重定向                                                                                                                                                 
+  dup2(fd, 0); // 输入重定向                                                                                                                                          
                                 
   char line[64];    
   while(1)          
@@ -604,6 +690,16 @@ int main()
   return 0;     
 }     
 ```
+
+
+
+### shell重定向
+
+![image-20260425095204053](picture/image-20260425095204053.png)
+
+**数据结构：文件描述符系统会拷贝给子进程一份的。文件不用给子进程拷贝一份的。**
+
+**进程的程序替换会不会影响 曾经重定向的文件描述符呢？ 不会的。PCB还是原来的PCB，程序和数据load到 内存里面去了的**
 
 
 
@@ -1075,15 +1171,21 @@ int main()
 
 ## 2Linux一切皆文件
 
-
-
 **多态**
 
 ![image-20251120093846741](./picture/image-20251120093846741.png)
 
+![image-20260425100309735](picture/image-20260425100309735.png)
+
 **进程地址空间**
 
-**引用计数信息**
+**引用计数信息,文件被多少人打开。**
+
+**一直要学习，但是也要谦虚的。**
+
+**万变不离其宗。come on**
+
+
 
 **存储**
 
@@ -1096,8 +1198,6 @@ int main()
 
 
 ## 3缓冲区
-
-
 
 **./a.out > log.txt**
 
@@ -1128,13 +1228,17 @@ int main()
 
 ```
 
+![image-20260425103814960](picture/image-20260425103814960.png)
 
+**缓冲区相关的，下节课继续的。**
 
 **复习**
 
 **进程和被打开文件的关系**
 
-**重定向关系**
+**重定向关系：dup2(fd,1)   **
+
+
 
 **复习**
 
@@ -1981,9 +2085,348 @@ int main()
 
 
 
+### 总结
+
+```c
+// 格式化写文件
+fprintf(fp, "%d %s\n", num, str);
+
+// 格式化读文件
+fscanf(fp, "%d %s", &num, str);
+
+// 按行读文件
+fgets(buf, sizeof(buf), fp);
+
+// 写字符串到文件
+fputs(str, fp);
+
+// 二进制读文件
+fread(buf, size, count, fp);
+
+// 二进制写文件
+fwrite(buf, size, count, fp);
+
+// 关闭文件
+fclose(fp);
+```
 
 
 
+### 几个宏的使用
+
+```c
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+int main()
+{
+  umask(022);
+  int fd = open("log.txt", O_RDWR | O_CREAT | O_APPEND, 0666);
+  if(fd == -1)
+  {
+    perror("open");
+    return 1;
+  }
+
+  const char* name = "lichermionex-----------linuxxxx\n";
+  int cnt = 10;
+  while(cnt)
+  {
+    ssize_t s = write(fd, name, strlen(name));
+    if(s < 0)
+    {
+      perror("write");
+      return 1;
+    }
+    --cnt;
+  }
+
+  lseek(fd, 0, SEEK_SET);
+
+  char buferr[64] = {0};
+  for(int i = 0; i < 10; ++i)
+  {
+   ssize_t n = read(fd, buferr, sizeof buferr);
+   if(n > 0)
+   {
+     buferr[n] = 0;
+     printf("%s\n", buferr);
+   }
+  }
+
+  close(fd);
+  return 0;
+}
+
+```
+
+
+
+### 重定向
+
+```c
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+#define METHON 2
+#define OPT 2
+
+
+int main()
+{
+  if(METHON == 1)
+  {
+#if OPT == 0
+    close(0);
+
+#elif OPT == 1
+    close(1);
+
+#elif OPT == 2
+    close(2);
+
+#endif
+    umask(022);
+    int fd = open("log.txt1", O_RDWR | O_APPEND | O_CREAT, 0666);
+    if(fd == -1)
+    {
+      perror("open");
+      return 1;
+    }
+
+    printf("fd:%d\n", fd);
+  }
+  else 
+  {
+    umask(022);
+    int fd = open("log.txt1", O_RDWR | O_APPEND | O_CREAT, 0666);
+    if(fd == -1)
+    {
+      perror("open");
+      return 1;
+    }
+
+#if OPT == 0
+    dup2(fd, 0);
+    char buffer[1024] = {0};
+    ssize_t n = read(fd, buffer, sizeof(buffer) - 1);
+    if(n > 0)
+    {
+      buffer[n] = 0;
+    }
+    printf("%s\n", buffer);
+
+#elif OPT == 1
+    dup2(fd, 1);
+    const char* name = "lichermionexTTTTTTTTTTTTT\n";
+    write(fd, name, strlen(name));
+
+#elif OPT == 2
+    dup2(fd, 2);
+    const char* name = "lichermionex---erron\n";
+    write(fd, name, strlen(name));
+
+#endif
+    close(fd);
+  }
+
+  return 0;
+}
+
+```
+
+
+
+### shell重定向
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <assert.h>
+#include <ctype.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+
+#define NUM 1024
+#define OPT_NUM 64
+
+#define NONE_REDIR   0
+#define INPUT_REDIR  1
+#define OUTPUT_REDIR 2
+#define APPEND_REDIR 3
+
+int redirType = NONE_REDIR;
+char* redirFile = NULL;
+
+int lastcode = 0;
+int lastsig = 0;
+
+char linecommand[NUM];
+char* myargv[OPT_NUM];
+
+#define trimSpace(start) do{\
+  while(isspace(*start)) ++start;\
+}while(0)
+
+void commandCheck(char* command)
+{
+  assert(command != NULL);
+  char* start = command;
+  char* end = command + strlen(command);
+
+  while(start < end)
+  {
+    if(*start == '>')
+    {
+        *start = '\0';
+        start++;
+        if(*start == '>')
+        {
+          redirType = APPEND_REDIR; // 追加重定向
+          start++;
+        }
+        else 
+        {
+          redirType = OUTPUT_REDIR; // 输出重定向
+        }
+      
+        // 重定向的文件
+        trimSpace(start);
+        redirFile = start;
+        break;
+    }
+    else if(*start == '<')
+    {
+      *start = '\0';
+      start++;
+      trimSpace(start);
+      redirType = INPUT_REDIR;
+      redirFile = start;
+      break; 
+    }
+    else 
+    {
+      ++start;
+    }
+  }
+}
+
+int main()
+{
+// 这里的重定向和shell的实现就是多了一个字符串解析而言
+  while(1)
+  {
+    redirType = NONE_REDIR;
+    redirFile = NULL;
+    lastcode = 0;
+    lastsig = 0;
+    errno = 0;
+    printf("newshell:");
+    fflush(stdout);
+   
+    // 细节，它最大读取 sizeof(linecommand)-1个字符串，自动补上\0;
+    char* s = fgets(linecommand, sizeof(linecommand), stdin);
+    assert(s != NULL);
+    (void)s;
+
+
+    // ls -a -b \n, 这里清除\n的
+    linecommand[strlen(linecommand) - 1] = 0;
+  #if 0
+    printf("%s\n", linecommand);
+  #endif
+
+    // 检查命令的定向方式
+    commandCheck(linecommand);
+
+    myargv[0] = strtok(linecommand, " ");
+    if(myargv[0] == NULL)
+    {
+      continue;
+    }
+
+    int i = 1;
+
+    while((myargv[i++] = strtok(NULL, " ")) != NULL)
+    {
+      ;
+    }
+
+
+    pid_t id = fork();
+    assert(id != -1);
+    if(id == 0)
+    {
+      switch(redirType)
+      {
+        case NONE_REDIR: break;
+        case INPUT_REDIR:
+        {
+            int fd = open(redirFile, O_RDONLY);
+            if(fd < 0)
+            {
+              perror("open");
+              return 1;
+            }
+            dup2(fd, 0);
+            break;
+        }
+        case OUTPUT_REDIR:
+        case APPEND_REDIR:
+        {
+          umask(0);
+          int flag = O_WRONLY | O_CREAT;
+          
+          if(redirType == APPEND_REDIR)
+            flag |= O_APPEND;
+          else 
+            flag |= O_TRUNC;
+          
+          int fd = open(redirFile, flag, 0666);
+          if(fd < 0)
+          {
+            perror("open");
+            return 1;
+          }
+          
+          dup2(fd, 1);
+          break;
+        }
+        default: printf("BUG?\n");
+          break;
+      }
+      
+      execvp(myargv[0], myargv);
+      perror("execvp");
+      _exit(127);
+    }
+    
+    int status = 0;
+    pid_t ret = waitpid(id, &status, 0);
+    assert(ret > 0);
+    (void)ret;
+    
+    lastcode = (status>>8)&0xff;
+    lastsig = status & 0x7f;
+  }
+
+  return 0;
+}
+```
 
 
 
