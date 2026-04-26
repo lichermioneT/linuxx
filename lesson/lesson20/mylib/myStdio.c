@@ -2,6 +2,7 @@
 
 FILE_* fopen_(const char* path_name, const char* mode)
 {
+// 1.文件创建的rwa权限设置的
     int flags = 0;
     int defaultMode=0666;
     if(strcmp(mode, "r") == 0)
@@ -10,17 +11,18 @@ FILE_* fopen_(const char* path_name, const char* mode)
     }
     else if(strcmp(mode, "w") == 0)
     {
-      flags |= (O_WRONLY | O_CREAT | O_TRUNC);
+      flags |= (O_WRONLY | O_TRUNC | O_CREAT);
     }
     else if(strcmp(mode, "a") == 0)
     {
-      flags |= (O_WRONLY | O_CREAT | O_APPEND);
+      flags |= (O_WRONLY | O_APPEND | O_CREAT) ;
     }
     else 
     {
       // todo
     }
 
+// 2.打开文件 设置文件的权限rwx，系统文件的
     int fd = 0;
     
     if(flags & O_RDONLY) fd = open(path_name, flags);
@@ -33,8 +35,8 @@ FILE_* fopen_(const char* path_name, const char* mode)
       return NULL;
     }
 
+// 3.填充文件结构体色属性信息的
     FILE_* fp = (FILE_*)malloc(sizeof(FILE_));
-  
     assert(fp);
   
     fp->flags = SYNC_LINE;
@@ -47,16 +49,15 @@ FILE_* fopen_(const char* path_name, const char* mode)
 
 void fwrite_(const void* ptr, int num, FILE_* fp)
 {
-  // 数据写入到缓冲区中
+  // 1.数据写入到缓冲区中
    memcpy(fp->buffer + fp->szie, ptr, num); // 不考虑缓冲区的溢出
-   
    fp->szie += num;
-   // 判断是否刷新
-   
+
+   // 2.判断是否刷新
    if(fp->flags & SYNC_NOW)
    {
-    write(fp->fileno, fp->buffer, fp->szie);   
-    fp->szie = 0; // 清空缓冲区
+      write(fp->fileno, fp->buffer, fp->szie);   
+      fp->szie = 0; // 清空缓冲区
    }
    else if(fp->flags & SYNC_FULL)
    {
@@ -82,8 +83,9 @@ void fwrite_(const void* ptr, int num, FILE_* fp)
 
 void fflush_(FILE_* fp)
 {
-  // 写到系统里面
-  if(fp->szie > 0)write(fp->fileno, fp->buffer, fp->szie);
+  // 1.写到系统里面
+  if(fp->szie > 0)
+    write(fp->fileno, fp->buffer, fp->szie);
 
   // 真正的刷新
   fsync(fp->fileno);

@@ -2,7 +2,6 @@
 
 int main()
 {
-
   FILE_* fp = fopen_("./log.txt","w");
 
   if(fp == NULL)
@@ -14,8 +13,6 @@ int main()
    *const char* msg = "helllo \n";
    *fwrite_(msg, strlen(msg), fp);
    */
-
-
 
   int cnt = 10;
   const char* msg = "helllo \n";
