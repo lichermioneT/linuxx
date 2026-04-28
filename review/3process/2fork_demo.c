@@ -49,7 +49,6 @@ int main()
     {
       printf("wait success sig_num:%d\n", WTERMSIG(status));
     }
-
   }
   return 0;
 }
