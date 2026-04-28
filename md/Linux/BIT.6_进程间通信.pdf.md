@@ -1,10 +1,30 @@
 # BIT.6_进程间通信.pdf
 
-**复习**
+## **复习**
 
 **动静态库**
 
 **复习**
+
+
+
+## 目的
+
+![image-20260428200049411](picture/image-20260428200049411.png)
+
+```
+1. pipe 管道
+2. FIFO 命名管道
+3. signal 信号
+4. System V 消息队列
+5. System V 共享内存
+6. System V 信号量
+7. mmap
+8. socket
+9. epoll + eventfd
+```
+
+
 
 ## 1进程间通信介绍
 
@@ -36,13 +56,13 @@
 **1.你需要先让不同的进程看到同一份资源(其实学习的是这个)**
 **2.通信**
 
-
-
 ![image-20251124095822878](./picture/image-20251124095822878.png)
 
 
 
 ## 2匿名管道
+
+### 同一份资源
 
 **子进程继承父进程的文件 **
 
@@ -58,13 +78,19 @@
 
 **fork子进程看到同一份资源**
 
-
+**文件需要进行拷贝的，struct files_struct需要进行拷贝的，进程打开文件，进程属性有文件属性的。**
 
 ![image-20251124100813288](./picture/image-20251124100813288.png)
 
+![image-20260428202200027](picture/image-20260428202200027.png)
+
+**1.不是磁盘文件的。太慢了，没有必要的。**
+
+**2.内存级别文件的。**
 
 
 
+### 匿名管道原理
 
 **匿名管道通信**
 
@@ -76,17 +102,54 @@
 
 **匿名管道只能用来父子进程间通信**
 
-
-
 ![image-20251124103737149](./picture/image-20251124103737149.png)
-
-
 
 
 
 ![image-20251124105127508](./picture/image-20251124105127508.png)
 
+**1.父进程创建**
 
+**2.各自关闭，建议关闭的**
+
+**3.通信**
+
+### pipe接口
+
+```
+int pipe(int pipefd[2]); // int pipefd[2]输出型参数
+
+```
+
+```c++
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+using namespace std;
+
+int main()
+{
+  int fds[2];
+  int n = pipe(fds);
+  if(n == -1)
+  {
+    cerr<< "pipe:" << strerror(errno) <<endl;
+    return 1;
+  }
+
+  cout<< fds[0] << endl; // read 
+  cout<< fds[1] << endl; // write
+
+  return 0;
+}
+
+```
+
+
+
+
+
+### 管道code
 
 **创建管道文件**
 
@@ -440,6 +503,10 @@ int main()
 }
 
 ```
+
+
+
+### 管道的特点
 
 **a.匿名管道                                                                                                                                        
   1.父子进程间通信     
