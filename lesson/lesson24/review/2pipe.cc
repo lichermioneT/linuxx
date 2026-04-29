@@ -42,6 +42,7 @@ int main()
   }
   
   close(fds[1]);
+  close(fds[0]);
   
   while(true)
   {
