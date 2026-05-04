@@ -1,9 +1,7 @@
 #include "comm.hpp"
 
-
 int main()
 {
-  
   bool r = createFifo(NAME_PIPE);
   assert(r);
   (void)r;

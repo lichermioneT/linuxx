@@ -1,6 +1,5 @@
 #include "comm.hpp"
 
-
 int main()
 {
   std::cout<< "cliend begin" <<std::endl;

@@ -34,7 +34,7 @@ void flushTask()
 
 }
 
-// 放任务
+// 1.放任务
 void loadTaskFunc(vector<func_t>* out)
 {
   assert(out);
@@ -43,7 +43,6 @@ void loadTaskFunc(vector<func_t>* out)
   out->push_back(flushTask);
 }
 
-// 
 class SubEd
 {
 public:
@@ -52,7 +51,7 @@ public:
     ,writeFd_(writeFd)
   {
     char namebuffer[1024];
-    snprintf(namebuffer, sizeof(namebuffer), "process-%d[(pid)%d-(fd)%d]", num++,subId_, writeFd_);
+    snprintf(namebuffer, sizeof(namebuffer), "process-%d[(pid)%d-(fd)%d]", num++, subId_, writeFd_);
     name_ = namebuffer;
   }
 public: 
@@ -74,10 +73,9 @@ int reveTask(int readFd)
   else return 0;
 }
 
-// 创建子进程，子进程的信息放在subs里面的
+// 2.创建子进程，子进程的信息放在subs里面的
 void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
 {
-
   vector<int> deletefd;
   for(int i = 0; i < PROCESS_NUM; i++)
   {
@@ -93,11 +91,10 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
 
     if(id == 0)
     {
-      
-        for(size_t i = 0; i < deletefd.size(); i++)
-        {
-          close(deletefd[i]);
-        }
+      for(size_t i = 0; i < deletefd.size(); i++)
+      {
+        close(deletefd[i]);
+      }
 
       // 处理任务
       close(fds[1]); // 关闭写端
@@ -105,12 +102,15 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
       // 1接收命令码，没有就阻塞。
       while(true)
       {
-       int commandcode = reveTask(fds[0]);
-       if(commandcode >= 0 && commandcode < funcMap.size()) // size_t类型和int类型的
-       {
-         funcMap[commandcode]();
-       }
-       else if(commandcode == -1) break;
+        int commandcode = reveTask(fds[0]);
+        if(commandcode >= 0 && commandcode < (int)funcMap.size()) // size_t类型和int类型的
+        {
+          funcMap[commandcode]();
+        }
+        else if(commandcode == -1) 
+        {
+          break;
+        }
       }
       exit(0);
     }
@@ -119,7 +119,7 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
     SubEd sub(id, fds[1]);
    // (*subs).push_back(sub);
     subs->push_back(sub);
-    deletefd.push_back(fds[i]);
+    deletefd.push_back(fds[1]);
   }
 }
 
@@ -131,6 +131,7 @@ void sendTask(const SubEd& process, int tasknum)
   (void)n;
 }
 
+//3.发送任务信息
 void loadBalanceContrl(vector<SubEd>& subs, vector<func_t>& funcMap, int count)
 {
   // 父进程控制子进程
@@ -176,20 +177,21 @@ void waitProcess(vector<SubEd> process)
 
 int main()
 {
+  // 随机数种子的
   Make_Seed(); 
   // 创建一批子进程
   // 子进程id和写入的fd
   
-  vector<SubEd> subs; // 先描述，后组织起来
-  vector<func_t> funcMap; 
+  vector<SubEd> subs; // 先描述，后组织起来,子进程的信息
+  vector<func_t> funcMap;  // 进程的函数,执行的函数
 
-  loadTaskFunc(&funcMap); 
-  cteateSubProcess(&subs, funcMap);
+  loadTaskFunc(&funcMap);               // 添加函数任务
+  cteateSubProcess(&subs, funcMap);  // 创建子进程的信息
 
   int taskCnt = 3; // cnt == -1 
 
   // loadBal
-  loadBalanceContrl(subs, funcMap, taskCnt);
+  loadBalanceContrl(subs, funcMap, taskCnt); // 分发任务信息的
 
   // 回收子进程
   waitProcess(subs);
