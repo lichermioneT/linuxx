@@ -1,9 +1,7 @@
 #include "comm.hpp"
 
-
 int main()
 {
-
 // 获取key
   key_t k = getKey();
   printf("0x%x\n", k); // key 

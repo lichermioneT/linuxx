@@ -2,12 +2,11 @@
 
 int main()
 {
-
-// key获取
+// 1.key获取
   key_t k = getKey();
   printf("key : 0x%x\n", k);
 
-// shmid获取
+// 2.shmid获取
   int shmid = getShm(k);
   printf("shmid : %d\n", shmid);
 

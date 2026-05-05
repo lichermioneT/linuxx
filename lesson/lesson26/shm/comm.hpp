@@ -11,8 +11,9 @@
 #include <unistd.h>
 
 #define MAX_SIZE 4096
+
 #define PATHNAME "/tmp"
-#define PROJ_ID 0X66 
+#define PROJ_ID  0X66 
 
 key_t getKey()
 {
@@ -56,8 +57,6 @@ int getShm(key_t k)
   return getShmHelper(k, IPC_CREAT  /*0*/);
 }
 
-
-
 void* attachShm(int shmid)
 {
   // 纯数字没有任何意义的，必须的有类型才行的
@@ -68,7 +67,6 @@ void* attachShm(int shmid)
   // 10L
   // 10;
   // 3.14f
-  
 
   void* mem = shmat(shmid,nullptr,0); // 8个字节，int四字节
   if((long long)mem == 1L)
@@ -88,7 +86,6 @@ void detachShm(void* start)
   }
 }
 
-
 // 删除共享内存
 // shmctl(id,cmd, shmid_ds* buf);
 void delShm(int shmid)
@@ -98,13 +95,5 @@ void delShm(int shmid)
     std::cerr<< errno << " : " << strerror(errno) <<std::endl;
   }
 }
-  
-
-
-
-
-
-
-
 
 #endif 
