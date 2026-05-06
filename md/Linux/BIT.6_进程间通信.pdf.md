@@ -1031,11 +1031,15 @@ key:是什么不重要，能进行唯一性标识最重要。ftok函数,ftok(cha
 
 
 
+### 在谈key
+
 ![image-20251126104138308](./picture/image-20251126104138308.png)
 
+**shmid是用户层，key是内核层面的**
 
 
-**shmget(key size flag) ;**
+
+**shmget(key size flag) ;   key设置进内核里面去的。**
 
 **在来理解key：**
 
@@ -1067,15 +1071,17 @@ key:是什么不重要，能进行唯一性标识最重要。ftok函数,ftok(cha
 
 ​	**ipcs -m/-q/-s**
 
+![image-20260506144929812](picture/image-20260506144929812.png)
 
+### ipc资源特征
+
+![image-20260506144750428](picture/image-20260506144750428.png)
 
 **ipc资源的特征**
 
 **共享内存的生命周期是随OS的，不是随进程的（lpcs -m) (system v版本的特征)**
 
 **ipcrm -m id 删除共享内存**
-
-
 
 ```c++
   #include <sys/ipc.h>
@@ -1084,11 +1090,9 @@ key:是什么不重要，能进行唯一性标识最重要。ftok函数,ftok(cha
 
 ```
 
-
-
 **谁创建谁删除的**
 
-
+![image-20260506145258034](picture/image-20260506145258034.png)
 
 **关联起来的**
 
@@ -1101,7 +1105,11 @@ void *shmat(int shmid, const void *shmaddr, int shmflg);
 
 
 
+### 共享内存优点
 
+![image-20260506145005580](picture/image-20260506145005580.png)
+
+![image-20260506145020507](picture/image-20260506145020507.png)
 
 **共享内存的优点**
 
