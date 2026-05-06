@@ -38,6 +38,7 @@ int getShmHelper(key_t k, int flags)
   // 用户层    内核层
   // shmid vs  key  ：key是shmind的属性 
   // fd    vs  inode：inode是fd的属性
+  // shmid:用户的句柄使用的
     int shmid = shmget(k, MAX_SIZE, flags); // 唯一标识符，大小，标识符
     if(shmid  < 0)
     {
@@ -49,7 +50,7 @@ int getShmHelper(key_t k, int flags)
 
 int createShm(key_t k)
 {
-  return getShmHelper(k, IPC_CREAT  | 0600);
+  return getShmHelper(k, IPC_CREAT | IPC_EXCL | 0600);
 }
 
 int getShm(key_t k)
@@ -67,9 +68,10 @@ void* attachShm(int shmid)
   // 10L
   // 10;
   // 3.14f
-
-  void* mem = shmat(shmid,nullptr,0); // 8个字节，int四字节
-  if((long long)mem == 1L)
+  
+  // 进程地址空间的地址信息。
+  void* mem = shmat(shmid, nullptr, 0); // 8个字节，int四字节
+  if((long long)mem == -1L)
   {
     std::cerr<< errno << " : " << strerror(errno) <<std::endl;
     exit(3);
@@ -78,6 +80,7 @@ void* attachShm(int shmid)
   return mem;
 }
 
+// 进程地址空间进行去关联
 void detachShm(void* start)
 {
   if(shmdt(start) == -1)
@@ -85,6 +88,7 @@ void detachShm(void* start)
     std::cerr<< errno << " : " << strerror(errno) <<std::endl;
   }
 }
+
 
 // 删除共享内存
 // shmctl(id,cmd, shmid_ds* buf);
