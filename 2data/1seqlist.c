@@ -44,7 +44,6 @@ void seqlistPrint(seqlist* ps)
   printf("\n");
 }
 
-
 void seqlistCheckCapacity(seqlist* ps)
 {
   assert(ps != NULL);

@@ -17,7 +17,7 @@ int main()
   
   pid_t id = fork();
   assert(id >= 0);
-  if(id < 0)
+  if(id == -1)
   {
     exit(1);
   }
@@ -28,10 +28,9 @@ int main()
     close(fd[0]);
     const char* msg = "我是子进程，正在在给你写信息";
     char buffer[1024];
-    snprintf(buffer, sizeof(buffer),"%s, %d \n", msg,cnt++);
+    snprintf(buffer, sizeof(buffer),"%s, %d \n", msg, cnt++);
     write(fd[1],buffer, sizeof(buffer));
   }
-    
 
   if(id > 0)
   {
@@ -40,24 +39,6 @@ int main()
     read(fd[0],buffer, sizeof(buffer));
     cout<< buffer <<endl;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   return 0;
 }

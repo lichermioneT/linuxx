@@ -4,13 +4,10 @@
 #include <sys/wait.h>
 #include <cstring>
 #include <cstdio>
-
 using namespace std;
 
 int main()
 {
-
-// #include 
 // int pipe[int pipefd[2]];
 // 创建一个管道文件
   
@@ -72,8 +69,6 @@ int main()
 
     // 父进程没有进行sleep
   }
-
-
 
   n = waitpid(id, nullptr, 0);
   assert(n == id);

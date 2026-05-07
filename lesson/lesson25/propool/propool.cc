@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 using namespace std;
+int reveTask(int readFd);
 
 #define PROCESS_NUM 5
 #define Make_Seed() srand((unsigned long)time(nullptr)^getpid()^0x1112^rand()%1234)
@@ -63,15 +64,6 @@ public:
 
 int SubEd::num = 0;
 
-int reveTask(int readFd)
-{
-  int code = 0;
-  ssize_t s = read(readFd, &code, sizeof(code));
-
-  if(s == 4) return code;
-  else if(s <= 0) return -1;
-  else return 0;
-}
 
 // 2.创建子进程，子进程的信息放在subs里面的
 void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
@@ -86,7 +78,7 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
     // bug 
     // 父进程打开的文件，是会被子进程共享的
     // 关闭前面的进程的管道描述符 
-    // 
+
     pid_t id = fork();
 
     if(id == 0)
@@ -96,7 +88,8 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
         close(deletefd[i]);
       }
 
-      // 处理任务
+      // 处理任务,子进程赋值读取父进程发送的执行信息。
+      // 读端会阻塞，等父进程发送信息的。
       close(fds[1]); // 关闭写端
       
       // 1接收命令码，没有就阻塞。
@@ -117,10 +110,19 @@ void cteateSubProcess(vector<SubEd>* subs, vector<func_t>& funcMap)
 
     close(fds[0]);
     SubEd sub(id, fds[1]);
-   // (*subs).push_back(sub);
     subs->push_back(sub);
     deletefd.push_back(fds[1]);
   }
+}
+
+int reveTask(int readFd)
+{
+  int code = 0;
+  ssize_t s = read(readFd, &code, sizeof(code));
+
+  if(s == 4) return code;
+  else if(s <= 0) return -1;
+  else return 0;
 }
 
 void sendTask(const SubEd& process, int tasknum)
