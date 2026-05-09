@@ -32,7 +32,6 @@ static void myhander(int signo)
 
 int main()
 {
-
   for(const auto&  sig : sigarr) signal(sig,myhander); // 捕捉了信号
 
 // 1.屏蔽指定的信
@@ -51,6 +50,7 @@ int main()
     sigaddset(&block, e);
   }
 
+// 进程PCB
 // 1.3开始屏蔽, 设置进内核(进程)
   sigprocmask(SIG_SETMASK, &block, &oblock);
  

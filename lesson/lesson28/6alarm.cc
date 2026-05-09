@@ -20,7 +20,7 @@ void catSing(int sig)
 int main()
 {
   signal(SIGALRM, catSing);
-  alarm(1);
+  alarm(2);
 
   while(true)
   {

@@ -22,7 +22,7 @@ struct FdInfo
 
 int initListenFd(unsigned short port)
 {
-// 1.创建监听的fd
+// 1.创建监听的fd,关于IPV4的网络通信。
   int lfd = socket(AF_INET, SOCK_STREAM, 0);
   if(lfd == -1)
   {
@@ -30,7 +30,7 @@ int initListenFd(unsigned short port)
     return -1;
   }
 
- //2.端口复用
+//2.端口复用,服务器主动重启的时候 能够马上使用端口
   int opt = 1;
   int ret = setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   if(ret == -1)
@@ -39,13 +39,15 @@ int initListenFd(unsigned short port)
     return -1;
   }
   
-// 3.bind函数
+// 3.bind函数,设置进内核里面
   struct sockaddr_in addr;
   bzero(&addr, sizeof(addr));
+
   addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);  // 服务器任意地址。
   addr.sin_port = htons(port);               // 不建议写死了，函数参数传进来的
 
+// 3.1设置进内核里面去的
   ret = bind(lfd, (struct sockaddr*)&addr, sizeof(addr));
   if(ret == -1)
   {
@@ -53,7 +55,7 @@ int initListenFd(unsigned short port)
     return -1;
   }
 
-// 4.listen  全链接长度,存储已经握手成功的，没有被accept走的数据了。
+// 4.listen  全链接长度,存储已经三次握手成功的，没有被accept走的数据了。
   ret = listen(lfd, 128);
   if(ret == -1)
   {
@@ -63,7 +65,6 @@ int initListenFd(unsigned short port)
 
   return lfd;
 }
-
 
 int epollRun(int lfd)
 {
@@ -79,7 +80,8 @@ int epollRun(int lfd)
   struct epoll_event ev;
   ev.data.fd = lfd;
   ev.events = EPOLLIN; // EPOLLIN关系它的读事件的。
-  int ret = epoll_ctl(epfd,  EPOLL_CTL_ADD, lfd, &ev);
+
+  int ret = epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &ev);
   if(ret == -1)
   {
     perror("epoll_ctl");
@@ -87,6 +89,7 @@ int epollRun(int lfd)
   }
 
 // 3.检查
+// 服务器一般都是死循环，常驻内存进程。
   struct epoll_event evs[1024];
   int size = sizeof(evs) / sizeof(struct epoll_event);
 
@@ -96,6 +99,7 @@ int epollRun(int lfd)
     for(int i = 0; i < num; ++i)
     {
       struct FdInfo* info = (struct FdInfo*)malloc(sizeof(struct FdInfo));
+
       int fd = evs[i].data.fd;
       info->epfd = epfd;
       info->fd  = fd;

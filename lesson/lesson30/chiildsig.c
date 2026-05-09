@@ -12,7 +12,6 @@ void hander(int signo)
 
 int main()
 {
-
   //  signal(SIGCHLD, hander); // 捕捉子进程的退出信号。这样就清晰了。子进程的退出了
                            // waitpid()缺点子进程太多了，同时退出  while()循环等 waitpid(-1,) -1任意进程
                            // 子进程太多了，只有一部分退出了。waitpid要非阻塞 waitpdi(-1,null, wnohong) 轮询等待子进程
