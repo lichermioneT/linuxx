@@ -24,11 +24,12 @@ void hander(int signo)
 int main()
 {
   struct sigaction act,oact;
+
   act.sa_handler = hander;
   act.sa_flags = 0;
-
   sigemptyset(&act.sa_mask); // 正在处理某一种信号的时候，我们也想屏蔽其它信号，就可以添加到这个sa_mask中
   sigaddset(&act.sa_mask, 3);
+
   sigaction(SIGINT, &act, &oact);
 
   while(true)

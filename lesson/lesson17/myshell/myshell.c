@@ -32,9 +32,9 @@ int main()
     myagrv[0] = strtok(linecommand, " ");
     
     int i = 1;
-    while(myagrv[i++] = strtok(NULL, " "))
+    while((myagrv[i] = strtok(NULL, " ")) != NULL)
     {
-      ;
+      i++;
     }
 
     //测试 是否成功

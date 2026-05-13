@@ -76,6 +76,12 @@ int epollRun(int lfd)
   }
 
 // 2.lfd上树
+// struct epoll_event 
+// {
+//   uint32_t events,   // 事件类型 EPOLLIN
+//   epoll_data_t data  // 用户数据，一般是fd或者指针。
+//  }
+//
   struct epoll_event ev;
   ev.data.fd = lfd;
   ev.events = EPOLLIN; // EPOLLIN关系它的读事件的。

@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
- int g_val = 10;
+int g_val = 10;
 int main()
 {
   pid_t id = fork();

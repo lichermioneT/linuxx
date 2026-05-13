@@ -48,5 +48,3 @@ v:vector,
 
 waitpid(id,&status,0)
 waitpid(id,&status,WNOHONG)
-
-

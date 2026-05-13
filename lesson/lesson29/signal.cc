@@ -52,6 +52,22 @@ int main()
 
 // 进程PCB
 // 1.3开始屏蔽, 设置进内核(进程)
+/*
+ * int sigprocmask(
+ *    int how,
+ *    新的信号集合
+ *    const sigset_t *set, 
+ *    blocked |= set  ：SIG_BLOCK
+ *    blocked &= ~set : SIG_UNBLOCK
+ *    blocked = set   : SIG_SETMASK
+ *    
+ *    旧的信号集合
+ *    sigset_t *oldset
+ *);
+ */
+
+  // block位图设置了2,3信号的。
+  // oblock里面全是零的。
   sigprocmask(SIG_SETMASK, &block, &oblock);
  
 // 遍历打印pending信号集
