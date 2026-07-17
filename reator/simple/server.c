@@ -86,7 +86,7 @@ int epollRun(int lfd)
   ev.data.fd = lfd;
   ev.events = EPOLLIN; // EPOLLIN关系它的读事件的。
 
-  int ret = epoll_ctl(epfd,  EPOLL_CTL_ADD, lfd, &ev);
+  int ret = epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &ev);
   if(ret == -1)
   {
     perror("epoll_ctl");
@@ -100,10 +100,14 @@ int epollRun(int lfd)
   while(1)
   {
     int num = epoll_wait(epfd, evs, size, -1); // -1 一直阻塞，
+
+    // 成功了就返回 num个就绪的网络文件描述符
     for(int i = 0; i < num; ++i)
     {
       struct FdInfo* info = (struct FdInfo*)malloc(sizeof(struct FdInfo));
       int fd = evs[i].data.fd;
+      
+      // 结构体里面放句柄和已经就绪的网络文件描述符。
       info->epfd = epfd;
       info->fd  = fd;
 
@@ -130,7 +134,7 @@ int epollRun(int lfd)
 void* acceptClient(void* arg)
 {
   struct FdInfo* info  = (struct FdInfo*)arg;
-  // 1.建立链接
+// 1.建立链接
   int cfd = accept(info->fd, NULL, NULL);
   if(cfd == -1)
   {
@@ -138,12 +142,12 @@ void* acceptClient(void* arg)
     return NULL;
   }
 
-  // 2.设置文件描述符的属性，非阻塞
+// 2.设置文件描述符的属性，非阻塞
   int flag = fcntl(cfd, F_GETFL);
   flag |= O_NONBLOCK;
   fcntl(cfd, F_SETFL, flag);
 
-  // 3.添加到epoll模型里面去的
+// 3.添加到epoll模型里面去的
   struct epoll_event ev;
   ev.data.fd = cfd;
   ev.events = EPOLLIN | EPOLLET;
@@ -157,7 +161,7 @@ void* acceptClient(void* arg)
   printf("accept threadid: %ld", info->tid);
   free(info);
 
-    return NULL;
+  return NULL;
 }
 
 void* recvHttpRequest(void* arg)

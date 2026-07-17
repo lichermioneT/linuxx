@@ -87,6 +87,7 @@ namespace server
           uint16_t clientport = ntohs(peer.sin_port);
           string message = buffer;
           cout<< clientip << "[" << clientport << "]# " << message <<endl;
+
           _callback(_socket, clientip, clientport, message);       // 回调函数处理业务了，处理收到的信息message
         }
       }
