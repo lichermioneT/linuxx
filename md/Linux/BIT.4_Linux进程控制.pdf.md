@@ -883,6 +883,8 @@ int main()
 
 ### execl
 
+![image-20260601165258876](picture/image-20260601165258876.png)
+
 ```c
 #include <stdio.h>
 #include <unistd.h>

@@ -409,6 +409,11 @@ int main()
 
 **struct file* fd_array[]  数组。**
 
+```
+struct files_struct* files
+struct file
+```
+
 
 
 **内建指令：自己进程执行的指令**
